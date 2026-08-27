@@ -1,0 +1,37 @@
+\chapter{Mở đầu}
+\section{Bối cảnh và động cơ nghiên cứu}
+
+Hệ thống gợi ý (\textit{recommender system}) là một trong những ứng dụng học máy có giá trị thực tiễn cao nhất hiện nay, đóng vai trò trung tâm trong các nền tảng thương mại điện tử, mạng xã hội và dịch vụ truyền phát nội dung. Bản chất dữ liệu của bài toán gợi ý là một quan hệ giữa người dùng và sản phẩm (\textit{user--item}), và quan hệ này có thể được biểu diễn một cách tự nhiên dưới dạng một đồ thị hai phía (\textit{bipartite graph}), trong đó các đỉnh là người dùng và sản phẩm, còn các cạnh thể hiện tương tác (mua hàng, đánh giá, nhấp chuột). Cách biểu diễn đồ thị này cho phép khai thác cấu trúc quan hệ bậc cao mà các mô hình lọc cộng tác truyền thống khó nắm bắt được.
+
+Chính từ nhu cầu khai thác cấu trúc quan hệ đó, Mạng nơ-ron đồ thị (\textit{Graph Neural Network -- GNN}) đã trở thành một hướng tiếp cận chủ đạo. Các mô hình tiêu biểu như GCN~\cite{Kipf2017}, GAT~\cite{Velickovic2018} và GraphSAGE~\cite{Hamilton2017} đã chứng minh hiệu quả vượt trội trên nhiều tác vụ học máy bằng biểu diễn đồ thị. Trong lĩnh vực gợi ý, PinSage~\cite{Ying2018PinSage} là một trong những hệ thống GNN quy mô công nghiệp đầu tiên được triển khai thành công, và đáng chú ý là chính PinSage đã phải dựa vào kỹ thuật \textit{random walk} kết hợp lấy mẫu đỉnh để có thể vận hành trên đồ thị với hàng tỷ cạnh. Các mô hình gợi ý dựa trên GNN về sau như NGCF~\cite{Wang2019NGCF} và LightGCN~\cite{He2020LightGCN} tiếp tục khẳng định vai trò của truyền tin trên đồ thị trong việc nâng cao chất lượng gợi ý.
+
+Tuy nhiên, khi suy xét trên thực tế của ứng dụng gợi ý quy mô lớn và rất lớn, một thách thức cốt lõi đã lộ rõ: khi đồ thị có kích thước rất lớn, việc huấn luyện GNN trở nên tốn kém về bộ nhớ và thời gian một cách khó kiểm soát. Đây chính là điểm khởi nguồn dẫn dắt nghiên cứu này đi từ bài toán gợi ý sang một vấn đề nền tảng hơn của GNN: khả năng mở rộng quy mô (\textit{scalability}).
+
+\section{Phát biểu vấn đề}
+
+GNN hiện nay vẫn tồn tại nhiều vấn đề mở chưa được giải quyết triệt để:
+\begin{itemize}
+    \item \textbf{Over-smoothing}: khi số tầng tăng, biểu diễn các đỉnh dần hội tụ về cùng một véc-tơ, mất khả năng phân biệt~\cite{Li2018DeeperInsights}.
+    \item \textbf{Over-squashing}: thông tin từ vùng lân cận mở rộng theo cấp số nhân bị nén ép vào véc-tơ kích thước cố định, gây suy giảm tín hiệu tầm xa~\cite{Alon2021Bottleneck}.
+    \item \textbf{Heterophily}: các GNN chuẩn giả thiết đỉnh lân cận có đặc trưng tương đồng, hoạt động kém trên đồ thị mà láng giềng thuộc nhãn khác nhau.
+    \item \textbf{Khả năng diễn đạt} (\textit{expressiveness}): nhiều kiến trúc GNN bị giới hạn bởi bài toán đẳng cấu đồ thị (WL test), không phân biệt được một số cấu trúc đồ thị nhất định.
+    \item \textbf{Khả năng mở rộng quy mô} (\textit{scalability}): việc huấn luyện trở nên bất khả thi khi đồ thị có hàng triệu đỉnh và cạnh.
+\end{itemize}
+
+Trong số các vấn đề trên, \textit{scalability} có liên hệ trực tiếp với cơ chế truyền tin: khi số tầng (số vòng truyền tin) của một GNN tăng lên, trường tiếp nhận (\textit{receptive field}) của mỗi đỉnh đích mở rộng theo cấp số nhân, vì biểu diễn của một đỉnh phụ thuộc đệ quy vào toàn bộ các đỉnh lân cận của nó~\cite{Younesian2023GRAPES, Zou2019LADIES}. Hệ quả là số đỉnh và số cạnh cần nạp vào bộ nhớ để tính một mini-batch bùng nổ rất nhanh --- đây chính là hiện tượng \textit{neighbor explosion} (bùng nổ lân cận), và trong báo cáo này tác giả gọi tương đương là \textit{bùng nổ cạnh và đỉnh}. Nói cách khác, neighbor explosion không phải là một vấn đề độc lập mà là hệ quả tất yếu của kiến trúc message passing khi áp dụng ở quy mô lớn, và đây là rào cản trực tiếp khiến nhiều kiến trúc GNN không thể áp dụng trên các đồ thị thực tế cỡ lớn. Nghiên cứu này do đó lựa chọn tập trung vào vấn đề này, vì đây là rào cản có tính hệ thống và ý nghĩa thực tiễn trực tiếp đối với các ứng dụng như gợi ý quy mô công nghiệp.
+
+\section{Mục tiêu và phạm vi}
+
+Mục tiêu của báo cáo là khảo sát có hệ thống các phương pháp giảm bùng nổ lân cận trong huấn luyện GNN từ quá khứ đến hiện tại, sau đó đi sâu vào một phương pháp tiêu biểu thuộc nhóm lấy mẫu thích ứng hiện đại là GRAPES~\cite{Younesian2023GRAPES}. Cụ thể, báo cáo nhằm:
+\begin{itemize}
+    \item Hệ thống hóa các nhóm phương pháp lấy mẫu để mở rộng quy mô GNN: lấy mẫu theo đỉnh, theo tầng, theo đồ thị con, và hướng dùng embedding lịch sử.
+    \item Trình bày chi tiết định nghĩa, kiến trúc và cơ sở lý thuyết của phương pháp GRAPES.
+    \item Tái hiện và phân tích thiết lập thực nghiệm cùng các kết quả chính trong bài báo gốc giới thiệu GRAPES.
+    \item Đưa ra nhận định cá nhân về ưu, nhược điểm của phương pháp và đề xuất các hướng cải tiến, gắn với định hướng ứng dụng cho hệ thống gợi ý.
+\end{itemize}
+
+Phạm vi của báo cáo giới hạn ở khía cạnh \textit{huấn luyện có khả năng mở rộng} của GNN thông qua lấy mẫu; các vấn đề khác của GNN chỉ được nhắc đến ở mức tổng quan để định vị đề tài.
+
+\section{Cấu trúc báo cáo}
+
+Phần còn lại của báo cáo được tổ chức như sau. Chương~2 trình bày cơ sở lý thuyết về GNN và phát biểu hình thức hiện tượng bùng nổ lân cận. Chương~3 khảo sát tổng quan các phương pháp lấy mẫu từ quá khứ đến hiện tại. Chương~4 đi sâu vào phương pháp GRAPES. Chương~5 trình bày thiết lập và kết quả thực nghiệm từ bài báo gốc. Chương~6 tổng hợp kết quả và đưa ra nhận định về ưu, nhược điểm. Chương~7 đề xuất các hướng cải tiến và định hướng tương lai.

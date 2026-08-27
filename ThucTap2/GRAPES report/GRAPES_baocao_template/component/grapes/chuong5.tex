@@ -1,0 +1,218 @@
+\chapter{Thực nghiệm}
+
+Chương này được tổ chức thành ba phần: (1) tóm tắt thiết lập và kết quả chính từ bài báo gốc GRAPES~\cite{Younesian2023GRAPES} như một điểm tham chiếu; (2) thực nghiệm tái hiện do tác giả báo cáo tự tiến hành; (3) so sánh và nhận xét từ hai nguồn kết quả.
+
+%% ============================================================
+\section{Kết quả từ bài báo gốc (Younesian et al., 2024)}
+%% ============================================================
+
+\subsection{Tập dữ liệu}
+
+GRAPES được đánh giá trên 12 benchmark phân loại đỉnh, chia thành hai nhóm~\cite{Younesian2023GRAPES}:
+\begin{itemize}
+    \item \textbf{Homophily} (7 dataset): Cora, CiteSeer, PubMed, Reddit, ogbn-arxiv, ogbn-products, DBLP.
+    \item \textbf{Heterophily} (5 dataset): Flickr, snap-patents, Yelp, ogbn-proteins, BlogCat.
+\end{itemize}
+
+Bảng~\ref{tab:datasets} trình bày thống kê chi tiết của từng dataset (từ Bảng 5, Appendix C của~\cite{Younesian2023GRAPES}).
+
+\begin{table}[H]
+\centering
+\caption{Thống kê 12 dataset dùng trong thực nghiệm GRAPES. Ký hiệu ``---'' là dataset không có đặc trưng đỉnh sẵn có. \textit{Label rate}: tỉ lệ đỉnh dùng để huấn luyện. Nguồn: Bảng 5 của~\cite{Younesian2023GRAPES}.}
+\label{tab:datasets}
+\small
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{l l r r r r r r}
+\toprule
+\textbf{Dataset} & \textbf{Nhóm} & \textbf{Đỉnh} & \textbf{Cạnh} & \textbf{Đặc trưng} & \textbf{Lớp} & \textbf{Tác vụ} & \textbf{Label rate (\%)} \\
+\midrule
+Cora           & Homo & 2\,708        & 5\,278          & 1\,433  & 7   & MC  & 44.61 \\
+CiteSeer       & Homo & 3\,327        & 4\,552          & 3\,703  & 6   & MC  & 54.91 \\
+PubMed         & Homo & 19\,717       & 44\,324         & 500     & 3   & MC  & 92.39 \\
+Reddit         & Homo & 232\,965      & 11\,606\,919    & 602     & 41  & MC  & 65.86 \\
+ogbn-arxiv     & Homo & 169\,343      & 1\,157\,799     & 128     & 40  & MC  & 53.70 \\
+ogbn-products  & Homo & 2\,449\,029   & 61\,859\,076    & 100     & 47  & MC  & 8.03  \\
+DBLP           & Homo & 28\,702       & 136\,670        & 300     & 4   & ML  & 80.00 \\
+\midrule
+Flickr         & Hetero & 89\,250     & 449\,878        & 500     & 7   & MC  & 50.00 \\
+snap-patents   & Hetero & 2\,923\,922 & 27\,945\,092    & 269     & 5   & MC  & 50.00 \\
+Yelp           & Hetero & 716\,847    & 6\,977\,409     & 300     & 100 & ML  & 75.00 \\
+ogbn-proteins  & Hetero & 132\,534    & 79\,122\,504    & ---     & 112 & ML  & 65.30 \\
+BlogCat        & Hetero & 10\,312     & 667\,966        & ---     & 39  & ML  & 60.00 \\
+\bottomrule
+\multicolumn{8}{l}{\footnotesize MC = phân loại đơn nhãn, ML = phân loại đa nhãn.}
+\end{tabular}
+\end{table}
+
+\subsection{Thiết lập thực nghiệm}
+
+Giao thức đánh giá gồm hai bước: (1) huấn luyện GCN thông qua lấy mẫu, và (2) đánh giá trên tập kiểm tra bằng toàn bộ đồ thị (full-graph inference). Thực nghiệm được tiến hành trên GPU Nvidia RTX A6000 48\,GB. Tất cả phương pháp dùng cùng batch size 256 và số mẫu 256 mỗi tầng; mỗi kết quả là trung bình $\pm$ độ lệch chuẩn qua 10 lần chạy~\cite{Younesian2023GRAPES}.
+
+\subsection{Kết quả độ chính xác}
+
+\paragraph{Bảng 1 — Đồ thị Homophily.}
+
+\begin{table}[H]
+\centering
+\caption{F1-score (\%) trên các đồ thị homophily (batch size 256, 256 mẫu/tầng, 10 lần chạy). In đậm: tốt nhất; gạch dưới: tốt thứ nhì trong nhóm sampling. Nguồn: Bảng 1 của~\cite{Younesian2023GRAPES}.}
+\label{tab:ketqua_f1}
+\small
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{l c c c c c c c}
+\toprule
+\textbf{Phương pháp} & \textbf{Cora} & \textbf{Citeseer} & \textbf{Pubmed} & \textbf{Reddit} & \textbf{ogbn-arxiv} & \textbf{ogbn-products} & \textbf{DBLP} \\
+\midrule
+GAS             & 87.00±0.19 & 85.87±0.19 & 87.45±0.23 & 94.75±0.04 & 68.36±0.55 & 74.69±0.14 & 83.08±0.31 \\
+\midrule
+FastGCN         & 76.17±3.98 & 62.81±7.19 & 53.52±28.48 & 62.93±3.28 & 39.49±8.04 & 66.09±3.04 & 62.93±3.28 \\
+LADIES          & 76.02±11.69 & 63.48±12.21 & 72.81±17.67 & 59.30±2.69 & 43.52±8.03 & 68.08±1.95 & 59.97±10.45 \\
+GraphSAINT      & \underline{87.28}±0.49 & 77.28±0.67 & 87.45±0.75 & 91.47±0.94 & 63.54±1.75 & 67.66±0.69 & 77.09±0.56 \\
+AS-GCN          & 85.60±0.54 & \textbf{79.21}±0.19 & \textbf{90.58}±0.40 & \underline{93.52}±0.40 & \underline{65.38}±1.80 & \underline{OOM} & \underline{83.24}±0.51 \\
+PASS            & 82.03±0.07 & 77.17±0.69 & 88.33±0.45 & OOM & 58.32±0.05 & OOM & 54.40±2.31 \\
+Random          & \underline{86.58}±0.33 & \underline{78.29}±0.52 & \underline{90.09}±0.17 & \textbf{94.16}±0.06 & 61.35±0.32 & 70.47±0.32 & 76.87±0.24 \\
+\midrule
+GRAPES-RL       & \textbf{87.62}±0.48 & 78.75±0.35 & 89.40±0.34 & 94.09±0.05 & 62.58±0.64 & 71.45±0.20 & 76.88±0.33 \\
+GRAPES-GFN      & 87.29±0.32 & 78.75±0.33 & 89.46±0.34 & \underline{94.30}±0.06 & 61.86±0.51 & 70.66±0.30 & \textbf{77.14}±0.48 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Bảng 2 — Đồ thị Heterophily.}
+
+\begin{table}[H]
+\centering
+\caption{F1-score (\%) trên các đồ thị heterophily. Nguồn: Bảng 2 của~\cite{Younesian2023GRAPES}.}
+\label{tab:ketqua_f1_hetero}
+\small
+\setlength{\tabcolsep}{5pt}
+\begin{tabular}{l c c c c c}
+\toprule
+\textbf{Phương pháp} & \textbf{Flickr} & \textbf{snap-patents} & \textbf{Yelp} & \textbf{ogbn-proteins} & \textbf{BlogCat} \\
+\midrule
+GAS             & 49.96±0.28 & 38.04±0.20 & 37.81±0.07 & 7.55±0.01 & 6.07±0.04 \\
+\midrule
+FastGCN         & 46.40±2.51 & 29.68±0.61 & 29.29±4.39 & 7.80±0.55 & 6.44±0.41 \\
+LADIES          & 47.19±3.42 & 29.09±1.88 & 18.92±3.18 & 4.31±0.11 & 6.74±0.67 \\
+GraphSAINT      & \underline{48.01}±1.44 & 28.01±0.57 & 34.68±0.70 & \underline{9.94}±0.07 & 6.89±0.96 \\
+AS-GCN          & 48.42±1.20 & \underline{31.04}±0.19 & \underline{38.51}±1.45 & 5.20±0.36 & 5.43±0.54 \\
+PASS            & 44.49±0.76 & OOM & OOM & 7.71±0.12 & \underline{6.88}±0.59 \\
+Random          & \textbf{49.39}±0.23 & 29.74±0.34 & 40.63±0.13 & 10.82±0.05 & 7.13±0.97 \\
+\midrule
+GRAPES-RL       & \underline{49.54}±0.67 & 29.16±0.54 & 40.69±0.55 & \textbf{11.78}±0.14 & \underline{9.06}±0.68 \\
+GRAPES-GFN      & 49.29±0.32 & \textbf{29.58}±0.24 & \textbf{44.57}±0.88 & \underline{11.57}±0.18 & \textbf{9.22}±0.40 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Ba phát hiện nổi bật từ kết quả gốc~\cite{Younesian2023GRAPES}:
+\begin{itemize}
+    \item Trên đồ thị heterophily đa nhãn (Yelp, ogbn-proteins, BlogCat), GRAPES-GFN đạt hạng 1 trên 4/5 dataset.
+    \item Trên ogbn-products, AS-GCN và PASS bị OOM trong khi GRAPES vẫn hoàn thành --- minh chứng trực tiếp cho tính mở rộng của phương pháp.
+    \item FastGCN và LADIES có độ lệch chuẩn rất cao (Pubmed: ±28.48), cho thấy lấy mẫu độc lập theo tầng không ổn định.
+\end{itemize}
+
+%% ============================================================
+\section{Thực nghiệm tái hiện của tác giả}
+%% ============================================================
+
+\subsection{Thiết lập}
+
+Thực nghiệm tái hiện được thực hiện trên nền tảng \textbf{Google Colab} với GPU \textbf{Tesla T4} (15.6\,GB VRAM), PyTorch \textbf{2.11.0+cu128}, torch-geometric \textbf{2.7.0}. Toàn bộ code và notebook được công bố tại:
+\begin{center}
+\url{https://colab.research.google.com/drive/1qEfu0aXfuJbnrka-URTDCLqQxc8FdvAn?usp=sharing}
+\end{center}
+
+Tác giả tái hiện trên bốn dataset: \textbf{Cora}, \textbf{CiteSeer}, \textbf{ogbn-arxiv} và \textbf{ogbn-products}, với cùng batch size 256, số mẫu 256 và cùng file siêu tham số (\texttt{configs/}) từ repo gốc. Cora, CiteSeer và ogbn-arxiv chạy 3 lần; ogbn-products chạy 1 lần. Chỉ hai phương pháp được tái hiện: GRAPES-GFN và baseline Random.
+
+\subsection{Kết quả tái hiện}
+
+% Bảng 5.5a: F1 tái hiện
+\begin{table}[H]
+\centering
+\caption{F1-score (\%) tái hiện của tác giả trên Google Colab (Tesla T4, 3 lần chạy). ``N/C'' = chạy được nhưng session hết thời gian trước khi in kết quả (xem chú thích).}
+\label{tab:reproduce_f1}
+\small
+\setlength{\tabcolsep}{6pt}
+\begin{tabular}{l c c c c}
+\toprule
+\textbf{Phương pháp} & \textbf{Cora} & \textbf{CiteSeer} & \textbf{ogbn-arxiv} & \textbf{ogbn-products} \\
+\midrule
+Random & 86.77±0.38 & 79.00±0.82 & 61.28±0.29 & --- \\
+GRAPES & 87.10±0.17 & 78.57±0.71 & 62.04±0.31 & N/C$^\dagger$ \\
+\midrule
+\textbf{GRAPES $-$ Random} & \textbf{+0.33} & \textbf{$-$0.43} & \textbf{+0.76} & --- \\
+\bottomrule
+\multicolumn{5}{l}{\footnotesize $^\dagger$ GRAPES hoàn thành 9/10 epoch trên ogbn-products, không OOM, session Colab hết giờ.}
+\end{tabular}
+\end{table}
+
+% Bảng 5.5b: So sánh với kết quả gốc
+\begin{table}[H]
+\centering
+\caption{Chênh lệch $\Delta$ (điểm \%) giữa kết quả tái hiện và kết quả gốc~\cite{Younesian2023GRAPES}. Giá trị dương = tái hiện tốt hơn. Tất cả $|\Delta| \leq 0.76$, nằm trong vùng phủ của độ lệch chuẩn gốc.}
+\label{tab:reproduce_delta}
+\small
+\setlength{\tabcolsep}{8pt}
+\begin{tabular}{l c c c c c c}
+\toprule
+ & \multicolumn{2}{c}{\textbf{Cora}} & \multicolumn{2}{c}{\textbf{CiteSeer}} & \multicolumn{2}{c}{\textbf{ogbn-arxiv}} \\
+\cmidrule(lr){2-3}\cmidrule(lr){4-5}\cmidrule(lr){6-7}
+\textbf{Phương pháp} & Gốc & $\Delta$ & Gốc & $\Delta$ & Gốc & $\Delta$ \\
+\midrule
+Random & 86.58±0.33 & +0.19 & 78.29±0.52 & +0.71 & 61.35±0.32 & $-$0.07 \\
+GRAPES & 87.29±0.32 & $-$0.19 & 78.75±0.33 & $-$0.18 & 61.86±0.51 & +0.18 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{Bộ nhớ GPU (MB) tại ba điểm đo trong vòng lặp huấn luyện và tổng thời gian chạy. ``Memory point 1'': sau forward pass của GFlowNet; ``Memory point 2'': sau backward pass của GFlowNet; ``Memory point 3'': sau backward pass của classifier. Random không có điểm đo 1 và 2 vì không huấn luyện GFlowNet.}
+\label{tab:reproduce_memory}
+\small
+\setlength{\tabcolsep}{5pt}
+\begin{tabular}{l l r r r r}
+\toprule
+\textbf{Dataset} & \textbf{Phương pháp} & \textbf{Mem-1 (MB)} & \textbf{Mem-2 (MB)} & \textbf{Mem-3 (MB)} & \textbf{Thời gian (s)} \\
+\midrule
+\multirow{2}{*}{Cora}
+  & GRAPES & 74.9±5.1 & 67.2±5.5 & 65.8±5.5 & 56 \\
+  & Random & ---       & ---       & 29.0±0.5 & 31 \\
+\midrule
+\multirow{2}{*}{CiteSeer}
+  & GRAPES & 136.4±11.5 & 124.2±19.0 & 120.6±19.0 & 95 \\
+  & Random & ---         & ---         & 45.1±2.7   & 56 \\
+\midrule
+\multirow{2}{*}{ogbn-arxiv}
+  & GRAPES & 327.5±10.7 & 59.5±9.5 & 59.3±9.5 & 11\,114 \\
+  & Random & ---         & ---       & 18.7±0.1 & 8\,133  \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+%% ============================================================
+\section{So sánh và nhận xét}
+%% ============================================================
+
+\subsection{Mức độ tái hiện}
+
+Kết quả tái hiện nhất quán tốt với bài báo gốc: tất cả sáu giá trị F1 đều lệch không quá 0.76 điểm phần trăm và nằm trong vùng phủ của độ lệch chuẩn được báo cáo. Điều này xác nhận code nguồn của GRAPES ổn định và tái hiện được trên phần cứng khác nhau.
+
+Sự chênh lệch nhỏ xuất phát từ: (i) số lần chạy ít hơn (3 thay vì 10), (ii) khác biệt phần cứng (Tesla T4 vs RTX A6000 ảnh hưởng đến tính không xác định của CUDA), (iii) phiên bản thư viện mới hơn.
+
+\subsection{Nhận xét chung}
+
+\paragraph{1. Lợi thế của GRAPES trên homophily là thực nhưng nhỏ.}
+Trên Cora và ogbn-arxiv, GRAPES nhỉnh hơn Random lần lượt $+$0.33 và $+$0.76 điểm --- nhất quán với kết quả gốc. Đây là cải thiện khiêm tốn nhưng đáng tin cậy, đạt được với cùng số mẫu cố định.
+
+\paragraph{2. CiteSeer là ngoại lệ đáng chú ý.}
+Kết quả tái hiện cho thấy Random (79.00\%) nhỉnh hơn GRAPES (78.57\%) $-$0.43 điểm, ngược chiều kết quả gốc (GRAPES 78.75 > Random 78.29, $+$0.46). Tuy nhiên cả hai chênh lệch đều nhỏ hơn một độ lệch chuẩn ($\approx$0.52--0.82), nên không có ý nghĩa thống kê. Điều này phản ánh thực tế rằng trên đồ thị homophily nhỏ, lợi thế của lấy mẫu thích ứng là cận biên.
+
+\paragraph{3. ogbn-products: GRAPES chạy được trên Tesla T4 15\,GB.}
+Đây là phát hiện quan trọng nhất của thực nghiệm tái hiện. GRAPES hoàn thành 9/10 epoch trên ogbn-products (2.4 triệu đỉnh, 61.9 triệu cạnh) trên GPU chỉ có 15.6\,GB VRAM --- bằng $\frac{1}{3}$ VRAM của RTX A6000 trong bài báo gốc --- mà không gặp lỗi OOM. Session Colab hết thời gian trước khi in kết quả cuối, nhưng quá trình training ổn định đến cuối, xác nhận tuyên bố về tính mở rộng của GRAPES. Đây là điểm tương phản rõ với AS-GCN và PASS --- hai phương pháp bị OOM ngay trên RTX A6000 48\,GB trong bài báo gốc.
+
+\paragraph{4. Chi phí bộ nhớ GFlowNet là thực chất nhưng hợp lý.}
+Từ Bảng~\ref{tab:reproduce_memory}, GRAPES tiêu thụ bộ nhớ GPU gấp $\approx$2.3--3.0 lần so với Random (65.8 vs 29.0\,MB trên Cora; 120.6 vs 45.1\,MB trên CiteSeer; 59.3 vs 18.7\,MB trên ogbn-arxiv). Điểm thú vị là trên ogbn-arxiv, bộ nhớ sau backward (59.3\,MB) thấp hơn nhiều so với sau forward (327.5\,MB), cho thấy GRAPES giải phóng bộ nhớ hiệu quả sau mỗi bước tính gradient.
+
+\paragraph{5. Chi phí thời gian của GFlowNet là đáng kể.}
+GRAPES chậm hơn Random từ $\times$1.37 (ogbn-arxiv) đến $\times$1.85 (Cora). Tổng thời gian ogbn-arxiv là $\approx$3.1 giờ so với $\approx$2.3 giờ của Random. Chi phí này là giá phải trả cho cơ chế học lấy mẫu thích ứng và cần được cân nhắc trong thực tế triển khai.

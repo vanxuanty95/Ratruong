@@ -1,0 +1,172 @@
+\documentclass[13pt, a4paper]{report}
+% tô màu cell trong bảng
+\usepackage[table]{xcolor}
+
+\usepackage[fontsize=13pt]{scrextend}
+\usepackage{fontspec}
+\usepackage{float}
+\usepackage[utf8]{inputenc}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{tikz}
+\usetikzlibrary{trees,positioning,arrows.meta,decorations.pathreplacing,fit,backgrounds,patterns}
+\setmainfont{Times New Roman}
+
+% dùng cho canh lề văn bản
+\usepackage[left=3.5cm,right=2cm,top=3cm,bottom=3cm]{geometry} 
+ 
+% dùng để chèn hình ảnh
+\usepackage{graphicx} 
+
+% dùng để tạo border title page
+\usepackage[many]{tcolorbox}
+\tcbset{
+    sharp corners,
+    colback = white,
+    before skip = 0.2cm,    % add extra space before the box
+    after skip = 0.5cm      % add extra space after the box
+}   
+\newtcolorbox{boxA}{
+    boxrule = 1pt,
+    colframe = black,
+    colback = white,
+    height fill,
+}
+
+% định dạng tiếng việt
+\usepackage[vietnamese]{babel}
+
+% % định nghĩa các section không số
+\usepackage[hidelinks]{hyperref}
+% \newcounter{Chapcounter}
+% \newcommand\showmycounter{\addtocounter{Chapcounter}{1}\themycounter}
+% \newcommand{\chapter}[1] 
+% { {\centering          
+%   \addtocounter{Chapcounter}{1} \Large {\textbf{#1}} \\ \vspace{1em} }   
+%   \addcontentsline{toc}{section}{#1}    
+% }
+
+
+
+% thụt đầu dòng đoạn đầu tiên của section
+\usepackage{indentfirst}
+% môi trường để code
+\usepackage{listings}
+\lstset{
+basicstyle=\small\ttfamily,
+columns=flexible,
+breaklines=true
+}
+
+% thu nhỏ cỡ chữ caption image giống cỡ chữ văn bản
+\usepackage[font=small]{caption}
+
+% break line cho url 
+\usepackage{xurl}
+
+% chèn block giải thuật
+\usepackage{algorithm2e}
+\RestyleAlgo{ruled}
+
+% hỗ trợ subtable
+\usepackage{subcaption}
+
+% hồ trợ multirow trong table
+\usepackage{multirow}
+
+% định dạng line spacing
+\usepackage{setspace}
+
+% đánh số trang trên đầu, ở giữa
+\usepackage{fancyhdr}
+\setlength{\headheight}{15.6pt}
+\addtolength{\topmargin}{-3.6pt}
+\pagestyle{fancy}
+\fancyhead{}
+\fancyhead[C]{\thepage}
+\fancyfoot{}
+\renewcommand{\headrulewidth}{0pt}
+
+% % figure theo chương
+% \usepackage{chngcntr}
+% \counterwithin{figure}{section}
+% \counterwithin{table}{section}
+
+% cho phép table tràn qua trang tiếp theo
+\usepackage{longtable}
+
+% trích dẫn kiểu APA
+% \usepackage{apacite}
+% \usepackage[numbers]{natbib} 
+% \renewcommand\refname{Tài liệu tham khảo}
+% \renewcommand{\refname}{whatever}
+
+\begin{document}
+% giãn cách dòng 1.5
+\onehalfspacing
+\input{component/cover}
+
+\newpage
+\input{component/subsidiary-cover}
+\newpage
+\thispagestyle{empty}
+\pagestyle{empty}
+\input{component/thesis-mission}
+
+\newpage
+\pagestyle{fancy}
+\pagenumbering{roman}
+\addcontentsline{toc}{chapter}{Lời cảm ơn}
+\input{component/acknowledgement}
+
+\newpage
+\addcontentsline{toc}{chapter}{Tóm tắt}
+\input{component/abstract-vi}
+
+\newpage
+\addcontentsline{toc}{chapter}{Abstract}
+\input{component/abstract-eng}
+
+\newpage
+\addcontentsline{toc}{chapter}{Lời cam đoan}
+\input{component/declaration} 
+
+\newpage
+\tableofcontents
+
+\newpage
+\addcontentsline{toc}{chapter}{\listfigurename}
+
+\listoffigures
+
+\newpage
+\addcontentsline{toc}{chapter}{Danh sách bảng}
+\listoftables
+\newpage
+\pagenumbering{arabic}
+\setcounter{page}{1}
+
+\input{component/grapes/chuong1}
+\newpage
+\input{component/grapes/chuong2}
+\newpage
+\input{component/grapes/chuong3}
+\newpage
+\input{component/grapes/chuong4}
+\newpage
+\input{component/grapes/chuong5}
+\newpage
+\input{component/grapes/chuong6}
+\newpage
+\input{component/grapes/chuong7}
+
+\newpage
+\addcontentsline{toc}{chapter}{Tài liệu tham khảo}
+\input{component/reference}
+
+\newpage
+%\addcontentsline{toc}{chapter}{Phần lý lịch trích ngang}
+%\input{component/profile}
+
+\end{document}

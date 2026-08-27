@@ -1,0 +1,304 @@
+\chapter{Tổng quan các phương pháp giảm bùng nổ lân cận}
+
+Các phương pháp mở rộng quy mô huấn luyện GNN có thể được phân thành ba nhóm lấy mẫu chính --- theo đỉnh, theo tầng, theo đồ thị con --- cùng một nhóm thay thế dựa trên embedding lịch sử. Cách phân loại này được sử dụng rộng rãi trong các khảo sát về chủ đề~\cite{Younesian2023GRAPES}. Chương này trình bày lần lượt từng nhóm theo trình tự phát triển từ quá khứ đến hiện tại.
+
+\section{Lấy mẫu theo đỉnh}
+
+\begin{figure}[htbp]
+\centering
+\resizebox{0.85\textwidth}{!}{%
+\begin{tikzpicture}[
+  nd/.style={circle,draw=black!55,fill=white,minimum size=8mm,font=\scriptsize,line width=0.7pt},
+  tgt/.style={circle,draw=red!70!black,fill=red!12,minimum size=9mm,font=\scriptsize\bfseries,line width=1.2pt},
+  smp/.style={circle,draw=blue!60!black,fill=blue!10,minimum size=7mm,font=\scriptsize,line width=0.8pt},
+  uns/.style={circle,draw=gray!35,fill=gray!8,minimum size=7mm,line width=0.5pt,dashed},
+  lbl/.style={font=\footnotesize,text=black!60},
+  >=Stealth
+]
+%% LEFT: full neighborhood tree
+\node[tgt] (v) at (0,0) {$v$};
+\foreach \i/\a in {1/100,2/140,3/180,4/220,5/260}{
+  \node[nd] (n\i) at ([shift={(\a:1.7)}]v) {};
+  \draw[black!30,line width=0.6pt] (v)--(n\i);
+}
+\foreach \i/\da/\db in {1/70/110,2/110/150,3/150/190,4/190/230,5/230/270}{
+  \node[uns] at ([shift={(\da:1.4)}]n\i) {};
+  \node[uns] at ([shift={(\db:1.4)}]n\i) {};
+}
+\node[lbl,align=center] at (0,-3.5) {\textbf{Toàn bộ lân cận}\\$|\mathcal{N}(v)| = 5$ mỗi tầng};
+
+%% arrow
+\draw[->,thick,gray!55,line width=1.3pt] (1.6,0) -- (2.9,0)
+  node[midway,above,font=\scriptsize,text=gray!70] {lấy $k{=}2$};
+
+%% RIGHT: node-wise sampled
+\begin{scope}[xshift=4.5cm]
+\node[tgt] (v2) at (0,0) {$v$};
+\node[smp] (s1) at (-1.3,-1.6) {};
+\node[smp] (s2) at ( 1.3,-1.6) {};
+\node[uns]       at (0,   -1.8) {};   % unsampled, faded
+\draw[blue!55,line width=1.0pt] (v2)--(s1);
+\draw[blue!55,line width=1.0pt] (v2)--(s2);
+
+\node[smp] (t1) at (-2.1,-3.2) {};
+\node[smp] (t2) at (-0.5,-3.2) {};
+\node[smp] (t3) at ( 0.5,-3.2) {};
+\node[smp] (t4) at ( 2.1,-3.2) {};
+\node[uns]       at (-2.8,-3.0){};
+\node[uns]       at ( 2.8,-3.0){};
+\draw[blue!40,line width=0.8pt] (s1)--(t1); \draw[blue!40,line width=0.8pt] (s1)--(t2);
+\draw[blue!40,line width=0.8pt] (s2)--(t3); \draw[blue!40,line width=0.8pt] (s2)--(t4);
+
+% brace k=2
+\draw[decorate,decoration={brace,amplitude=5pt},blue!55,line width=0.7pt]
+  (-1.7,-1.1) -- (1.7,-1.1) node[midway,above=6pt,font=\scriptsize,text=blue!70] {$k=2$ được chọn};
+
+\node[lbl,align=center] at (0,-4.0) {\textbf{Lấy mẫu theo đỉnh}\\$k$ lân cận / đỉnh / tầng};
+\end{scope}
+\end{tikzpicture}}
+\caption{Lấy mẫu theo đỉnh (node-wise sampling): mỗi đỉnh chỉ giữ lại $k$ lân cận được chọn ngẫu nhiên thay vì toàn bộ. Quá trình lặp lại theo từng tầng, nên cây phụ thuộc vẫn đệ quy nhưng bị chặn bởi $k^L$ thay vì $\bar{d}^L$.}
+\label{fig:nodewise-sampling}
+\end{figure}
+
+Trong nhóm lấy mẫu theo đỉnh (\textit{node-wise sampling}), với mỗi đỉnh đích, một số lượng cố định các đỉnh lân cận được lấy mẫu. GraphSAGE~\cite{Hamilton2017} là đại diện kinh điển: nó lấy mẫu ngẫu nhiên một số lân cận cố định cho mỗi đỉnh ở mỗi tầng. Hướng này về sau được áp dụng trong các hệ gợi ý quy mô lớn như PinSage~\cite{Ying2018PinSage}, vốn kết hợp \textit{random walk} với lấy mẫu đỉnh để mở rộng cho đồ thị web cỡ lớn. VR-GCN~\cite{ChenZhu2018VRGCN} cải tiến nhóm này bằng kỹ thuật giảm phương sai dựa trên ước lượng lịch sử của embedding.
+
+Hạn chế chính của lấy mẫu theo đỉnh là sự dư thừa: một đỉnh có thể bị lấy mẫu lặp lại nhiều lần vì nó là lân cận của nhiều đỉnh đích khác nhau~\cite{Younesian2023GRAPES}. Ngoài ra, do vẫn lấy mẫu đệ quy theo từng hop, độ phức tạp lấy mẫu vẫn tăng theo cấp số nhân khi số tầng tăng.
+
+\section{Lấy mẫu theo tầng}
+
+\begin{figure}[htbp]
+\centering
+\resizebox{0.9\textwidth}{!}{%
+\begin{tikzpicture}[
+  tgt/.style={circle,draw=red!70!black,fill=red!12,minimum size=9mm,font=\scriptsize\bfseries,line width=1.2pt},
+  pool/.style={circle,draw=blue!60!black,fill=blue!10,minimum size=7mm,line width=0.8pt},
+  uns/.style={circle,draw=gray!35,fill=gray!8,minimum size=7mm,line width=0.5pt,dashed},
+  lbl/.style={font=\footnotesize,text=black!60},
+  >=Stealth
+]
+
+%% ---- Node-wise (LEFT, for contrast) ----
+\node[lbl,font=\small\bfseries,text=gray!70] at (-0.5, 0.8) {Node-wise};
+
+\node[tgt] (a1) at (-1.5, 0) {$v_1$};
+\node[tgt] (a2) at ( 0.5, 0) {$v_2$};
+
+% v1's own sampled pool (orange)
+\node[pool,fill=orange!15,draw=orange!60!black] (pa1) at (-2.3,-1.8) {};
+\node[pool,fill=orange!15,draw=orange!60!black] (pa2) at (-1.5,-1.8) {};
+\node[uns] (pa3) at (-0.7,-1.8) {};
+% v2's own sampled pool (green)
+\node[pool,fill=green!15,draw=green!60!black] (pb1) at (-0.1,-1.8) {};
+\node[pool,fill=green!15,draw=green!60!black] (pb2) at ( 0.7,-1.8) {};
+\node[uns] (pb3) at ( 1.5,-1.8) {};
+
+\draw[orange!50] (a1)--(pa1); \draw[orange!50] (a1)--(pa2); \draw[gray!25,dashed] (a1)--(pa3);
+\draw[green!50]  (a2)--(pb1); \draw[green!50]  (a2)--(pb2); \draw[gray!25,dashed] (a2)--(pb3);
+
+\node[lbl,font=\scriptsize,text=orange!70] at (-1.9,-2.5) {pool riêng $v_1$};
+\node[lbl,font=\scriptsize,text=green!60!black] at (0.7,-2.5) {pool riêng $v_2$};
+
+%% ---- Divider ----
+\draw[gray!30,dashed,line width=0.8pt] (2.4,1.0) -- (2.4,-3.0);
+
+%% ---- Layer-wise (RIGHT) ----
+\node[lbl,font=\small\bfseries,text=blue!70] at (5.5, 0.8) {Layer-wise};
+
+\node[tgt] (b1) at (4.0, 0) {$v_1$};
+\node[tgt] (b2) at (6.0, 0) {$v_2$};
+
+% shared pool for the whole layer
+\node[pool] (sp1) at (3.4,-1.8) {};
+\node[pool] (sp2) at (4.4,-1.8) {};
+\node[pool] (sp3) at (5.4,-1.8) {};
+\node[pool] (sp4) at (6.4,-1.8) {};
+
+\draw[blue!50] (b1)--(sp1); \draw[blue!50] (b1)--(sp2); \draw[blue!40] (b1)--(sp3);
+\draw[blue!40] (b2)--(sp2); \draw[blue!50] (b2)--(sp3); \draw[blue!50] (b2)--(sp4);
+
+% shared pool box
+\begin{scope}[on background layer]
+\node[draw=blue!40,fill=blue!5,rounded corners=4pt,
+      fit=(sp1)(sp4),inner sep=5pt] {};
+\end{scope}
+\node[lbl,font=\scriptsize,text=blue!70,align=center] at (5.0,-2.5) {pool chung cho \textit{cả tầng}};
+
+\end{tikzpicture}}
+\caption{So sánh node-wise và layer-wise sampling: node-wise tạo pool lân cận riêng cho từng đỉnh đích (màu khác nhau), dễ chọn trùng đỉnh; layer-wise dùng một pool chung cho toàn tầng, kiểm soát được tổng số đỉnh cần nạp.}
+\label{fig:layerwise-sampling}
+\end{figure}
+
+Nhóm lấy mẫu theo tầng (\textit{layer-wise sampling}) khắc phục sự bùng nổ bằng cách lấy mẫu một số lượng đỉnh cố định cho \textit{toàn bộ một tầng} thay vì cho từng đỉnh, nhờ đó kiểm soát được kích thước vùng tính toán ở mỗi tầng.
+
+FastGCN~\cite{ChenFastGCN2018} diễn giải tích chập đồ thị như một phép biến đổi tích phân và dùng lấy mẫu quan trọng (\textit{importance sampling}) cùng xấp xỉ Monte Carlo; mỗi tầng được lấy mẫu một số đỉnh cố định một cách độc lập theo phân phối xác suất tính trước. Tuy nhiên, lấy mẫu độc lập giữa các tầng dễ dẫn đến tình trạng các đỉnh được chọn ở tầng dưới không phải là lân cận của các đỉnh ở tầng trên, làm ma trận kề cảm sinh trở nên thưa và giảm chất lượng truyền tin.
+
+LADIES~\cite{Zou2019LADIES} giải quyết điểm yếu đó bằng lấy mẫu phụ thuộc giữa các tầng: xác suất lấy mẫu ở tầng dưới được điều kiện hóa theo các đỉnh đã chọn ở tầng trên, đảm bảo các đỉnh được chọn nằm trong vùng lân cận và ma trận kề cảm sinh đủ dày.
+
+AS-GCN~\cite{Huang2018ASGCN} là phương pháp lấy mẫu theo tầng có tính \textit{thích ứng}: bộ lấy mẫu được xây dựng theo hướng từ trên xuống, lấy mẫu tầng dưới có điều kiện theo tầng trên, và quan trọng hơn, bộ lấy mẫu này có thể được tối ưu để giảm phương sai một cách tường minh. Đây là điểm khác biệt then chốt: AS-GCN không dùng heuristic cố định mà điều chỉnh theo phương sai lấy mẫu. Tuy vậy, AS-GCN sử dụng cơ chế chú ý trong quá trình lấy mẫu nên tiêu tốn nhiều bộ nhớ, và có thể gặp lỗi hết bộ nhớ trên các đồ thị rất lớn.
+
+\section{Lấy mẫu theo đồ thị con}
+
+\begin{figure}[htbp]
+\centering
+\resizebox{0.88\textwidth}{!}{%
+\begin{tikzpicture}[
+  nd/.style={circle,draw=black!45,fill=white,minimum size=7mm,line width=0.6pt},
+  cin/.style={circle,draw=blue!60!black,fill=blue!12,minimum size=7mm,line width=0.9pt},
+  cout/.style={circle,draw=gray!40,fill=gray!8,minimum size=7mm,line width=0.5pt},
+  lbl/.style={font=\footnotesize,text=black!60},
+  >=Stealth
+]
+
+%% ---- Full graph (LEFT) ----
+% cluster A nodes (blue)
+\node[cin] (c1) at (0.0, 0.0) {};
+\node[cin] (c2) at (1.0, 0.8) {};
+\node[cin] (c3) at (1.8, 0.0) {};
+\node[cin] (c4) at (0.8,-0.9) {};
+% cluster B nodes (gray)
+\node[cout] (o1) at (3.2, 0.6) {};
+\node[cout] (o2) at (4.0,-0.2) {};
+\node[cout] (o3) at (3.0,-1.0) {};
+\node[cout] (o4) at (0.5, 2.0) {};
+\node[cout] (o5) at (4.5, 1.5) {};
+
+% intra-cluster edges
+\draw[blue!45,line width=0.8pt] (c1)--(c2)--(c3)--(c4)--(c1);
+\draw[blue!45,line width=0.8pt] (c2)--(c4); \draw[blue!45,line width=0.8pt] (c1)--(c3);
+% inter-cluster edges (sparse)
+\draw[gray!30,line width=0.5pt] (c2)--(o4); \draw[gray!30,line width=0.5pt] (c3)--(o1);
+\draw[gray!30,line width=0.5pt] (o1)--(o2); \draw[gray!30,line width=0.5pt] (o2)--(o3);
+\draw[gray!30,line width=0.5pt] (o1)--(o5);
+
+% cluster boundary
+\begin{scope}[on background layer]
+  \node[draw=blue!50,fill=blue!4,rounded corners=8pt,dashed,line width=1.0pt,
+        fit=(c1)(c2)(c3)(c4),inner sep=8pt] (box) {};
+\end{scope}
+\node[lbl,font=\scriptsize,text=blue!70] at (0.9,-1.8) {cụm / đồ thị con};
+\node[lbl] at (2.0,-2.4) {\textbf{Đồ thị gốc}};
+
+%% arrow
+\draw[->,thick,gray!55,line width=1.3pt] (5.2,0) -- (6.4,0)
+  node[midway,above,font=\scriptsize,text=gray!70] {mini-batch};
+
+%% ---- Extracted subgraph (RIGHT) ----
+\begin{scope}[xshift=7.5cm]
+\node[cin] (e1) at (0.0, 0.0) {};
+\node[cin] (e2) at (1.0, 0.8) {};
+\node[cin] (e3) at (1.8, 0.0) {};
+\node[cin] (e4) at (0.8,-0.9) {};
+
+\draw[blue!55,line width=1.0pt] (e1)--(e2)--(e3)--(e4)--(e1);
+\draw[blue!55,line width=1.0pt] (e2)--(e4); \draw[blue!55,line width=1.0pt] (e1)--(e3);
+
+% GNN label inside
+\node[font=\scriptsize\bfseries,text=blue!70] at (0.9,0.1) {GNN};
+
+\begin{scope}[on background layer]
+  \node[draw=blue!50,fill=blue!6,rounded corners=8pt,line width=1.0pt,
+        fit=(e1)(e2)(e3)(e4),inner sep=10pt] {};
+\end{scope}
+\node[lbl,align=center] at (0.9,-2.0) {\textbf{Đồ thị con (mini-batch)}\\GNN chạy đầy đủ bên trong};
+\end{scope}
+
+\end{tikzpicture}}
+\caption{Lấy mẫu theo đồ thị con: thay vì lấy mẫu lân cận từng đỉnh, toàn bộ một đồ thị con (cụm) được trích ra làm mini-batch. GNN chạy đầy đủ bên trong đồ thị con mà không cần mở rộng lân cận ra ngoài.}
+\label{fig:subgraph-sampling}
+\end{figure}
+
+Khác với hai nhóm trên, lấy mẫu theo đồ thị con (\textit{subgraph sampling}) lấy mẫu ra các đồ thị con làm mini-batch, rồi xây dựng một GNN đầy đủ trên đồ thị con đó. Cách này giải quyết trực tiếp bùng nổ lân cận vì chỉ các đỉnh nằm trong đồ thị con mới tham gia tính toán.
+
+Cluster-GCN~\cite{Chiang2019ClusterGCN} trước hết phân cụm đồ thị, sau đó mỗi mini-batch huấn luyện trên một (hoặc một số) cụm, giúp các đỉnh trong mỗi batch được kết nối chặt chẽ. GraphSAINT~\cite{Zeng2020GraphSAINT} đề xuất một bộ lấy mẫu đồ thị con theo xác suất tổng quát, xây dựng các batch huấn luyện bằng cách lấy mẫu các đồ thị con của đồ thị gốc, kèm các kỹ thuật hiệu chỉnh độ chệch và phương sai. Thách thức chung của nhóm này là đảm bảo các đồ thị con vẫn giữ được cấu trúc tô-pô có ý nghĩa để GNN khai thác.
+
+\section{Hướng dùng embedding lịch sử}
+
+\begin{figure}[htbp]
+\centering
+\resizebox{0.82\textwidth}{!}{%
+\begin{tikzpicture}[
+  fresh/.style={circle,draw=blue!65!black,fill=blue!12,minimum size=9mm,font=\scriptsize\bfseries,line width=1.0pt},
+  stale/.style={circle,draw=gray!55,fill=gray!12,minimum size=9mm,font=\scriptsize,line width=0.8pt},
+  tgt/.style={circle,draw=red!70!black,fill=red!12,minimum size=10mm,font=\scriptsize\bfseries,line width=1.2pt},
+  emb/.style={rectangle,rounded corners=2pt,draw=gray!55,fill=gray!10,font=\scriptsize,inner sep=3pt},
+  lbl/.style={font=\footnotesize,text=black!60},
+  >=Stealth
+]
+
+%% ---- epoch t-1 (top, faded) ----
+\node[lbl,font=\scriptsize,text=gray!50] at (-0.5,2.8) {Epoch $t{-}1$};
+\node[stale,opacity=0.5] (old1) at (-1.5,2.2) {};
+\node[stale,opacity=0.5] (old2) at (0,2.2)   {};
+\node[stale,opacity=0.5] (old3) at (1.5,2.2)  {};
+\draw[gray!20,line width=0.5pt] (old1)--(old2)--(old3);
+
+% stored embedding arrows going down
+\draw[->,gray!40,dashed,line width=0.7pt] (old1) -- (-2.2,0.5)
+  node[midway,left,emb,font=\tiny] {$\tilde{\mathbf{h}}^{(t-1)}$};
+\draw[->,gray!40,dashed,line width=0.7pt] (old3) -- (2.2,0.5)
+  node[midway,right,emb,font=\tiny] {$\tilde{\mathbf{h}}^{(t-1)}$};
+
+%% ---- epoch t (main) ----
+\node[lbl,font=\scriptsize,text=black!60] at (-0.5,0.8) {Epoch $t$ (mini-batch)};
+
+% target node
+\node[tgt] (v) at (0,-0.3) {$v$};
+
+% in-batch fresh nodes
+\node[fresh] (f1) at (-1.2,0.3) {};
+\node[fresh] (f2) at ( 1.2,0.3) {};
+\draw[blue!50,line width=0.9pt] (v)--(f1);
+\draw[blue!50,line width=0.9pt] (v)--(f2);
+
+% out-of-batch stale nodes
+\node[stale] (s1) at (-2.2,-0.3) {};
+\node[stale] (s2) at ( 2.2,-0.3) {};
+\draw[gray!40,dashed,line width=0.7pt] (v)--(s1);
+\draw[gray!40,dashed,line width=0.7pt] (v)--(s2);
+
+% annotation fresh vs stale
+\node[draw=blue!40,fill=blue!5,rounded corners=3pt,font=\scriptsize,
+      text=blue!70,inner sep=3pt,align=center] at (-1.2,-1.3)
+  {tính mới\\ (in-batch)};
+\draw[->,blue!40,line width=0.6pt] (-1.2,-1.0) -- (-1.2,-0.05);
+
+\node[draw=gray!45,fill=gray!8,rounded corners=3pt,font=\scriptsize,
+      text=gray!60,inner sep=3pt,align=center] at (2.2,-1.3)
+  {dùng lại\\ (stale)};
+\draw[->,gray!40,line width=0.6pt] (2.2,-1.0) -- (2.2,-0.05);
+
+\node[lbl,align=center] at (0,-2.3) {\textbf{Historical Embeddings}};
+\node[lbl,font=\scriptsize,align=center] at (0,-2.85) {ngoài mini-batch: dùng $\tilde{\mathbf{h}}^{(t-1)}$ thay vì tính lại};
+
+\end{tikzpicture}}
+\caption{Hướng dùng embedding lịch sử: các đỉnh \textit{trong} mini-batch (xanh) được tính biểu diễn mới tại epoch $t$; các đỉnh \textit{ngoài} mini-batch (xám, nét đứt) cung cấp embedding được lưu từ epoch $t{-}1$ thay vì kéo theo toàn bộ lân cận.}
+\label{fig:historical-embeddings}
+\end{figure}
+
+Một hướng thay thế không dựa trên lấy mẫu là sử dụng embedding lịch sử (\textit{historical embeddings}). GNNAutoScale (GAS)~\cite{Fey2021GNNAutoScale} lưu lại biểu diễn của các đỉnh lân cận ngoài mini-batch từ các vòng lặp trước và tái sử dụng chúng thay vì tính lại, qua đó tránh phải mở rộng vùng lân cận. Cách này giữ được toàn bộ thông tin lân cận về mặt lý thuyết, nhưng đổi lại tiêu tốn nhiều bộ nhớ để lưu trữ embedding lịch sử --- đây chính là baseline mà GRAPES sẽ so sánh về hiệu quả bộ nhớ.
+
+\section{Khoảng trống nghiên cứu}
+
+Điểm chung của hầu hết các phương pháp lấy mẫu nêu trên (ngoại trừ một phần AS-GCN) là chúng dựa vào các heuristic tĩnh, không phụ thuộc vào quá trình huấn luyện GNN và có thể không tổng quát hóa được giữa các đồ thị hoặc tác vụ khác nhau~\cite{Younesian2023GRAPES}. Hơn nữa, phần lớn được đánh giá chủ yếu trên các đồ thị homophily (các đỉnh lân cận thường cùng nhãn) và bài toán phân loại đơn nhãn. Khoảng trống này đặt ra nhu cầu về một phương pháp lấy mẫu \textit{thích ứng}, học được cách chọn đỉnh quan trọng dựa trên chính mục tiêu của tác vụ --- đó là động cơ ra đời của GRAPES.
+
+\begin{table}[H]
+\centering
+\caption{So sánh tổng quan các nhóm phương pháp giảm bùng nổ lân cận}
+\label{tab:sosanh_phuongphap}
+\small
+\begin{tabular}{p{2.6cm} p{2.4cm} p{3.2cm} p{3.5cm}}
+\toprule
+\textbf{Nhóm} & \textbf{Phương pháp tiêu biểu} & \textbf{Cơ chế lấy mẫu} & \textbf{Hạn chế chính} \\
+\midrule
+Theo đỉnh & GraphSAGE, VR-GCN, PinSage & Lấy mẫu cố định lân cận cho từng đỉnh & Dư thừa đỉnh; vẫn bùng nổ theo số tầng \\
+\addlinespace
+Theo tầng & FastGCN, LADIES, AS-GCN & Lấy mẫu cố định đỉnh cho cả tầng (độc lập / phụ thuộc / thích ứng) & Ma trận cảm sinh thưa (FastGCN); AS-GCN tốn bộ nhớ \\
+\addlinespace
+Theo đồ thị con & Cluster-GCN, GraphSAINT & Lấy mẫu đồ thị con làm mini-batch & Khó giữ cấu trúc tô-pô có ý nghĩa \\
+\addlinespace
+Embedding lịch sử & GNNAutoScale (GAS) & Tái dùng embedding lưu trữ thay vì lấy mẫu & Tốn nhiều bộ nhớ lưu trữ \\
+\addlinespace
+Thích ứng học được & GRAPES & Học xác suất lấy mẫu đỉnh theo mục tiêu tác vụ & Chi phí huấn luyện thêm bộ lấy mẫu \\
+\bottomrule
+\end{tabular}
+\end{table}

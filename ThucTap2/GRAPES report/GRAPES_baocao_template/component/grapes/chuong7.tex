@@ -1,0 +1,119 @@
+\chapter{Định hướng nghiên cứu tương lai}
+
+Dựa trên phân tích bài báo gốc~\cite{Younesian2023GRAPES}, mã nguồn của tác giả, và kết quả thực nghiệm ở các chương trước, chương này đề xuất ba hướng nghiên cứu có tiềm năng nhất để mở rộng GRAPES. Mỗi hướng được chọn vì ba lý do: (i) tác giả đề cập là giới hạn hoặc hướng tương lai, (ii) có lộ trình hiện thực rõ ràng từ mã nguồn hiện có, và (iii) mang lại giá trị thực tiễn cho bài toán gợi ý --- động lực ban đầu của báo cáo.
+
+%% ============================================================
+\section{Mở rộng GRAPES sang dự đoán liên kết trong hệ thống gợi ý}
+\label{sec:linkpred}
+
+\subsection{Bối cảnh và khoảng trống}
+
+Bài báo gốc~\cite{Younesian2023GRAPES} khẳng định trong mục ``Known Limitations and Future Work'': \textit{``GRAPES is not tied to a particular downstream task. GRAPES assumes access to a tractable reward function. Therefore, GRAPES will be applicable for other graph-related tasks, like link prediction and unsupervised representation learning.''} Đây là hướng tương lai duy nhất mà tác giả nêu chính xác tên tác vụ. Trong khi đó, báo cáo này khởi đầu từ bài toán gợi ý (Chương~1), nơi tác vụ cốt lõi không phải phân loại đỉnh mà là \textit{dự đoán liên kết} (\textit{link prediction}) giữa người dùng và sản phẩm. Các mô hình GNN hàng đầu cho gợi ý --- NGCF~\cite{Wang2019NGCF}, LightGCN~\cite{He2020LightGCN}, PinSage~\cite{Ying2018PinSage} --- đều gặp vấn đề bùng nổ lân cận y như các GNN thông thường và vẫn phụ thuộc vào heuristic tĩnh hoặc random sampling khi huấn luyện trên đồ thị lớn. GRAPES, nếu được mở rộng thành công sang link prediction, có thể trực tiếp giải quyết khoảng trống này.
+
+\subsection{Thay thế hàm phần thưởng}
+
+Thách thức kỹ thuật cốt lõi là thiết kế lại hàm phần thưởng. Trong codebase hiện tại (\texttt{main.py}, dòng 274), phần thưởng được trích xuất trực tiếp từ classification loss:
+\begin{verbatim}
+cost_gfn = loss_c.detach()
+\end{verbatim}
+và tham gia vào Trajectory Balance loss của GFlowNet:
+\begin{equation}
+    \mathcal{L}_{\mathrm{GFN}} \;=\; \Bigl(\log Z(V^{(0)}) \;+\; \log q(V^{(1)},\ldots,V^{(L)}\mid V^{(0)}) \;+\; \alpha \cdot \mathcal{L}_C\Bigr)^2.
+\end{equation}
+Điều kiện để áp dụng GFlowNet là hàm phần thưởng phải \textit{tính được} (\textit{tractable}) từ đồ thị con đã lấy mẫu~\cite{Younesian2023GRAPES, Bengio2021GFlowNet}. Để mở rộng sang link prediction, $\mathcal{L}_C$ cần được thay bằng một hàm mất mát xếp hạng. Một lựa chọn tự nhiên là \textbf{Bayesian Personalized Ranking (BPR)}:
+\begin{equation}
+    \mathcal{L}_{\mathrm{BPR}}(S) \;=\; -\sum_{(u,\,i^+,\,i^-)\,\in\,\mathcal{D}} \ln\sigma\!\Bigl(\hat{y}_{u i^+}(S) \;-\; \hat{y}_{u i^-}(S)\Bigr),
+    \label{eq:bpr}
+\end{equation}
+trong đó $u$ là người dùng đích, $i^+$ là sản phẩm tích cực (đã tương tác), $i^-$ là sản phẩm tiêu cực (lấy mẫu ngẫu nhiên), và $S$ là tập đỉnh được lấy mẫu bởi GRAPES. Điểm số $\hat{y}_{u i}(S)$ là tích vô hướng giữa embedding của $u$ và $i$ sau khi chạy classifier GCN trên đồ thị con $S$. Hàm mất mát này hoàn toàn tính được từ $S$, thỏa điều kiện của GFlowNet.
+
+\subsection{Xử lý cấu trúc đồ thị hai phía}
+
+Đồ thị user--item là đồ thị \textit{hai phía} (bipartite): lân cận của đỉnh người dùng chỉ là đỉnh sản phẩm và ngược lại. Điều này tạo ra hai đặc điểm khác biệt so với đồ thị đồng nhất mà GRAPES hiện xử lý:
+
+\begin{enumerate}
+    \item \textbf{Chính sách lấy mẫu bất đối xứng.} Trong code hiện tại (\texttt{main.py}, vòng lặp \texttt{for hop in range(args.sampling\_hops)}), sampler GNN \texttt{gcn\_gf} áp dụng \textit{một} chính sách duy nhất cho tất cả các đỉnh ở tất cả các hop. Trên đồ thị hai phía, hop 1 đi từ user sang item, hop 2 từ item về user --- hai bước này có ngữ nghĩa hoàn toàn khác nhau. Cần tách \texttt{gcn\_gf} thành hai mạng: $\pi_{\text{user}\to\text{item}}$ và $\pi_{\text{item}\to\text{user}}$, hoặc bổ sung embedding kiểu nút vào đặc trưng đầu vào của sampler.
+
+    \item \textbf{Hàm mất mát phân loại cần thay bởi hàm xếp hạng.} Trong codebase, \texttt{loss\_fn} tại dòng 120--123 được khởi tạo theo nhãn (CrossEntropyLoss cho single-label, BCEWithLogitsLoss cho multi-label). Với link prediction, cần thay bằng BPR loss (Phương trình~\ref{eq:bpr}) và bổ sung cơ chế lấy mẫu tiêu cực (\textit{negative sampling}) cho mỗi batch người dùng.
+\end{enumerate}
+
+\subsection{Lộ trình hiện thực và đánh giá}
+
+Từ codebase hiện có, các thay đổi cần thiết được khoanh vùng rõ ràng: (1) thêm bộ đọc dữ liệu đồ thị hai phía vào \texttt{modules/data.py} (các tập dữ liệu chuẩn: Amazon-Book, Yelp2018 cho recommendation); (2) thay \texttt{loss\_fn} và \texttt{cost\_gfn} trong \texttt{main.py}; (3) thêm negative sampling và ranking metrics vào \texttt{eval.py}. Kết quả kỳ vọng được đánh giá bằng Recall@20 và NDCG@20, so sánh với LightGCN~\cite{He2020LightGCN}, NGCF~\cite{Wang2019NGCF}, và PinSage~\cite{Ying2018PinSage}. Đây là hướng nghiên cứu khép lại vòng lặp từ bài toán gợi ý (Chương~1) đến giải pháp lấy mẫu thích ứng, có giá trị ứng dụng cao và lộ trình thực nghiệm rõ ràng.
+
+%% ============================================================
+\section{Phân tích lý thuyết: khi nào lấy mẫu thích ứng có lợi?}
+\label{sec:theory}
+
+\subsection{Bối cảnh và khoảng trống}
+
+Bài báo gốc~\cite{Younesian2023GRAPES} thừa nhận trong phần ``Known Limitations'': \textit{``Further analysis is required to understand which graph characteristics contribute to the performance gain observed with adaptive sampling methods such as GRAPES.''} Điều này phản ánh một giới hạn lý thuyết thực sự: Định lý~1 trong bài báo chỉ chứng minh lợi thế của adaptive sampling trên \textit{một họ đồ thị cụ thể} --- đồ thị mà \textit{đúng một} đỉnh lân cận mang thông tin quyết định cho phân loại. Trong thực tế, kết quả thực nghiệm cho thấy một bức tranh phức tạp hơn nhiều:
+
+\begin{itemize}
+    \item Trên đồ thị \textbf{heterophilous đa nhãn} (BlogCat $h\!=\!0.10$, Yelp $h\!=\!0.22$, ogbn-proteins $h\!=\!0.15$): GRAPES-GFN xếp hạng \#1 trên cả ba tập, vượt trội rõ rệt so với Random và AS-GCN.
+    \item Trên đồ thị \textbf{homophilous đa lớp} (ogbn-products $h\!=\!0.81$): GRAPES-GFN đạt 77.14\%, chỉ nhỉnh hơn Random (76.87\%) và \textit{không} vượt được GraphSAINT (77.09\%).
+    \item Phân tích entropy (Hình~5 trong bài báo gốc): Trên các tập nhỏ (Cora, Citeseer, Flickr), entropy của phân phối lấy mẫu \textit{không giảm} sau huấn luyện --- GFlowNet không học được preference nào. Trên các tập lớn và phức tạp (ogbn-products, Yelp, BlogCat), entropy giảm về gần 0 --- GFlowNet học được sự ưu tiên rõ ràng cho từng đỉnh.
+\end{itemize}
+
+Câu hỏi nghiên cứu chưa có lời giải: \textit{tính chất nào của đồ thị quyết định liệu lấy mẫu thích ứng có lợi hơn lấy mẫu ngẫu nhiên?}
+
+\subsection{Hướng mở rộng lý thuyết}
+
+Định lý~1 của bài báo gốc chứng minh bằng cách xây dựng một họ phân phối trên đồ thị trong đó \textit{chỉ duy nhất một lân cận} mang tín hiệu phân loại. Một hướng nghiên cứu có giá trị là tổng quát hóa định lý này theo hai chiều:
+
+\begin{enumerate}
+    \item \textbf{Tổng quát hóa về số lân cận quyết định.} Xét họ đồ thị trong đó mỗi đỉnh đích có đúng $m$ lân cận mang tín hiệu và $N-m$ lân cận nhiễu. Định lý~1 tương ứng với $m=1$. Câu hỏi: với budget lấy mẫu $k$, adaptive sampling có lợi hơn non-adaptive khi và chỉ khi $m/N < k/N$, hay có điều kiện phức tạp hơn phụ thuộc vào đặc trưng của $m$ lân cận quan trọng? Phân tích này có thể được thực hiện bằng cách mở rộng phần chứng minh trong Appendix~H của bài báo gốc~\cite{Younesian2023GRAPES}.
+
+    \item \textbf{Mối liên hệ với phương sai ước lượng gradient.} LADIES~\cite{Zou2019LADIES} có phân tích phương sai đầy đủ: chọn đỉnh tỷ lệ với $\|\tilde{A}_{:,j}\|^2$ tối thiểu phương sai ước lượng gradient. Adaptive sampling của GRAPES tối ưu trực tiếp loss thay vì phương sai --- điều này có thể dẫn đến phương sai lớn hơn trong trường hợp xấu nhất. Liệu có thể chứng minh rằng, trong điều kiện nhất định, tối ưu theo loss đồng thời cũng giảm phương sai, hay cần có điều khoản bổ sung vào hàm mục tiêu của GFlowNet?
+\end{enumerate}
+
+\subsection{Hướng phân tích thực nghiệm}
+
+Song song với lý thuyết, có thể thực hiện một nghiên cứu thực nghiệm có hệ thống để xây dựng \textit{predictor cho lợi thế của GRAPES}. Cụ thể:
+
+\begin{itemize}
+    \item \textbf{Đặc trưng đồ thị cần đo:} hệ số homophily cạnh $h$~\cite{Younesian2023GRAPES}; phương sai bậc đỉnh $\mathrm{Var}(\deg)$; tương quan đặc trưng--nhãn lân cận (mức độ mà đặc trưng $h_i$ dự đoán nhãn $y_j$ với $j \in \mathcal{N}(i)$); số nhãn trung bình trên mỗi đỉnh (multi-label density).
+    \item \textbf{Biến kết quả:} $\Delta_{\mathrm{GRAPES}} = F1_{\mathrm{GRAPES}} - F1_{\mathrm{Random}}$ --- phần trăm gain của GRAPES so với Random baseline, tính trên toàn bộ 12 tập dữ liệu trong bài báo.
+    \item \textbf{Kỳ vọng:} phân tích hồi quy hoặc cây quyết định giữa đặc trưng đồ thị và $\Delta_{\mathrm{GRAPES}}$ có thể chỉ ra rằng gain lớn nhất xảy ra khi $h$ thấp VÀ multi-label density cao --- khớp với kết quả định tính nhưng lần này được lượng hóa và tổng quát hóa qua 12 datasets.
+\end{itemize}
+
+Đây là hướng nghiên cứu thuần học thuật nhưng có tác động lớn: nếu thành công, kết quả sẽ cung cấp cho người thực hành một tiêu chí rõ ràng để quyết định có nên dùng GRAPES hay không, thay vì phải thực nghiệm thử-sai trên từng đồ thị.
+
+%% ============================================================
+\section{Tích hợp GRAPES với kiến trúc GNN dành cho đồ thị heterophily}
+\label{sec:hetero_arch}
+
+\subsection{Bối cảnh và khoảng trống}
+
+Bài báo gốc~\cite{Younesian2023GRAPES} nêu tường minh trong phần ``Future Work'': \textit{``Another direction for future work is applying GRAPES to architectures designed to address heterophily, such as the ones proposed by Zhu et al. (2020); Abu-El-Haija et al. (2019). By leveraging GRAPES, these architectures could potentially overcome their scalability issues.''} Nhận định này xuất phát từ một quan sát thực tế: các GNN được thiết kế cho heterophily --- ví dụ H2GCN (Zhu và cộng sự, 2020), MixHop (Abu-El-Haija và cộng sự, 2019) --- tổng hợp lân cận từ \textit{nhiều bậc khác nhau} (1-hop, 2-hop, ...) đồng thời. Điều này mở rộng trường tiếp nhận nhanh hơn nhiều so với GCN chuẩn, dẫn đến vấn đề scalability nghiêm trọng hơn trên đồ thị lớn.
+
+Từ phía codebase: \texttt{gcn.py} đã có sẵn các lớp GCN, GAT~\cite{Velickovic2018}, GCN2, PNA --- nhưng \texttt{main.py} chỉ khởi tạo \texttt{model\_type = 'gcn'} và không có điều kiện để dùng các kiến trúc khác như backbone phân loại. Đây là điểm mở rõ ràng trong code để bắt đầu nghiên cứu.
+
+\subsection{Thách thức kỹ thuật: chính sách lấy mẫu đa bậc}
+
+Điểm khó nhất khi kết hợp GRAPES với kiến trúc heterophily-aware là sự bất tương thích giữa \textit{cơ chế lấy mẫu} và \textit{cơ chế tổng hợp}:
+
+\paragraph{Mâu thuẫn cơ bản.}
+GRAPES thực hiện lấy mẫu \textit{từng hop một}, theo đúng thứ tự của message passing (Algorithm~1 trong bài báo): ở hop $l$, sampler chọn $k$ đỉnh từ lân cận của các đỉnh đã có ở hop $l-1$. Đây là lấy mẫu theo chiều sâu (\textit{depth-first}). Ngược lại, H2GCN và MixHop tổng hợp \textit{đồng thời} 1-hop và 2-hop lân cận ở \textit{cùng một tầng mạng} --- tức là cần biết trước tập đỉnh từ cả hai khoảng cách trước khi thực hiện aggregation. Nếu chỉ đơn giản cắm H2GCN vào \texttt{gcn\_c} mà giữ nguyên cơ chế lấy mẫu của GRAPES, sampler sẽ cung cấp đồ thị con không đủ cấu trúc cho H2GCN hoạt động đúng.
+
+\paragraph{Hướng giải quyết đề xuất.}
+Điều chỉnh vòng lặp lấy mẫu để \textit{lấy mẫu theo lớp} (\textit{layer-wise}) thay vì theo hop:
+
+\begin{enumerate}
+    \item \textbf{Lấy mẫu đồng thời đa bậc:} Tại mỗi tầng $l$ của heterophily GNN, sampler cần cung cấp hai tập đỉnh độc lập $V^{(l)}_1$ (1-hop) và $V^{(l)}_2$ (2-hop) thay vì một tập duy nhất $V^{(l)}$. Chính sách lấy mẫu cần được mở rộng thành $q(V^{(l)}_1, V^{(l)}_2 \mid V^{(0)}, \ldots, V^{(l-1)})$, trong đó hai nhân tố có thể học độc lập.
+
+    \item \textbf{Biểu diễn vị trí phân cấp:} Cơ chế indicator features trong GRAPES hiện tại (một vector one-hot chiều $L+1$ chỉ hop index) cần được mở rộng thành vector mã hóa \textit{cả hop lẫn bậc lân cận} (hop $l$, bậc $r$), cho phép sampler phân biệt vai trò của từng đỉnh trong kiến trúc tổng hợp đa bậc.
+
+    \item \textbf{Gradient từ kiến trúc mới.} Khi backbone classifier là H2GCN hay MixHop, gradient backprop qua \texttt{gcn\_c} sẽ mang tín hiệu khác về đỉnh nào quan trọng so với GCN chuẩn. Cần phân tích liệu GFlowNet có thể học hội tụ trong điều kiện gradient signal phức tạp hơn này, và liệu cần điều chỉnh phạm vi tìm kiếm siêu tham số $\alpha$ (hiện tại từ $10^2$ đến $10^6$~\cite{Younesian2023GRAPES}).
+\end{enumerate}
+
+\subsection{Giá trị ứng dụng và lộ trình hiện thực}
+
+Kết hợp thành công GRAPES với kiến trúc heterophily-aware sẽ tạo ra phương pháp đầu tiên giải quyết đồng thời cả hai vấn đề: \textit{scalability} (thông qua lấy mẫu thích ứng của GRAPES) và \textit{heterophily} (thông qua kiến trúc tổng hợp đa bậc). GRAPES thuần túy đã thắng rõ trên các dataset heterophilous, nhưng kiến trúc backbone vẫn là GCN chuẩn vốn không được thiết kế tối ưu cho heterophily. Tiềm năng cải thiện thêm là thực sự.
+
+Từ codebase: bước đầu tiên có thể kiểm tra là thay thế \texttt{gcn\_c} bằng \texttt{GAT} (đã có sẵn trong \texttt{gcn.py}~\cite{Velickovic2018}) và kiểm tra xem kết quả có cải thiện trên BlogCat, Yelp, ogbn-proteins không, trước khi tiến đến các kiến trúc phức tạp hơn như H2GCN. GAT đã dùng cơ chế attention để \textit{trọng số hóa} lân cận, điều này có phần tương tự adaptive sampling nhưng ở mức độ trong một tầng --- sự kết hợp giữa hai cơ chế có thể mang lại hiệu quả cộng hưởng, đặc biệt trên các đồ thị heterophilous nơi không phải lân cận nào cũng có ích như nhau.
+
+%% ============================================================
+\section{Kết luận}
+
+Ba hướng nghiên cứu trên không độc lập mà tạo thành một lộ trình có tính logic: Hướng~\ref{sec:linkpred} (link prediction) mở rộng GRAPES sang tác vụ mục tiêu của báo cáo; Hướng~\ref{sec:theory} (phân tích lý thuyết) xây dựng nền tảng khoa học để hiểu \textit{khi nào} adaptive sampling thực sự cần thiết --- điều này cũng sẽ hướng dẫn Hướng~\ref{sec:linkpred} chọn đúng loại đồ thị gợi ý để khai thác; Hướng~\ref{sec:hetero_arch} (kiến trúc heterophily-aware) tăng cường khả năng của backbone classifier, tạo ra điểm xuất phát mạnh hơn cho cả link prediction lẫn phân tích lý thuyết. Cả ba đều xuất phát từ giới hạn được tác giả gốc thừa nhận, đều có thể hiện thực từ codebase GRAPES công khai~\cite{Younesian2023GRAPES}, và đều có tiềm năng đóng góp mới cho lĩnh vực học máy trên đồ thị quy mô lớn.

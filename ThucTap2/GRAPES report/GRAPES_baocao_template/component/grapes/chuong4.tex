@@ -1,0 +1,371 @@
+\chapter{Phương pháp GRAPES}
+
+\section{Ý tưởng cốt lõi}
+
+GRAPES (\textit{Graph Adaptive Sampling})~\cite{Younesian2023GRAPES} là một phương pháp lấy mẫu \textit{thích ứng}: thay vì áp dụng một heuristic cố định, nó học cách xác định tập các đỉnh quan trọng nhất cho việc huấn luyện GNN. Cụ thể, GRAPES huấn luyện một GNN thứ hai để dự đoán xác suất lấy mẫu của các đỉnh, và bộ lấy mẫu này được tối ưu trực tiếp theo mục tiêu tác vụ đầu cuối (\textit{downstream task}). Bài báo gốc nhấn mạnh ba tính chất chính:
+\begin{itemize}
+    \item \textbf{Tính thích ứng:} bộ lấy mẫu học được, điều chỉnh theo từng đồ thị và từng tác vụ.
+    \item \textbf{Hiệu quả bộ nhớ:} GRAPES sử dụng bộ nhớ GPU ít hơn nhiều bậc so với baseline dựa trên embedding lịch sử (GAS).
+    \item \textbf{Tính bền vững:} GRAPES duy trì hiệu năng tốt ngay cả khi kích thước mẫu bị giảm theo cấp số mũ.
+\end{itemize}
+
+\section{Kiến trúc hai mạng}
+
+GRAPES gồm hai GNN được huấn luyện phối hợp, minh họa trong Hình~\ref{fig:grapes-arch}:
+\begin{enumerate}
+    \item \textbf{Mạng phân loại} (\textit{classifier GNN}, $\text{GCN}_C$): một GCN tiêu chuẩn thực hiện tác vụ phân loại đỉnh trên đồ thị con đã được lấy mẫu.
+    \item \textbf{Mạng lấy mẫu} (\textit{sampler GNN}, $\text{GCN}_S$): một GCN thứ hai nhận đồ thị làm đầu vào và xuất ra xác suất đưa vào mẫu (\textit{inclusion probability}) $p_i$ cho từng đỉnh.
+\end{enumerate}
+
+\begin{figure}[htbp]
+\centering
+\resizebox{0.92\textwidth}{!}{%
+\begin{tikzpicture}[
+  gnnbox/.style={rectangle,draw=black!60,rounded corners=5pt,minimum width=2.8cm,minimum height=1.4cm,align=center,font=\small\bfseries},
+  nd/.style={circle,draw=black!50,fill=white,minimum size=7mm,font=\scriptsize,line width=0.7pt},
+  snd/.style={circle,draw=blue!60!black,fill=blue!10,minimum size=7mm,font=\scriptsize,line width=0.8pt},
+  tnd/.style={circle,draw=red!70!black,fill=red!12,minimum size=8mm,font=\scriptsize\bfseries,line width=1.1pt},
+  lbl/.style={font=\footnotesize,text=black!65},
+  >=Stealth
+]
+
+%% ---- Input graph ----
+\node[tnd] (v)  at (0,0)    {$v$};
+\node[nd]  (n1) at (-1.3,-1.2) {};
+\node[nd]  (n2) at (0,-1.5)   {};
+\node[nd]  (n3) at (1.3,-1.2) {};
+\node[nd]  (n4) at (-1.8,0.5) {};
+\draw[black!30] (v)--(n1)--(n2)--(n3)--(v);
+\draw[black!30] (v)--(n4); \draw[black!30] (n1)--(n4);
+\node[lbl] at (0,-2.2) {Đồ thị đầu vào $\mathcal{G}$};
+
+%% --- arrow to sampler ---
+\draw[->,thick,gray!60,line width=1.2pt] (1.9,0) -- (3.1,0);
+
+%% ---- Sampler GNN ----
+\node[gnnbox,fill=blue!5,draw=blue!50] (sampler) at (4.8,0)
+  {$\text{GCN}_S$ \\ \scriptsize (Mạng lấy mẫu)};
+\node[lbl,text=blue!70] at (4.8,-1.0) {\scriptsize học xác suất $p_i$};
+
+%% --- sampling output ---
+\draw[->,thick,blue!55,line width=1.2pt] (6.5,0) -- (7.5,0)
+  node[midway,above,font=\scriptsize,text=blue!65] {$p_i$};
+
+%% ---- Gumbel-Top-k ----
+\node[rectangle,draw=orange!60,fill=orange!8,rounded corners=3pt,
+      minimum width=2.2cm,minimum height=1.0cm,align=center,font=\scriptsize\bfseries,
+      text=orange!80!black] (gumbel) at (9.0,0)
+  {Gumbel \\ Top-$k$};
+\node[lbl,text=orange!70] at (9.0,-0.8) {\scriptsize chọn $k$ đỉnh};
+
+%% --- sampled subgraph ---
+\draw[->,thick,orange!55,line width=1.2pt] (10.1,0) -- (11.1,0);
+
+\node[tnd] (sv)  at (12.3,0.6)  {$v$};
+\node[snd] (sn1) at (11.3,-0.4) {};
+\node[snd] (sn2) at (12.3,-0.9) {};
+\node[snd] (sn3) at (13.3,-0.4) {};
+\draw[blue!45,line width=0.9pt] (sv)--(sn1); \draw[blue!45,line width=0.9pt] (sv)--(sn2);
+\draw[blue!45,line width=0.9pt] (sv)--(sn3);
+\node[lbl] at (12.3,-1.7) {Đồ thị con $\mathcal{G}_s$};
+
+%% --- arrow to classifier ---
+\draw[->,thick,gray!60,line width=1.2pt] (12.3,-2.1) -- (12.3,-3.0);
+
+%% ---- Classifier GNN ----
+\node[gnnbox,fill=red!5,draw=red!50] (classifier) at (12.3,-4.0)
+  {$\text{GCN}_C$ \\ \scriptsize (Mạng phân loại)};
+\node[lbl,text=red!70] at (12.3,-5.0) {\scriptsize mất mát $\mathcal{L}_C$};
+
+%% --- loss back to sampler ---
+\draw[->,thick,green!55!black,dashed,line width=1.0pt]
+  (10.5,-4.0) -- (4.8,-4.0) -- (4.8,-0.7)
+  node[near start,below,font=\scriptsize,text=green!55!black] {cập nhật $\text{GCN}_S$ (REINFORCE / GFlowNet)};
+
+\end{tikzpicture}}
+\caption{Kiến trúc GRAPES: $\text{GCN}_S$ tính xác suất lấy mẫu cho các đỉnh lân cận; Gumbel Top-$k$ chọn đúng $k$ đỉnh để tạo đồ thị con; $\text{GCN}_C$ phân loại và tính mất mát; mất mát này được dùng để cập nhật cả hai mạng.}
+\label{fig:grapes-arch}
+\end{figure}
+
+\section{Chính sách lấy mẫu}
+\label{sec:grapes-policy}
+
+\paragraph{Ký hiệu.} Gọi $V^{(0)}$
+ là tập đỉnh đích của mini-batch. Ở tầng $l$, tập đỉnh đã thu thập được là $K^{(l)} = V^{(0)} \cup V^{(1)} \cup \cdots \cup V^{(l)}$, còn $V^{(l)} \subseteq \mathcal{N}(K^{(l-1)})$ là tập đỉnh được lấy mẫu trong tầng $l$ từ vùng lân cận của $K^{(l-1)}$.
+
+\paragraph{Chính sách phân rã theo tầng.} Hình~\ref{fig:policy-layers} minh họa quá trình lấy mẫu tích lũy qua từng tầng. Mạng lấy mẫu $\text{GCN}_S$ định nghĩa chính sách $q$ theo dạng phân rã tích:
+
+\begin{figure}[htbp]
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{tikzpicture}[
+  tgt/.style={circle,draw=red!70!black,fill=red!15,minimum size=9mm,font=\scriptsize\bfseries,line width=1.2pt},
+  sel/.style={circle,draw=blue!60!black,fill=blue!12,minimum size=8mm,font=\scriptsize,line width=1.0pt},
+  uns/.style={circle,draw=gray!40,fill=gray!8,minimum size=7mm,font=\scriptsize,line width=0.5pt,dashed},
+  acc/.style={circle,draw=teal!60!black,fill=teal!10,minimum size=8mm,font=\scriptsize,line width=0.9pt},
+  prob/.style={font=\scriptsize,text=blue!65},
+  lbl/.style={font=\footnotesize,text=black!60},
+  box/.style={rectangle,draw=gray!35,rounded corners=4pt,fill=gray!4,inner sep=6pt},
+  >=Stealth
+]
+
+%% ============ STEP 0: V^(0) ============
+\begin{scope}[xshift=0cm]
+\node[tgt] (v0) at (0,0) {$v$};
+\node[box,fit=(v0),inner sep=10pt] {};
+\node[lbl,align=center] at (0,-1.4) {$V^{(0)} = \{v\}$\\$K^{(0)} = V^{(0)}$};
+\node[lbl,font=\small\bfseries,text=black!70] at (0,1.4) {Tầng 0};
+\end{scope}
+
+%% arrow
+\draw[->,thick,gray!55,line width=1.2pt] (1.1,0) -- (2.1,0);
+
+%% ============ STEP 1: sample V^(1) ============
+\begin{scope}[xshift=3.5cm]
+\node[tgt] (v1) at (0,0) {$v$};
+% neighbors with probabilities
+\node[sel] (n1a) at (-1.5, 1.2) {};  \node[prob] at (-2.3,1.2) {$p{=}0.8$};
+\node[sel] (n1b) at ( 1.5, 1.2) {};  \node[prob] at ( 2.3,1.2) {$p{=}0.6$};
+\node[uns] (n1c) at (-1.5,-1.2) {};  \node[prob,text=gray!50] at (-2.3,-1.2) {$p{=}0.2$};
+\node[uns] (n1d) at ( 1.5,-1.2) {};  \node[prob,text=gray!50] at ( 2.3,-1.2) {$p{=}0.3$};
+\draw[blue!45,line width=1.0pt] (v1)--(n1a); \draw[blue!45,line width=1.0pt] (v1)--(n1b);
+\draw[gray!30,dashed] (v1)--(n1c); \draw[gray!30,dashed] (v1)--(n1d);
+
+% GCN_S label
+\node[rectangle,draw=blue!40,fill=blue!5,rounded corners=2pt,font=\scriptsize,
+      inner sep=3pt] at (0,2.3) {$\text{GCN}_S \Rightarrow p_i$};
+
+% top-k=2 brace
+\draw[decorate,decoration={brace,amplitude=4pt},blue!55,line width=0.6pt]
+  (-2.0,0.8) -- (2.0,0.8) node[midway,above=5pt,font=\scriptsize,text=blue!60] {top-$k{=}2$};
+
+\node[lbl,align=center] at (0,-2.0)
+  {$V^{(1)} = \{n_1, n_2\}$\\$K^{(1)} = V^{(0)}\cup V^{(1)}$};
+\node[lbl,font=\small\bfseries,text=black!70] at (0,3.2) {Tầng 1};
+\end{scope}
+
+%% arrow
+\draw[->,thick,gray!55,line width=1.2pt] (6.6,0) -- (7.6,0);
+
+%% ============ STEP 2: sample V^(2) ============
+\begin{scope}[xshift=9.5cm]
+% accumulated K^(1) shown faded
+\node[tgt,opacity=0.6] (v2) at (0,0.2) {$v$};
+\node[acc] (m1) at (-1.2,1.4) {};   % V^(1) already in K
+\node[acc] (m2) at ( 1.2,1.4) {};
+
+\draw[teal!35,line width=0.8pt] (v2)--(m1); \draw[teal!35,line width=0.8pt] (v2)--(m2);
+
+% new 2-hop candidates (neighbors of K^(1))
+\node[sel] (p1) at (-2.5, 2.4) {};  \node[prob] at (-3.3,2.4) {$p{=}0.7$};
+\node[sel] (p2) at (-0.5, 2.8) {};  \node[prob] at ( 0.5,2.8) {$p{=}0.5$};
+\node[uns] (p3) at ( 2.2, 2.4) {};  \node[prob,text=gray!50] at ( 3.1,2.4) {$p{=}0.1$};
+\node[uns] (p4) at (-2.0,-0.8) {};  \node[prob,text=gray!50] at (-2.9,-0.8) {$p{=}0.2$};
+
+\draw[blue!45,line width=1.0pt] (m1)--(p1); \draw[blue!45,line width=1.0pt] (m1)--(p2);
+\draw[gray!30,dashed] (m2)--(p3); \draw[gray!30,dashed] (v2)--(p4);
+
+\node[rectangle,draw=blue!40,fill=blue!5,rounded corners=2pt,font=\scriptsize,
+      inner sep=3pt] at (0,3.7) {$\text{GCN}_S(K^{(1)}) \Rightarrow p_i$};
+
+\node[lbl,align=center] at (0,-1.8)
+  {$V^{(2)} = \{p_1, p_2\}$\\$K^{(2)} = K^{(1)}\cup V^{(2)}$};
+\node[lbl,font=\small\bfseries,text=black!70] at (0,4.5) {Tầng 2};
+
+% legend
+\node[acc,minimum size=5mm] at (-1.5,-2.8) {};
+\node[lbl] at (0.3,-2.8) {$K^{(l-1)}$ (đã tích lũy)};
+\node[sel,minimum size=5mm] at (-1.5,-3.5) {};
+\node[lbl] at (0.3,-3.5) {$V^{(l)}$ (được chọn)};
+\node[uns,minimum size=5mm] at (-1.5,-4.2) {};
+\node[lbl] at (0.3,-4.2) {không được chọn};
+\end{scope}
+
+\end{tikzpicture}}
+\caption{Chính sách lấy mẫu phân rã theo tầng: ở mỗi tầng $l$, $\text{GCN}_S$ tính xác suất $p_i$ cho các lân cận của $K^{(l-1)}$ (đỉnh đã tích lũy); Gumbel Top-$k$ chọn $k$ đỉnh có điểm cao nhất thành $V^{(l)}$; $K^{(l)}$ tích lũy thêm $V^{(l)}$. Quá trình lặp lại cho đến tầng $L$.}
+\label{fig:policy-layers}
+\end{figure}
+\begin{equation}
+q\!\left(V^{(1)},\ldots,V^{(L)}\mid V^{(0)}\right)
+= \prod_{l=1}^{L} q\!\left(V^{(l)}\mid V^{(0)},\ldots,V^{(l-1)}\right).
+\end{equation}
+
+Mỗi nhân tử được mô hình hóa bằng tích các phân phối Bernoulli độc lập:
+\begin{equation}
+q\!\left(V^{(l)}\mid V^{(0)},\ldots,V^{(l-1)}\right)
+= \prod_{i\,\in\,\mathcal{N}(K^{(l-1)})} \mathrm{Bern}\!\left(i \in V^{(l)}\mid p_i\right),
+\quad p_i = \text{GCN}_S\!\left(K^{(l-1)}\right)_i.
+\end{equation}
+
+Ngoài đặc trưng nút $\mathbf{X}$, mạng lấy mẫu còn nhận thêm một vector one-hot độ dài $L+1$ đánh dấu tầng mà mỗi đỉnh được lấy mẫu, giúp nó phân biệt các đỉnh thu thập được ở các bước khác nhau.
+
+\paragraph{Gumbel Top-$k$.} Vì chính sách Bernoulli không đảm bảo lấy đúng $k$ đỉnh, GRAPES dùng kỹ thuật \textit{Gumbel Top-$k$}~\cite{Younesian2023GRAPES} để lấy mẫu chính xác $k$ đỉnh không lặp (Hình~\ref{fig:gumbel-topk}):
+
+\begin{figure}[htbp]
+\centering
+\resizebox{0.88\textwidth}{!}{%
+\begin{tikzpicture}[
+  >=Stealth,
+  lbl/.style={font=\footnotesize,text=black!65}
+]
+
+%% --- data: 5 neighbors ---
+% log p_i values (base heights)
+% n1=0.8→log=-0.22, n2=0.6→log=-0.51, n3=0.3→log=-1.20, n4=0.15→log=-1.90, n5=0.05→log=-3.0
+% scale to cm: divide by 3, multiply by 3.5 → max ~3.5cm
+% n1: -0.22 → base=3.24,  n2: -0.51→2.99,  n3: -1.20→2.60,  n4: -1.90→2.19,  n5: -3.00→1.50
+% Gumbel noise added: ε1=-0.3, ε2=+1.1, ε3=+0.2, ε4=-0.5, ε5=+0.8
+% final: n1:2.94, n2:4.09*, n3:2.80, n4:1.69, n5:2.30   → top-2: n2, n1
+
+\def\bw{0.7cm}
+\def\gap{1.3cm}
+\def\xone{0.5}
+\def\xtwo{1.8}
+\def\xthree{3.1}
+\def\xfour{4.4}
+\def\xfive{5.7}
+
+%% axes
+\draw[->] (0,0) -- (0,4.8) node[above,font=\footnotesize] {điểm số};
+\draw[->] (0,0) -- (7.2,0);
+
+%% --- log p_i bars (dotted outline, light) ---
+\fill[blue!15] (\xone,  0) rectangle +(\bw, 3.24);
+\fill[blue!15] (\xtwo,  0) rectangle +(\bw, 2.99);
+\fill[blue!15] (\xthree,0) rectangle +(\bw, 2.60);
+\fill[blue!15] (\xfour, 0) rectangle +(\bw, 2.19);
+\fill[blue!15] (\xfive, 0) rectangle +(\bw, 1.50);
+
+%% --- log p_i + ε bars (solid) ---
+% top-2: n2 (4.09) and n1 (2.94) — highlight these
+\fill[blue!65] (\xone,  0) rectangle +(\bw, 2.94); % n1: selected
+\fill[blue!90] (\xtwo,  0) rectangle +(\bw, 4.09); % n2: selected (highest)
+\fill[blue!30] (\xthree,0) rectangle +(\bw, 2.80); % n3: not selected
+\fill[blue!20] (\xfour, 0) rectangle +(\bw, 1.69); % n4
+\fill[blue!25] (\xfive, 0) rectangle +(\bw, 2.30); % n5
+
+%% top-k threshold line
+\draw[red!70,dashed,line width=1.0pt] (-0.1,2.94) -- (7.0,2.94)
+  node[right,font=\scriptsize,text=red!70] {ngưỡng top-$k$};
+
+%% selected annotation
+\draw[red!60,line width=1.2pt] (\xone,0) rectangle +(\bw,2.94);
+\draw[red!60,line width=1.2pt] (\xtwo,0) rectangle +(\bw,4.09);
+\node[font=\scriptsize,text=red!70] at (\xone+0.35, 3.25) {$\checkmark$};
+\node[font=\scriptsize,text=red!70] at (\xtwo+0.35, 4.40) {$\checkmark$};
+
+%% x-axis labels
+\foreach \x/\name in {\xone/$n_1$,\xtwo/$n_2$,\xthree/$n_3$,\xfour/$n_4$,\xfive/$n_5$}{
+  \node[font=\small] at (\x+0.35,-0.35) {\name};
+}
+
+%% p_i values
+\foreach \x/\p in {\xone/0.8,\xtwo/0.6,\xthree/0.3,\xfour/0.15,\xfive/0.05}{
+  \node[font=\scriptsize,text=blue!60] at (\x+0.35,-0.75) {$p{=}\p$};
+}
+
+%% legend (top-right, clear of axis label and tall bars)
+\fill[blue!15] (4.2,4.6) rectangle +(0.5,0.28);
+\node[lbl,anchor=west] at (4.8,4.74) {$\log p_i$ (chưa có nhiễu)};
+\fill[blue!65] (4.2,4.1) rectangle +(0.5,0.28);
+\node[lbl,anchor=west] at (4.8,4.24) {$\log p_i + \varepsilon_i$ (sau nhiễu Gumbel)};
+
+\end{tikzpicture}}
+\caption{Gumbel Top-$k$: thanh xanh nhạt là $\log p_i$ (từ $\text{GCN}_S$); thanh đậm là $\log p_i + \varepsilon_i$ sau khi thêm nhiễu Gumbel. Hai đỉnh có điểm cao nhất ($n_2, n_1$) vượt ngưỡng (đường đỏ) được chọn vào $V^{(l)}$. Lưu ý $n_2$ có $p=0.6 < p_{n_1}=0.8$ nhưng được chọn vì nhiễu Gumbel dương lớn --- đây là tính ngẫu nhiên có điều kiện theo $p_i$.}
+\label{fig:gumbel-topk}
+\end{figure}
+
+\begin{equation}
+V^{(l)} = \operatorname{top\text{-}k}_{i\,\in\,\mathcal{N}(K^{(l-1)})}
+\Bigl(\log p_i + \varepsilon_i\Bigr),
+\quad \varepsilon_i \sim \mathrm{Gumbel}(0,1).
+\end{equation}
+
+Phép nhiễu Gumbel biến điểm số $\log p_i$ thành một mẫu xác suất đúng từ phân phối $q$ điều kiện trên $k$, trong khi vẫn đảm bảo chọn đúng $k$ đỉnh không lặp. Tuy nhiên, thao tác top-$k$ không có gradient hàm (gradient bằng không ở mọi nơi), nên cần dùng kỹ thuật đặc biệt để huấn luyện mạng lấy mẫu.
+
+\section{Huấn luyện chính sách lấy mẫu}
+\label{sec:grapes-training}
+
+Vì thao tác lấy mẫu rời rạc (top-$k$) không khả vi, GRAPES đề xuất hai phương án huấn luyện mạng lấy mẫu $\text{GCN}_S$.
+
+\paragraph{GRAPES-RL (REINFORCE).} Phương án thứ nhất dùng bộ ước lượng REINFORCE để tính gradient không chệch của hàm mất mát phân loại:
+\begin{equation}
+\label{eq:rl}
+\mathcal{L}_{\mathrm{RL}}\!\left(\mathbf{X}, Y, V^{(0)}\right)
+= \mathcal{L}_C\!\left(\mathbf{X}, Y, K^{(0)},\ldots,K^{(L)}\right)
+\cdot \log q\!\left(V^{(1)},\ldots,V^{(L)}\mid V^{(0)}\right),
+\end{equation}
+trong đó $V^{(1)},\ldots,V^{(L)} \sim q(\cdot\mid V^{(0)}, k)$ được lấy mẫu bằng Gumbel Top-$k$. Lấy đạo hàm theo tham số của $q$ cho ra bộ ước lượng REINFORCE chuẩn.
+
+\paragraph{GRAPES-GFN (GFlowNet).} Phương án thứ hai dùng hàm mất mát \textit{Trajectory Balance}~\cite{Younesian2023GRAPES} từ lý thuyết GFlowNet~\cite{Bengio2021GFlowNet}:
+\begin{equation}
+\label{eq:gfn}
+\mathcal{L}_{\mathrm{GFN}}\!\left(\mathbf{X}, Y, V^{(0)}\right)
+= \Bigl(
+    \log Z\!\left(V^{(0)}\right)
+    + \log q\!\left(V^{(1)},\ldots,V^{(L)}\mid V^{(0)}\right)
+    + \alpha \cdot \mathcal{L}_C\!\left(\mathbf{X}, Y, K^{(0)},\ldots,K^{(L)}\right)
+  \Bigr)^2,
+\end{equation}
+trong đó $\log Z(V^{(0)})$ là một GCN nhỏ dự đoán một đại lượng vô hướng từ các đỉnh đích, và $\alpha$ là siêu tham số điều chỉnh mức độ phần thưởng. GFlowNet đảm bảo mạng lấy mẫu chọn tập đỉnh với xác suất tỉ lệ thuận với phần thưởng (tức tỉ lệ nghịch với mất mát phân loại), thay vì chỉ tối thiểu hóa mất mát như REINFORCE. Điều này khuyến khích tính đa dạng trong lấy mẫu, giúp tránh hội tụ sớm vào một tập đỉnh cố định.
+
+\paragraph{So sánh hai biến thể.} GRAPES-GFN thường ổn định hơn GRAPES-RL trong thực nghiệm, đặc biệt trên các đồ thị heterophily đa nhãn, do cơ chế cân bằng dòng (\textit{flow matching}) phù hợp hơn với bài toán lấy mẫu tập con rời rạc~\cite{Younesian2023GRAPES}.
+
+\section{Độ phức tạp bộ nhớ}
+
+Bảng~\ref{tab:memory-complexity} so sánh độ phức tạp bộ nhớ lúc huấn luyện giữa GRAPES và baseline GAS.
+
+\begin{table}[htbp]
+\centering
+\caption{Độ phức tạp bộ nhớ lúc huấn luyện. $D$: bậc tối đa, $b$: batch size, $k$: kích thước mẫu, $L$: số tầng, $N$: số đỉnh đồ thị. Nguồn:~\cite{Younesian2023GRAPES}.}
+\label{tab:memory-complexity}
+\small
+\begin{tabular}{lll}
+\toprule
+\textbf{Phương pháp} & \textbf{Bộ nhớ} & \textbf{Ghi chú} \\
+\midrule
+FastGCN, LADIES, GRAPES & $\mathcal{O}(Dbk)$ & chỉ lưu đồ thị con kích thước $k$ \\
+GAS (historical embeddings) & $\mathcal{O}(DbL + N)$ & phần $N$: lưu embedding toàn đồ thị \\
+\midrule
+\multicolumn{3}{l}{\footnotesize Với đồ thị lớn $N \gg DbL$, chi phí $N$ của GAS chiếm ưu thế và vượt xa $Dbk$ của GRAPES.}\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Khi $N$ lớn (ví dụ ogbn-products có $N \approx 2{,}4$ triệu đỉnh), phần overhead lưu trữ embedding lịch sử của GAS tạo ra khoảng cách bộ nhớ nhiều bậc so với GRAPES.
+
+\section{Phân tích lý thuyết}
+
+Bài báo gốc cung cấp một kết quả lý thuyết chứng minh rằng lấy mẫu thích ứng có thể đạt độ chính xác hoàn hảo trong khi lấy mẫu không thích ứng chỉ đạt xác suất thành công tiệm cận không trên một họ đồ thị cụ thể~\cite{Younesian2023GRAPES}.
+
+\begin{quote}
+\textbf{Định lý 1} (Younesian et al., 2024).
+\textit{Tồn tại các đồ thị vô hướng sao cho một GCN với bộ lấy mẫu thích ứng $L$ tầng và ngân sách $K$ đỉnh mỗi tầng có thể đạt độ chính xác hoàn hảo; trong khi với bộ lấy mẫu không thích ứng, xác suất để GCN đạt độ chính xác cao hơn ngẫu nhiên bị chặn bởi $p \leq LK/N$.}
+\end{quote}
+
+Nói cách khác, khi $N \to \infty$ với $K$ cố định, bộ lấy mẫu không thích ứng không thể chọn được các đỉnh quan trọng, trong khi bộ lấy mẫu thích ứng (học theo đặc trưng) có thể làm được. Kết quả này đặc biệt phù hợp với đồ thị heterophily, nơi các lân cận quan trọng không tương quan với bậc đỉnh (heuristic phổ biến của FastGCN, LADIES).
+
+\section{Thuật toán huấn luyện}
+
+Giải thuật~\ref{alg:grapes} mô tả một epoch của GRAPES theo pseudocode gần với bài báo gốc.
+
+\begin{algorithm}[H]
+\caption{Một epoch huấn luyện GRAPES~\cite{Younesian2023GRAPES}}
+\label{alg:grapes}
+\KwIn{Đồ thị $\mathcal{G}$, đặc trưng $\mathbf{X}$, nhãn $Y$, đỉnh đích $V^t$, batch size $b$, sample size $k$, $\text{GCN}_C$, $\text{GCN}_S$}
+\For{mỗi batch $V^{(0)} \subseteq V^t$ (kích thước $b$)}{
+  $K^{(0)} \leftarrow V^{(0)}$\;
+  \For{$l = 1$ \KwTo $L$}{
+    \For{mỗi đỉnh $i \in \mathcal{N}(K^{(l-1)})$}{
+      $p_i \leftarrow \text{GCN}_S(K^{(l-1)})_i$ \quad \tcp{xác suất đưa vào mẫu}
+      $\varepsilon_i \sim \mathrm{Gumbel}(0,1)$\;
+    }
+    $V^{(l)} \leftarrow \operatorname{top\text{-}k}_{i} (\log p_i + \varepsilon_i)$ \quad \tcp{Gumbel Top-$k$}
+    $K^{(l)} \leftarrow V^{(0)} \cup V^{(l)}$\;
+  }
+  $\mathcal{L}_C \leftarrow$ mất mát phân loại của $\text{GCN}_C$ trên $\mathcal{G}_s = (K^{(0)},\ldots,K^{(L)})$\;
+  $\mathcal{L}_S \leftarrow$ mất mát lấy mẫu theo công thức~(\ref{eq:rl}) hoặc~(\ref{eq:gfn})\;
+  Cập nhật $\text{GCN}_S$ theo $\nabla\mathcal{L}_S$\;
+  Cập nhật $\text{GCN}_C$ theo $\nabla\mathcal{L}_C$\;
+}
+\end{algorithm}

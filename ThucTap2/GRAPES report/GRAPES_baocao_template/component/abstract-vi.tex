@@ -1,0 +1,7 @@
+\chapter*{Tóm tắt}
+
+Mạng nơ-ron đồ thị (Graph Neural Network - GNN) đã trở thành công cụ chủ đạo cho học biểu diễn trên dữ liệu có cấu trúc đồ thị, với nhiều ứng dụng quan trọng như hệ thống gợi ý. Tuy nhiên, khi áp dụng trên các đồ thị quy mô lớn, GNN gặp phải hiện tượng bùng nổ lân cận (neighbor explosion): khi số tầng tăng, trường tiếp nhận của mỗi đỉnh mở rộng theo cấp số nhân, dẫn đến chi phí bộ nhớ và tính toán tăng nhanh, cản trở khả năng mở rộng.
+
+Báo cáo này khảo sát có hệ thống các phương pháp giảm bùng nổ lân cận, phân thành các nhóm lấy mẫu theo đỉnh, theo tầng, theo đồ thị con và hướng dùng embedding lịch sử. Trên cơ sở đó, báo cáo đi sâu vào GRAPES, một phương pháp lấy mẫu thích ứng học cách xác định tập đỉnh quan trọng cho việc huấn luyện GNN bằng cách huấn luyện một mạng lấy mẫu thứ hai dựa trên GFlowNet, tối ưu trực tiếp theo mục tiêu của tác vụ.
+
+Báo cáo trình bày định nghĩa, kiến trúc và cơ sở lý thuyết của GRAPES, tái hiện thiết lập cùng các kết quả thực nghiệm chính từ bài báo gốc, và đưa ra nhận định về ưu, nhược điểm của phương pháp. Các kết quả cho thấy GRAPES hiệu quả về độ chính xác và khả năng mở rộng, dùng bộ nhớ ít hơn nhiều bậc so với baseline dựa trên embedding lịch sử và bền vững với kích thước mẫu nhỏ. Cuối cùng, báo cáo đề xuất các hướng cải tiến, đặc biệt là mở rộng phương pháp sang bài toán dự đoán liên kết và gợi ý, làm định hướng nghiên cứu tiếp theo.

@@ -1,0 +1,13 @@
+[build-system]
+requires = []
+build-backend = "setuptools.build_meta:__legacy__"
+
+[project]
+name = "grapes-to-recommendation-scaffold"
+version = "0.1.0"
+description = "Week 1 pure-Python contracts for a direct GRAPES-to-recommendation adaptation"
+requires-python = ">=3.9"
+dependencies = []
+
+[tool.unittest]
+testpaths = ["tests"]

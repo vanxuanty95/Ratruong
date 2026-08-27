@@ -1,0 +1,37 @@
+{
+  "timestamp": "2026-05-30T15:05:16.993866",
+  "gpu": "Tesla T4",
+  "torch_version": "2.11.0+cu128",
+  "results": {
+    "cora_grapes": {
+      "mean": 0.871,
+      "std": 0.0017000000000000001,
+      "time_s": 56.3
+    },
+    "cora_random": {
+      "mean": 0.8676999999999999,
+      "std": 0.0038,
+      "time_s": 30.5
+    },
+    "citeseer_grapes": {
+      "mean": 0.7857,
+      "std": 0.0070999999999999995,
+      "time_s": 94.6
+    },
+    "citeseer_random": {
+      "mean": 0.79,
+      "std": 0.008199999999999999,
+      "time_s": 56.0
+    },
+    "ogbn_arxiv_grapes": {
+      "mean": 0.6204,
+      "std": 0.0031,
+      "time_s": 11113.8
+    },
+    "ogbn_arxiv_random": {
+      "mean": 0.6128,
+      "std": 0.0029,
+      "time_s": 8133.0
+    }
+  }
+}

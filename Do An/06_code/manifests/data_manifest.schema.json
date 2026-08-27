@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Phase 2 data manifest placeholder",
+  "type": "object",
+  "required": ["status", "dataset_family", "artifact_url", "retrieved_at", "sha256", "preprocessing_config_sha256"],
+  "properties": {
+    "status": {"enum": ["OPEN", "PROPOSED", "ACQUIRED", "VALIDATED"]},
+    "dataset_family": {"type": "string"},
+    "category": {"type": "string"},
+    "artifact_url": {"type": "string"},
+    "retrieved_at": {"type": "string"},
+    "sha256": {"type": "string"},
+    "preprocessing_config_sha256": {"type": "string"},
+    "raw_schema": {"type": "object"},
+    "temporal_cutoffs": {"type": "object"},
+    "post_filter_counts": {"type": "object"},
+    "license_or_access_note": {"type": "string"}
+  },
+  "additionalProperties": true
+}

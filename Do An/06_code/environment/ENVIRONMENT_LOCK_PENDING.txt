@@ -1,0 +1,8 @@
+STATUS=OPEN
+PURPOSE=Phase 2 executable environment record
+PYTHON=UNKNOWN
+PYTORCH=UNKNOWN
+PYG=UNKNOWN
+CUDA=UNKNOWN
+GPU=UNKNOWN
+NOTE=Do not treat this placeholder as the final environment lock. Freeze it only after the borrowed GPU class and Colab-compatible software stack are confirmed and smoke-tested.

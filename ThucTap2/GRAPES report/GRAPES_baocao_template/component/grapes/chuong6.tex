@@ -1,0 +1,27 @@
+\chapter{Kết luận và nhận định}
+
+\section{Tổng hợp kết quả}
+
+Qua khảo sát và phân tích thực nghiệm, có thể tổng hợp các kết luận chính về GRAPES~\cite{Younesian2023GRAPES} như sau. GRAPES là một phương pháp lấy mẫu thích ứng hiệu quả cả về độ chính xác lẫn khả năng mở rộng. So với các phương pháp đối chứng, nó dùng bộ nhớ GPU ít hơn nhiều bậc so với baseline dựa trên embedding lịch sử, đồng thời giữ được độ chính xác cao ngay cả khi kích thước mẫu nhỏ, nên có thể áp dụng cho các đồ thị cực lớn. Đáng chú ý, GRAPES tỏ ra đặc biệt hiệu quả trên các đồ thị heterophily đa nhãn --- trường hợp mà nhiều phương pháp lấy mẫu trước đó ít được kiểm chứng.
+
+\section{Nhận định cá nhân}
+
+\subsection{Ưu điểm}
+
+\begin{itemize}
+    \item \textbf{Tính thích ứng học được:} GRAPES vượt qua giới hạn của các heuristic tĩnh bằng cách học xác suất lấy mẫu trực tiếp từ mục tiêu tác vụ, giúp tổng quát hóa tốt hơn giữa các đồ thị và tác vụ khác nhau.
+    \item \textbf{Hiệu quả bộ nhớ:} ưu thế bộ nhớ là yếu tố quyết định để triển khai trên đồ thị thực tế cỡ lớn, nơi các phương pháp lưu embedding lịch sử bị giới hạn bởi dung lượng GPU.
+    \item \textbf{Bền vững với mẫu nhỏ:} khả năng giữ độ chính xác khi giảm mạnh kích thước mẫu cho phép đánh đổi tài nguyên một cách linh hoạt.
+    \item \textbf{Mạnh trên heterophily/đa nhãn:} mở rộng phạm vi áp dụng sang các loại đồ thị khó, vốn là điểm yếu của nhiều phương pháp cũ.
+\end{itemize}
+
+\subsection{Nhược điểm}
+
+\begin{itemize}
+    \item \textbf{Chi phí và độ phức tạp tăng thêm:} việc phải huấn luyện một mạng thứ hai (bộ lấy mẫu dựa trên GFlowNet) làm tăng chi phí tính toán và độ phức tạp triển khai so với các phương pháp lấy mẫu theo heuristic đơn giản.
+    \item \textbf{Tính ổn định khi huấn luyện:} việc huấn luyện GFlowNet nói chung nhạy với thiết kế hàm phần thưởng và siêu tham số, có thể ảnh hưởng đến tính ổn định và khả năng tái lập.
+    \item \textbf{Phạm vi đánh giá:} bài báo gốc tập trung chủ yếu vào tác vụ phân loại đỉnh; phương pháp chưa được kiểm chứng trực tiếp trên các tác vụ khác như dự đoán liên kết (\textit{link prediction}) hay gợi ý --- vốn là định hướng ứng dụng được nêu ở Chương~1.
+    \item \textbf{Bản chất lấy mẫu theo đỉnh:} GRAPES về cơ bản lấy mẫu đỉnh để gián tiếp kiểm soát bùng nổ lân cận, chưa kiểm soát trực tiếp số cạnh; trong các đồ thị dày đặc, số cạnh trong đồ thị con vẫn có thể là một nút thắt.
+\end{itemize}
+
+Nhìn chung, GRAPES là một bước tiến thuyết phục theo hướng lấy mẫu thích ứng có cơ sở lý thuyết, đặc biệt giá trị ở khía cạnh bộ nhớ và độ bền vững. Các nhược điểm nêu trên không phủ nhận giá trị của phương pháp mà chính là những điểm mở cho hướng cải tiến, được trình bày ở chương tiếp theo.

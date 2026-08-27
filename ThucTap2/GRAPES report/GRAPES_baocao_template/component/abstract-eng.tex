@@ -1,0 +1,7 @@
+\chapter*{Abstract}
+
+Graph Neural Networks (GNNs) have become a leading tool for representation learning on graph-structured data, with important applications such as recommender systems. However, when applied to large-scale graphs, GNNs suffer from the neighbor explosion problem: as the number of layers increases, the receptive field of each node grows exponentially, leading to rapidly increasing memory and computational costs that hinder scalability.
+
+This report systematically surveys methods for mitigating neighbor explosion, organized into node-wise, layer-wise, and subgraph sampling categories as well as the historical-embedding approach. Building on this, the report focuses on GRAPES, an adaptive sampling method that learns to identify the set of nodes crucial for training a GNN by training a second, GFlowNet-based sampling network optimized directly toward the downstream task objective.
+
+The report presents the definition, architecture, and theoretical basis of GRAPES, reproduces the main experimental setup and results from the original paper, and provides an assessment of the method's strengths and weaknesses. The results show that GRAPES is effective in both accuracy and scalability, using orders of magnitude less memory than a historical-embedding baseline and remaining robust under small sample sizes. Finally, the report proposes improvement directions, in particular extending the method to link prediction and recommendation, as a future research direction.

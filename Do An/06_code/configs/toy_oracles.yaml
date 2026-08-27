@@ -1,0 +1,14 @@
+status: specified
+purpose: week1_contract_tests_only
+implementation_language: python
+random_seed: 0
+candidate_k: 2
+rl_action_losses: [1.0, 3.0]
+tb_log_z: 0.2
+tb_log_q: -0.1
+tb_alpha: 2.0
+tb_task_loss: 0.3
+notes:
+  - no_amazon_data
+  - no_pytorch_model
+  - no_benchmark_claim

@@ -1,0 +1,484 @@
+\chapter{Cơ sở lý thuyết}
+\section{Mạng nơ-ron đồ thị}
+
+Một đồ thị được ký hiệu $\mathcal{G}=(\mathcal{V},\mathcal{E})$ với tập đỉnh $\mathcal{V}$ ($|\mathcal{V}|=N$) và tập cạnh $\mathcal{E}$. Mỗi đỉnh $v$ có một vector đặc trưng $\mathbf{x}_v \in \mathbb{R}^{d}$, và cấu trúc kết nối được mô tả bởi ma trận kề $\mathbf{A}\in\mathbb{R}^{N\times N}$. Ý tưởng cốt lõi của GNN, khởi nguồn từ mô hình GNN gốc của Scarselli và cộng sự~\cite{Scarselli2009}, là học biểu diễn của một đỉnh bằng cách tổng hợp (\textit{aggregate}) thông tin từ các đỉnh lân cận của nó. Hình~\ref{fig:gnn-overview} minh họa tổng thể quá trình này.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+  vnode/.style={circle, draw=black!70, line width=0.9pt, minimum size=10mm, font=\small\bfseries, inner sep=1pt},
+  feat/.style={rectangle, rounded corners=2pt, draw=blue!60, fill=blue!8, font=\footnotesize, inner sep=3pt},
+  emb/.style={rectangle, rounded corners=2pt, draw=orange!70, fill=orange!10, font=\footnotesize, inner sep=3pt},
+  gnnbox/.style={rectangle, draw=gray!60, fill=gray!6, rounded corners=5pt, minimum width=2.2cm, minimum height=3.8cm},
+  >=Stealth
+]
+%% ---- INPUT GRAPH ----
+\node[vnode, fill=blue!12] (A) at (0, 2.2)   {$v_1$};
+\node[vnode, fill=blue!12] (B) at (1.6, 3.4) {$v_2$};
+\node[vnode, fill=blue!12] (C) at (1.6, 1.0) {$v_3$};
+\node[vnode, fill=blue!12] (D) at (3.2, 2.2) {$v_4$};
+\node[vnode, fill=blue!12] (E) at (0.5, 0.0) {$v_5$};
+\draw[black!40, line width=0.8pt] (A)--(B); \draw[black!40, line width=0.8pt] (A)--(C);
+\draw[black!40, line width=0.8pt] (B)--(D); \draw[black!40, line width=0.8pt] (C)--(D);
+\draw[black!40, line width=0.8pt] (C)--(E); \draw[black!40, line width=0.8pt] (A)--(E);
+\node[feat] (fx1) at (-1.5, 2.2) {$\mathbf{x}_{1}$};
+\node[feat] (fx2) at (1.6,  4.6) {$\mathbf{x}_{2}$};
+\node[feat] (fx3) at (3.4,  0.6) {$\mathbf{x}_{3}$};
+\draw[->, blue!40, dashed, shorten >=2pt] (fx1)--(A);
+\draw[->, blue!40, dashed, shorten >=2pt] (fx2)--(B);
+\draw[->, blue!40, dashed, shorten >=2pt] (fx3)--(C);
+\node[font=\footnotesize\bfseries, text=black!60] at (1.5,-1.0) {Đồ thị đầu vào $\mathcal{G}$};
+\node[font=\footnotesize, text=blue!60] at (1.5,-1.6) {(đỉnh mang đặc trưng $\mathbf{x}_v$)};
+%% ---- ARROW ----
+\draw[->, thick, gray!70, line width=1.2pt] (3.8, 2.0) -- (5.0, 2.0);
+%% ---- GNN BOX ----
+\node[gnnbox, align=center, font=\small\bfseries, text=gray!60] at (6.0, 2.0)
+  {GNN\\[6pt]\scriptsize $L$ tầng\\[-1pt]\scriptsize truyền\\[-1pt]\scriptsize tin};
+%% ---- ARROW ----
+\draw[->, thick, gray!70, line width=1.2pt] (7.2, 2.0) -- (8.4, 2.0);
+%% ---- OUTPUT GRAPH ----
+\node[vnode, fill=orange!18] (A2) at (9.4, 2.2)  {$v_1$};
+\node[vnode, fill=orange!18] (B2) at (11.0, 3.4) {$v_2$};
+\node[vnode, fill=orange!18] (C2) at (11.0, 1.0) {$v_3$};
+\node[vnode, fill=orange!18] (D2) at (12.6, 2.2) {$v_4$};
+\node[vnode, fill=orange!18] (E2) at (9.9,  0.0) {$v_5$};
+\draw[black!30, line width=0.8pt] (A2)--(B2); \draw[black!30, line width=0.8pt] (A2)--(C2);
+\draw[black!30, line width=0.8pt] (B2)--(D2); \draw[black!30, line width=0.8pt] (C2)--(D2);
+\draw[black!30, line width=0.8pt] (C2)--(E2); \draw[black!30, line width=0.8pt] (A2)--(E2);
+\node[emb] at (13.9, 2.2) {$\mathbf{h}_{v_4}^{(L)}$};
+\node[emb] at (9.4,  4.6) {$\mathbf{h}_{v_1}^{(L)}$};
+\draw[->, orange!50, dashed, shorten >=2pt] (A2) -- (9.4, 4.0);
+\draw[->, orange!50, dashed, shorten >=2pt] (D2) -- (13.3, 2.2);
+\node[font=\footnotesize\bfseries, text=black!60] at (11.0,-1.0) {Biểu diễn đầu ra};
+\node[font=\footnotesize, text=orange!70] at (11.0,-1.6) {(mỗi đỉnh có embedding $\mathbf{h}_v^{(L)}$)};
+\end{tikzpicture}
+\caption{Tổng quan GNN: mỗi đỉnh mang đặc trưng đầu vào $\mathbf{x}_v$ (xanh); sau $L$ tầng truyền tin, GNN tạo ra embedding $\mathbf{h}_v^{(L)}$ (cam) tích hợp thông tin từ vùng lân cận $L$-hop của đỉnh đó.}
+\label{fig:gnn-overview}
+\end{figure}
+
+\subsection{Khung truyền tin}
+
+Phần lớn các GNN hiện đại có thể được mô tả thống nhất qua khung truyền tin (\textit{message passing})~\cite{Gilmer2017MPNN}. Tại tầng thứ $l$, biểu diễn của đỉnh $v$ được cập nhật theo công thức tổng quát:
+\begin{equation}
+\mathbf{h}_v^{(l)} = \text{UPDATE}\Big(\mathbf{h}_v^{(l-1)},\ \text{AGGREGATE}\big(\{\mathbf{h}_u^{(l-1)} : u \in \mathcal{N}(v)\}\big)\Big),
+\end{equation}
+trong đó $\mathcal{N}(v)$ là tập lân cận của $v$, $\mathbf{h}_v^{(0)}=\mathbf{x}_v$, và AGGREGATE, UPDATE là các hàm khả vi (ví dụ trung bình có trọng số rồi qua một biến đổi tuyến tính và hàm phi tuyến). Hình~\ref{fig:message-passing} minh họa chi tiết ba bước của một vòng truyền tin tại đỉnh $v$.
+
+\begin{figure}[htbp]
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{tikzpicture}[
+  cnode/.style={circle, draw=black!70, line width=0.9pt, minimum size=11mm, font=\small\bfseries, inner sep=1pt},
+  target/.style={circle, draw=red!80!black, fill=red!10, line width=1.4pt, minimum size=13mm, font=\small\bfseries},
+  msg/.style={rectangle, rounded corners=3pt, draw=teal!60, fill=teal!8, font=\scriptsize, inner sep=3pt, minimum width=1.1cm},
+  agg/.style={rectangle, rounded corners=3pt, draw=purple!60, fill=purple!8, font=\scriptsize, inner sep=3pt, minimum width=1.4cm},
+  upd/.style={rectangle, rounded corners=3pt, draw=green!60!black, fill=green!8, font=\scriptsize, inner sep=3pt, minimum width=1.4cm},
+  >=Stealth
+]
+%% ---- STEP 1: Message ----
+\begin{scope}[xshift=0cm]
+\node[target] (v0) at (0,0) {$v$};
+\node[cnode, fill=teal!15] (u1) at (-2.0,  1.5) {$u_1$};
+\node[cnode, fill=teal!15] (u2) at ( 2.0,  1.5) {$u_2$};
+\node[cnode, fill=teal!15] (u3) at (0,    -2.0) {$u_3$};
+\draw[black!30] (v0)--(u1); \draw[black!30] (v0)--(u2); \draw[black!30] (v0)--(u3);
+\draw[->, teal!70, line width=1.2pt, shorten >=4pt, shorten <=4pt]
+  (u1) -- (v0) node[midway, above left, msg] {$\mathbf{m}_{u_1}$};
+\draw[->, teal!70, line width=1.2pt, shorten >=4pt, shorten <=4pt]
+  (u2) -- (v0) node[midway, above right, msg] {$\mathbf{m}_{u_2}$};
+\draw[->, teal!70, line width=1.2pt, shorten >=4pt, shorten <=4pt]
+  (u3) -- (v0) node[midway, right, msg, xshift=2pt] {$\mathbf{m}_{u_3}$};
+\node[msg, minimum width=3.4cm, font=\scriptsize] at (0, -3.3)
+  {$\mathbf{m}_{u} = \mathrm{MSG}(\mathbf{h}_u^{(l-1)})$};
+\node[font=\small\bfseries, text=teal!70!black] at (0, -4.2) {(1) Tạo thông điệp};
+\end{scope}
+%% ---- STEP 2: Aggregate ----
+\begin{scope}[xshift=6.5cm]
+\node[target] (v0b) at (0,0) {$v$};
+\node[cnode, fill=teal!10] (u1b) at (-2.0,  1.5) {$u_1$};
+\node[cnode, fill=teal!10] (u2b) at ( 2.0,  1.5) {$u_2$};
+\node[cnode, fill=teal!10] (u3b) at (0,    -2.0) {$u_3$};
+\draw[black!20] (v0b)--(u1b); \draw[black!20] (v0b)--(u2b); \draw[black!20] (v0b)--(u3b);
+\draw[->, teal!40, dashed, line width=0.9pt, shorten >=4pt, shorten <=4pt] (u1b)--(v0b);
+\draw[->, teal!40, dashed, line width=0.9pt, shorten >=4pt, shorten <=4pt] (u2b)--(v0b);
+\draw[->, teal!40, dashed, line width=0.9pt, shorten >=4pt, shorten <=4pt] (u3b)--(v0b);
+\node[agg, minimum width=3.8cm, above=0.3cm of v0b, font=\scriptsize]
+  {$\mathrm{AGG}\!\left(\{\mathbf{m}_u\}_{u \in \mathcal{N}(v)}\right)$};
+\node[agg, minimum width=3.4cm, font=\scriptsize] at (0, -3.3)
+  {$\mathbf{a}_v^{(l)} = \bigoplus_{u \in \mathcal{N}(v)} \mathbf{m}_{u}$};
+\node[font=\small\bfseries, text=purple!70!black] at (0, -4.2) {(2) Tổng hợp lân cận};
+\end{scope}
+%% ---- STEP 3: Update ----
+\begin{scope}[xshift=13cm]
+\node[circle, draw=green!60!black, fill=green!15, line width=1.4pt,
+      minimum size=13mm, font=\small\bfseries] (v0c) at (0,0) {$v'$};
+\node[cnode, fill=gray!12] (u1c) at (-2.0,  1.5) {$u_1$};
+\node[cnode, fill=gray!12] (u2c) at ( 2.0,  1.5) {$u_2$};
+\node[cnode, fill=gray!12] (u3c) at (0,    -2.0) {$u_3$};
+\draw[black!15] (v0c)--(u1c); \draw[black!15] (v0c)--(u2c); \draw[black!15] (v0c)--(u3c);
+\draw[->, green!60!black, line width=1.1pt] (-0.3,-0.6)--(-0.3,-1.7)
+  node[left, upd, xshift=-2pt, font=\scriptsize] {$\mathbf{h}_v^{(l-1)}$};
+\draw[->, purple!60, line width=1.1pt] (0.3, 0.6)--(0.3, 1.7)
+  node[right, agg, xshift=2pt, font=\scriptsize] {$\mathbf{a}_v^{(l)}$};
+\node[upd, minimum width=4.2cm, font=\scriptsize] at (0, -3.3)
+  {$\mathbf{h}_v^{(l)} = \mathrm{UPDATE}\!\left(\mathbf{h}_v^{(l-1)},\,\mathbf{a}_v^{(l)}\right)$};
+\node[font=\small\bfseries, text=green!60!black] at (0, -4.2) {(3) Cập nhật biểu diễn};
+\end{scope}
+%% ---- transition arrows ----
+\draw[->, thick, gray!60, line width=1.3pt] (2.8, 0) -- (4.0, 0);
+\draw[->, thick, gray!60, line width=1.3pt] (9.3, 0) -- (10.5, 0);
+\end{tikzpicture}
+}% end resizebox
+\caption{Ba bước của một vòng truyền tin tại đỉnh $v$: (1)~mỗi lân cận $u_i$ tạo thông điệp $\mathbf{m}_{u_i}$ từ biểu diễn tầng trước; (2)~$v$ tổng hợp tất cả thông điệp thành $\mathbf{a}_v^{(l)}$; (3)~$v$ kết hợp biểu diễn cũ của chính nó với $\mathbf{a}_v^{(l)}$ để tạo ra biểu diễn mới $\mathbf{h}_v^{(l)}$.}
+\label{fig:message-passing}
+\end{figure}
+% ---- end fig:message-passing ----
+
+\subsection{Một số kiến trúc tiêu biểu}
+
+\textbf{GCN}~\cite{Kipf2017} sử dụng quy tắc lan truyền dựa trên ma trận kề đã chuẩn hóa đối xứng:
+\begin{equation}
+\mathbf{H}^{(l)} = \sigma\big(\hat{\mathbf{A}}\,\mathbf{H}^{(l-1)}\mathbf{W}^{(l)}\big),\qquad \hat{\mathbf{A}}=\tilde{\mathbf{D}}^{-\frac{1}{2}}\tilde{\mathbf{A}}\tilde{\mathbf{D}}^{-\frac{1}{2}},
+\end{equation}
+với $\tilde{\mathbf{A}}=\mathbf{A}+\mathbf{I}$ và $\tilde{\mathbf{D}}$ là ma trận bậc tương ứng.
+
+\textbf{GraphSAGE}~\cite{Hamilton2017} đề xuất khung học quy nạp (\textit{inductive}), trong đó mỗi đỉnh tổng hợp thông tin từ một tập lân cận được lấy mẫu cố định kích thước, thay vì toàn bộ lân cận.
+
+\textbf{GAT}~\cite{Velickovic2018} đưa cơ chế chú ý (\textit{attention}) vào bước tổng hợp, gán trọng số khác nhau cho từng lân cận tùy theo mức độ liên quan.
+
+\section{Các vấn đề mở trong huấn luyện GNN}
+\label{sec:gnn-challenges}
+
+Mặc dù GNN đã đạt được hiệu quả vượt trội trên nhiều tác vụ, các tài liệu hiện nay cũng ghi nhận một số vấn đề cốt lõi giới hạn khả năng triển khai thực tế của chúng. Thực tế, mỗi vấn đề trong số này đã tích lũy đủ khối lượng công trình để cộng đồng nghiên cứu dành riêng các bài survey tổng quan: over-smoothing~\cite{Rusch2023SurveyOversmoothing}, over-squashing~\cite{Akansha2023SurveyOversquashing}, heterophily~\cite{Zheng2022SurveyHeterophily}, và scalability thông qua sampling~\cite{Liu2021ScalableSampling}. Sự tồn tại của các survey độc lập này cho thấy mỗi vấn đề đã hình thành một hướng nghiên cứu riêng biệt, và đây là cơ sở để chúng tôi nhận định đây là bốn thách thức chính đang được cộng đồng GNN theo đuổi song song. Phần này trình bày ngắn gọn bản chất từng vấn đề và xu hướng giải quyết, nhằm định vị rõ vị trí của vấn đề bùng nổ lân cận trong bức tranh tổng thể.
+
+\subsection{Over-smoothing (làm mịn quá mức)}
+
+Over-smoothing xảy ra khi số tầng truyền tin tăng cao: biểu diễn của các đỉnh dần hội tụ về cùng một véc-tơ không phân biệt, dẫn đến mất khả năng phân loại đỉnh. Li và cộng sự~\cite{Li2018DeeperInsights} chứng minh rằng phép nhân ma trận kề lặp lại trong GCN về bản chất là làm mịn Laplacian (\textit{Laplacian smoothing}), và khi số lần lặp đủ lớn, toàn bộ biểu diễn đỉnh trở nên giống nhau bất kể cấu trúc cục bộ. Đây là lý do tại sao các GCN nông (2--3 tầng) thường vượt trội hơn các mô hình sâu hơn trên các bộ dữ liệu chuẩn~\cite{Li2018DeeperInsights}.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+  every node/.style={circle, draw, minimum size=7mm, inner sep=1pt, font=\small},
+  lyr/.style={rectangle, draw=none, minimum size=0pt},
+  >=stealth
+]
+% Layer 0 - distinct colors
+\node[fill=blue!60,  text=white] (v1l0) at (0,3)   {$v_1$};
+\node[fill=red!60,   text=white] (v2l0) at (0,1.5) {$v_2$};
+\node[fill=green!60, text=white] (v3l0) at (0,0)   {$v_3$};
+
+% Layer 1 - slightly mixed
+\node[fill=blue!35!red!30!green!20,  text=white] (v1l1) at (3,3)   {$v_1$};
+\node[fill=blue!30!red!40!green!20,  text=white] (v2l1) at (3,1.5) {$v_2$};
+\node[fill=blue!30!red!25!green!35,  text=white] (v3l1) at (3,0)   {$v_3$};
+
+% Layer L - fully mixed (same color)
+\node[fill=gray!55, text=white] (v1lL) at (6,3)   {$v_1$};
+\node[fill=gray!55, text=white] (v2lL) at (6,1.5) {$v_2$};
+\node[fill=gray!55, text=white] (v3lL) at (6,0)   {$v_3$};
+
+% Arrows
+\foreach \s/\t in {v1l0/v1l1, v2l0/v2l1, v3l0/v3l1,
+                   v1l1/v1lL, v2l1/v2lL, v3l1/v3lL}
+  \draw[->] (\s) -- (\t);
+
+% Labels
+\node[lyr] at (0,-0.85)  {Tầng 0};
+\node[lyr] at (3,-0.85)  {Tầng 1};
+\node[lyr] at (6,-0.85)  {Tầng $L$};
+\end{tikzpicture}
+\caption{Minh họa over-smoothing: sau nhiều tầng truyền tin, biểu diễn các đỉnh hội tụ về cùng một véc-tơ (màu xám), mất tính phân biệt.}
+\label{fig:oversmoothing}
+\end{figure}
+
+Xu hướng giải quyết over-smoothing tập trung vào hai hướng chính: (i) giảm độ sâu mô hình kết hợp kết nối dư (\textit{residual connections}) để truyền thông tin nhận dạng đỉnh qua các tầng~\cite{Li2018DeeperInsights}; (ii) các kỹ thuật \textit{graph rewiring} nhằm điều chỉnh cấu trúc đồ thị để làm chậm quá trình hội tụ~\cite{Topping2022GraphRewiring}.
+
+\subsection{Over-squashing (nén thông tin quá mức)}
+
+Over-squashing, được phát biểu hình thức bởi Alon và Yahav~\cite{Alon2021Bottleneck}, mô tả hiện tượng đối lập: khi GNN cần tổng hợp thông tin từ các đỉnh \textit{xa} (nhiều hop), lượng thông tin từ vùng lân cận mở rộng theo cấp số nhân buộc phải được nén vào một véc-tơ kích thước cố định. Điều này dẫn đến suy giảm thông tin không thể tránh khỏi với các tác vụ đòi hỏi phụ thuộc tầm xa.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+  node/.style={circle, draw, minimum size=6mm, inner sep=1pt, font=\footnotesize},
+  target/.style={circle, draw=red!80!black, line width=1.5pt, minimum size=8mm, inner sep=1pt, font=\footnotesize, fill=red!15},
+  >=stealth, level distance=12mm,
+  level 1/.style={sibling distance=28mm},
+  level 2/.style={sibling distance=14mm},
+  level 3/.style={sibling distance=7mm}
+]
+\node[target] {$v$}
+  child { node[node] {}
+    child { node[node] {}
+      child { node[node, fill=yellow!40] {} }
+      child { node[node, fill=yellow!40] {} }
+    }
+    child { node[node] {}
+      child { node[node, fill=yellow!40] {} }
+      child { node[node, fill=yellow!40] {} }
+    }
+  }
+  child { node[node] {}
+    child { node[node] {}
+      child { node[node, fill=yellow!40] {} }
+      child { node[node, fill=yellow!40] {} }
+    }
+    child { node[node] {}
+      child { node[node, fill=yellow!40] {} }
+      child { node[node, fill=yellow!40] {} }
+    }
+  };
+\node[font=\small] at (3.5, -0.3) {$\xrightarrow{\text{nén vào } \mathbf{h}_v \in \mathbb{R}^d}$};
+\end{tikzpicture}
+\caption{Over-squashing: $2^3=8$ đỉnh ở hop 3 (vàng) cần được nén vào véc-tơ $\mathbf{h}_v$ kích thước $d$ của đỉnh đích $v$ (đỏ). Khi cây lân cận mở rộng, thông tin bị bóp méo.}
+\label{fig:oversquashing}
+\end{figure}
+
+Xu hướng giải quyết over-squashing bao gồm \textit{graph rewiring} (thêm hoặc bỏ cạnh để rút ngắn đường đi tầm xa) và các kiến trúc \textit{graph transformer} tổng hợp thông tin toàn cục bỏ qua cấu trúc cục bộ~\cite{Alon2021Bottleneck}.
+
+\subsection{Heterophily (đồ thị phi đồng nhất)}
+
+Hầu hết các GNN được thiết kế dựa trên giả thiết \textit{homophily}: các đỉnh kết nối với nhau có xu hướng thuộc cùng một lớp hoặc có đặc trưng tương đồng~\cite{Zhu2020BeyondHomophily}. Giả thiết này hợp lý với nhiều đồ thị thực tế (ví dụ: người dùng mạng xã hội kết bạn với người có cùng sở thích), và chính nó lý giải tại sao việc \textit{tổng hợp thông tin từ lân cận} lại có ích.
+
+Tuy nhiên, không phải đồ thị nào cũng thỏa mãn homophily. Trong đồ thị \textit{heterophilic}, các cạnh thường nối các đỉnh \textit{khác} lớp --- ví dụ đồ thị gian lận tài chính (tài khoản gian lận kết nối với tài khoản bình thường để ngụy trang), mạng tương tác protein (protein chức năng khác nhau tương tác với nhau), hay mạng lưới chuỗi cung ứng. Khi đó, bước AGGREGATE của GNN lại phản tác dụng: thay vì củng cố tín hiệu, nó \textit{pha loãng} đặc trưng của đỉnh đích bằng thông tin không liên quan từ các lân cận khác lớp. Hình~\ref{fig:heterophily} minh họa sự khác biệt này.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+  rnode/.style={circle, draw=red!70!black,   fill=red!20,   minimum size=9mm, font=\small\bfseries, line width=0.9pt},
+  bnode/.style={circle, draw=blue!70!black,  fill=blue!20,  minimum size=9mm, font=\small\bfseries, line width=0.9pt},
+  gnode/.style={circle, draw=green!60!black, fill=green!20, minimum size=9mm, font=\small\bfseries, line width=0.9pt},
+  label/.style={font=\small, text=black!60},
+  >=Stealth
+]
+
+%% ---- HOMOPHILIC (left) ----
+\node[rnode] (h1) at (0,   2.0) {};
+\node[rnode] (h2) at (1.2, 3.0) {};
+\node[rnode] (h3) at (2.4, 2.0) {};
+\node[bnode] (h4) at (0,   0.0) {};
+\node[bnode] (h5) at (1.2,-1.0) {};
+\node[bnode] (h6) at (2.4, 0.0) {};
+
+\draw[red!50,  line width=1.1pt] (h1)--(h2)--(h3)--(h1);
+\draw[blue!50, line width=1.1pt] (h4)--(h5)--(h6)--(h4);
+\draw[gray!40, dashed] (h3)--(h4);
+
+\node[label] at (1.2, -2.0) {\textbf{Homophilic}};
+\node[label, font=\footnotesize] at (1.2, -2.55) {(lân cận cùng lớp)};
+
+% annotation
+\node[font=\footnotesize, text=red!70!black]  at (-0.9, 2.5)  {Lớp A};
+\node[font=\footnotesize, text=blue!70!black] at (-0.9, -0.5) {Lớp B};
+
+%% ---- ARROW ----
+\draw[->, thick, gray!50, line width=1.2pt] (3.2, 1.0) -- (4.2, 1.0);
+
+%% ---- HETEROPHILIC (right) ----
+\node[rnode] (e1) at (5.2, 2.5) {};
+\node[bnode] (e2) at (6.6, 3.2) {};
+\node[gnode] (e3) at (7.8, 2.0) {};
+\node[bnode] (e4) at (6.6, 0.8) {};
+\node[rnode] (e5) at (5.2,-0.2) {};
+
+\draw[gray!60, line width=1.1pt] (e1)--(e2)--(e3)--(e4)--(e5)--(e1);
+\draw[gray!60, line width=1.1pt] (e2)--(e4);
+
+\node[label] at (6.5, -1.2) {\textbf{Heterophilic}};
+\node[label, font=\footnotesize] at (6.5, -1.75) {(lân cận khác lớp)};
+
+%% ---- AGGREGATE result comparison ----
+% homophilic: aggregation stays red
+\node[rnode, minimum size=11mm] at (10.2, 2.5) {};
+\draw[->, teal!60, line width=1.0pt] (8.6, 2.0) -- (9.5, 2.5)
+  node[midway, above, font=\scriptsize, text=teal!70] {AGG};
+\node[font=\footnotesize, text=teal!70!black, align=center] at (10.2, 1.4)
+  {\scriptsize biểu diễn\\\scriptsize giữ nguyên lớp};
+
+% heterophilic: aggregation produces mixed/gray
+\node[circle, draw=gray!60, fill=gray!25, minimum size=11mm, font=\small\bfseries,
+      line width=0.9pt] at (10.2, -0.3) {?};
+\draw[->, orange!60, line width=1.0pt] (8.6, 0.0) -- (9.5, -0.3)
+  node[midway, below, font=\scriptsize, text=orange!70] {AGG};
+\node[font=\footnotesize, text=orange!70!black, align=center] at (10.2, -1.4)
+  {\scriptsize biểu diễn\\\scriptsize bị pha loãng};
+
+\end{tikzpicture}
+\caption{So sánh homophilic (trái) và heterophilic (giữa): trên đồ thị homophilic, tổng hợp lân cận củng cố đặc trưng của đỉnh đích (biểu diễn giữ nguyên màu lớp); trên đồ thị heterophilic, lân cận khác lớp làm pha loãng tín hiệu (biểu diễn mờ, mất phân biệt).}
+\label{fig:heterophily}
+\end{figure}
+
+Các hướng giải quyết hiện tại tập trung vào việc giúp GNN \textit{phân biệt} lân cận hữu ích và lân cận gây nhiễu: thiết kế hàm tổng hợp có trọng số theo mức độ tương đồng~\cite{Zheng2022SurveyHeterophily}, hoặc dùng cơ chế chú ý như trong GAT~\cite{Velickovic2018} để tự động gán trọng số thấp cho các lân cận khác lớp.
+
+\subsection{Scalability --- Khả năng mở rộng quy mô}
+
+Các đồ thị trong thực tế có thể có kích thước rất lớn: bộ dữ liệu chuẩn Open Graph Benchmark (OGB)~\cite{Hu2020OGB} bao gồm các đồ thị từ hàng trăm nghìn đến hàng trăm triệu đỉnh; đồ thị tương tác người dùng--sản phẩm của Pinterest mà PinSage~\cite{Ying2018PinSage} xử lý có tới \textbf{3 tỷ cạnh}; các đồ thị mạng xã hội như Twitter có hàng trăm triệu đỉnh~\cite{Hamilton2017}.
+
+Những con số này không chỉ là kích thước lý thuyết --- chúng kéo theo chi phí thực tế rất lớn. Duan và cộng sự~\cite{Duan2022LargeScaleBenchmark} trong một khảo sát benchmark toàn diện ghi nhận rằng việc huấn luyện GNN cho hệ thống gợi ý trên đồ thị 7,5 tỷ mục mất \textbf{3 ngày} trên cụm 16 GPU với tổng bộ nhớ 384\,GB. Ở quy mô nhỏ hơn, Chiang và cộng sự~\cite{Chiang2019ClusterGCN} thực nghiệm trên đồ thị Amazon (2 triệu đỉnh, 61 triệu cạnh) cho thấy huấn luyện GCN 3 tầng theo cách thông thường tiêu tốn \textbf{11,2\,GB bộ nhớ GPU} và hơn 30 phút mỗi epoch; với GCN 4 tầng, \textbf{tất cả các phương pháp hiện có đều thất bại do hết bộ nhớ (OOM)} trước khi ClusterGCN được đề xuất. Đây là minh chứng rõ ràng rằng scalability không phải vấn đề học thuật trừu tượng mà là rào cản triển khai thực tế ngay cả với đồ thị cỡ trung.
+
+\paragraph{Huấn luyện full-batch và giới hạn của nó.}
+Cách huấn luyện ngây thơ nhất là \textit{full-batch}: nạp toàn bộ đồ thị vào bộ nhớ GPU và tính gradient trên tất cả các đỉnh. Với mô hình GCN $L$ tầng trên đồ thị $N$ đỉnh, $|\mathcal{E}|$ cạnh, chiều đặc trưng $d$, độ phức tạp bộ nhớ là $\mathcal{O}(LNd + Ld^{2})$. Với $N$ lên đến hàng triệu và $d$ hàng trăm chiều, lượng bộ nhớ cần thiết vượt xa dung lượng GPU thông thường (16--80\,GB) ngay cả với đồ thị cỡ trung.
+
+\paragraph{Vấn đề cốt lõi: bùng nổ lân cận khi dùng mini-batch.}
+Để vượt qua giới hạn trên, hướng tiếp cận tự nhiên là chia nhỏ thành mini-batch theo đỉnh. Tuy nhiên, để tính biểu diễn $\mathbf{h}_v^{(L)}$ của một đỉnh $v$, GNN cần biểu diễn tầng $L{-}1$ của toàn bộ lân cận $v$; để có được đó lại cần tầng $L{-}2$ của lân cận của lân cận; và cứ thế đệ quy. Kết quả là tập đỉnh phụ thuộc để tính một điểm đích duy nhất mở rộng theo $\mathcal{O}(\bar{d}^{L})$, với $\bar{d}$ là bậc trung bình của đồ thị. Đây là hiện tượng \textbf{bùng nổ lân cận}, được phân tích chi tiết trong mục~\ref{sec:neighbor-explosion}.
+
+Hình~\ref{fig:neighbor-explosion-preview} minh họa mức độ nghiêm trọng của vấn đề này trên một đồ thị có bậc trung bình $\bar{d}=10$: chỉ với 3 tầng, một mini-batch 512 đỉnh đã kéo theo hơn \textbf{500\,000 đỉnh phụ thuộc} --- vượt xa kích thước toàn bộ nhiều bộ dữ liệu chuẩn.
+
+\begin{figure}[htbp]
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{tikzpicture}[
+  bar/.style={rectangle, draw=none, fill=blue!55, minimum width=1.0cm},
+  label/.style={font=\small},
+  >=Stealth
+]
+
+%% ---- Left: tree growth illustration ----
+\begin{scope}[xshift=0cm,
+  lv0/.style={circle, draw=red!70!black,  fill=red!15,   minimum size=10mm, font=\footnotesize\bfseries},
+  lv1/.style={circle, draw=blue!60!black, fill=blue!12,  minimum size=8mm,  font=\scriptsize},
+  lv2/.style={circle, draw=teal!60!black, fill=teal!12,  minimum size=6mm,  font=\scriptsize},
+  lv3/.style={circle, draw=gray!60,       fill=gray!12,  minimum size=5mm},
+]
+% root
+\node[lv0] (r) at (0, 0) {$v$};
+
+% layer 1 (3 shown, label "×10")
+\node[lv1] (l1a) at (-2.2, -1.4) {};
+\node[lv1] (l1b) at ( 0,   -1.4) {};
+\node[lv1] (l1c) at ( 2.2, -1.4) {};
+\draw[blue!40] (r)--(l1a); \draw[blue!40] (r)--(l1b); \draw[blue!40] (r)--(l1c);
+\node[font=\scriptsize, text=blue!60] at (3.5, -1.4) {$\times 10$};
+
+% layer 2 (3×2 shown) — named with letters to avoid pgf parsing issues
+\node[lv2] (l2aa) at (-2.8, -2.8) {};  \node[lv2] (l2ab) at (-1.6, -2.8) {};
+\node[lv2] (l2ba) at (-0.6, -2.8) {};  \node[lv2] (l2bb) at ( 0.6, -2.8) {};
+\node[lv2] (l2ca) at ( 1.6, -2.8) {};  \node[lv2] (l2cb) at ( 2.8, -2.8) {};
+\draw[teal!35] (l1a)--(l2aa); \draw[teal!35] (l1a)--(l2ab);
+\draw[teal!35] (l1b)--(l2ba); \draw[teal!35] (l1b)--(l2bb);
+\draw[teal!35] (l1c)--(l2ca); \draw[teal!35] (l1c)--(l2cb);
+\node[font=\scriptsize, text=teal!60] at (3.5, -2.8) {$\times 10^2$};
+
+% layer 3 (dots only, too many)
+\foreach \x in {-3.2,-2.8,-2.4,-2.0,-1.6,-1.2,-0.4,0.0,0.4,1.2,1.6,2.0,2.4,2.8}{
+  \node[lv3] at (\x, -4.0) {};
+}
+\node[font=\scriptsize, text=gray!60] at (3.5, -4.0) {$\times 10^3$};
+\node[font=\scriptsize, text=gray!50] at (0, -4.7) {\ldots};
+
+% labels
+\node[font=\footnotesize\bfseries, text=black!60] at (-4.0, 0)    {Tầng 0};
+\node[font=\footnotesize\bfseries, text=black!60] at (-4.0, -1.4) {Tầng 1};
+\node[font=\footnotesize\bfseries, text=black!60] at (-4.0, -2.8) {Tầng 2};
+\node[font=\footnotesize\bfseries, text=black!60] at (-4.0, -4.0) {Tầng 3};
+\end{scope}
+
+%% ---- Right: bar chart: number of nodes needed ----
+%% yshift=-4.0cm: align x-axis of chart with "Tầng 3" row of tree
+\begin{scope}[xshift=9.5cm, yshift=-4.0cm]
+
+% axes
+\draw[->] (0,0) -- (0, 4.5) node[above, font=\footnotesize] {Số đỉnh cần nạp};
+\draw[->] (0,0) -- (4.8, 0) node[right, font=\footnotesize] {Số tầng $L$};
+
+% bars: L=1 → 512*10=5120 (scale /1000 → 0.26cm per unit, max ~520 → 3.5cm)
+% normalize: max = 512000, bar height = value/512000 * 4.0
+% L=1: 5120     → 5120/512000*4.0 = 0.04 (too small, show at least 0.12)
+% L=2: 51200    → 0.4
+% L=3: 512000   → 4.0
+\def\bw{0.8cm}
+\def\gap{1.4cm}
+
+\fill[blue!30] (0.3,    0) rectangle +(\bw, 0.12) node[above, font=\scriptsize] {5\,120};
+\fill[blue!50] (0.3+\gap, 0) rectangle +(\bw, 0.40) node[above, font=\scriptsize] {51\,200};
+\fill[blue!75] (0.3+2*\gap, 0) rectangle +(\bw, 4.0) node[above, font=\scriptsize] {\textbf{512\,000}};
+
+% x tick labels
+\node[font=\scriptsize] at (0.3+0.4,   -0.3) {$L=1$};
+\node[font=\scriptsize] at (0.3+\gap+0.4,   -0.3) {$L=2$};
+\node[font=\scriptsize] at (0.3+2*\gap+0.4, -0.3) {$L=3$};
+
+\node[font=\scriptsize, text=gray!60, align=center] at (2.4, -0.75)
+  {(mini-batch 512 đỉnh, $\bar{d}=10$)};
+\end{scope}
+
+\end{tikzpicture}}% end resizebox
+\caption{Minh họa bùng nổ lân cận: (trái) cây phụ thuộc của một đỉnh $v$ mở rộng theo $\mathcal{O}(\bar{d}^L)$ qua từng tầng; (phải) số đỉnh thực tế cần nạp vào bộ nhớ để tính một mini-batch 512 đỉnh trên đồ thị có bậc trung bình $\bar{d}=10$, tăng từ 5\,120 (1 tầng) lên 512\,000 (3 tầng).}
+\label{fig:neighbor-explosion-preview}
+\end{figure}
+
+Thực tiễn cho thấy chính các hệ thống GNN công nghiệp đầu tiên như PinSage~\cite{Ying2018PinSage} và GraphSAGE~\cite{Hamilton2017} đều phải trang bị cơ chế lấy mẫu lân cận ngay từ đầu vì không thể chạy trên đồ thị thực quy mô lớn theo cách thông thường.
+
+Tài liệu hiện nay ghi nhận ba hướng thuật toán chính để giải quyết bùng nổ lân cận~\cite{Duan2022LargeScaleBenchmark, Liu2021ScalableSampling}:
+
+\begin{itemize}
+    \item \textbf{Sampling (lấy mẫu)}: thay vì dùng toàn bộ lân cận, chỉ chọn một tập con đại diện ở mỗi tầng hoặc mỗi mini-batch. Đây là hướng được nghiên cứu nhiều nhất, với các biến thể lấy mẫu theo đỉnh (GraphSAGE~\cite{Hamilton2017}), theo tầng (FastGCN~\cite{ChenFastGCN2018}), và theo đồ thị con (ClusterGCN~\cite{Chiang2019ClusterGCN}, GraphSAINT~\cite{Zeng2020GraphSAINT}).
+
+    \item \textbf{Decoupling (tách rời)}: tách bước lan truyền (\textit{propagation}) ra khỏi bước học (\textit{transformation}). Propagation được tính trước một lần ngoại tuyến, sau đó một MLP học trên kết quả --- loại bỏ hoàn toàn phụ thuộc đệ quy lân cận lúc huấn luyện. Đại diện: SGC, SIGN, GAMLP.
+
+    \item \textbf{Historical embeddings (embedding lịch sử)}: thay vì tính lại toàn bộ lân cận, tái sử dụng embedding đã tính từ vòng lặp trước cho các đỉnh ngoài mini-batch hiện tại. Đại diện: GNNAutoScale~\cite{Fey2021GNNAutoScale}.
+\end{itemize}
+
+\textbf{Phạm vi của báo cáo này.} Trong ba hướng trên, báo cáo tập trung vào \textbf{sampling} --- cụ thể là phương pháp GRAPES~\cite{Younesian2023GRAPES}. Lý do lựa chọn: (i)~sampling là hướng không yêu cầu thay đổi kiến trúc GNN gốc và có thể kết hợp với bất kỳ mô hình nào~\cite{Liu2021ScalableSampling, Duan2022LargeScaleBenchmark}; (ii)~trong dòng sampling, hầu hết các phương pháp dựa trên heuristic cố định (bậc đỉnh, xác suất đều), trong khi GRAPES đề xuất \textit{học} xác suất lấy mẫu trực tiếp từ mục tiêu phân loại --- hướng tiếp cận mà chính bài báo gốc xác định là khác biệt so với các phương pháp lấy mẫu tĩnh trước đó~\cite{Younesian2023GRAPES}. Decoupling và historical embeddings được đề cập ngắn trong Chương~3 như các hướng đối chiếu.
+
+\begin{table}[htbp]
+\centering
+\caption{Tóm tắt bốn vấn đề mở chính của GNN và hướng giải quyết hiện hành.}
+\label{tab:gnn-challenges}
+\begin{tabular}{lll}
+\hline
+\textbf{Vấn đề} & \textbf{Nguyên nhân} & \textbf{Hướng chính} \\
+\hline
+Over-smoothing & Nhiều tầng $\Rightarrow$ biểu diễn đồng nhất & Residual, graph rewiring \\
+Over-squashing & Nén thông tin tầm xa & Graph rewiring, transformer \\
+Heterophily & Giả thiết đồng nhất sai & Attention, thiết kế aggregation \\
+Scalability & Bùng nổ lân cận & \textbf{Sampling} (trọng tâm báo cáo này) \\
+\hline
+\end{tabular}
+\end{table}
+
+Trong bốn vấn đề trên, báo cáo này lựa chọn tập trung vào \textbf{scalability thông qua giảm bùng nổ lân cận}, vì đây là rào cản có tính hệ thống nhất đối với triển khai GNN trong môi trường công nghiệp quy mô lớn.
+
+\paragraph{Lưu ý: dễ nhầm lẫn giữa over-smoothing, over-squashing và scalability.}
+Ba vấn đề này đều liên quan đến số tầng và cấu trúc lân cận, dẫn đến nhầm lẫn phổ biến. Bảng~\ref{tab:confusion} phân biệt rõ bản chất của từng vấn đề.
+
+\begin{table}[htbp]
+\centering
+\caption{Phân biệt ba vấn đề thường bị nhầm lẫn trong GNN.}
+\label{tab:confusion}
+\begin{tabular}{llll}
+\hline
+\textbf{Vấn đề} & \textbf{Triệu chứng} & \textbf{Bản chất} & \textbf{\shortstack{Phụ thuộc\\kích thước đồ thị?}} \\
+\hline
+Over-smoothing   & Biểu diễn đồng nhất      & Chất lượng mô hình    & Không \\
+Over-squashing   & Mất tín hiệu tầm xa      & Chất lượng mô hình    & Không \\
+Scalability      & Hết bộ nhớ / quá chậm   & Chi phí tính toán     & \textbf{Có} \\
+\hline
+\end{tabular}
+\end{table}
+
+Over-smoothing và over-squashing là vấn đề \textit{chất lượng biểu diễn} --- chúng xuất hiện ngay cả trên đồ thị nhỏ nếu kiến trúc mạng không phù hợp. Ngược lại, scalability (và hệ quả là neighbor explosion) là vấn đề \textit{chi phí tính toán} --- một GNN chỉ 2 tầng trên đồ thị hàng triệu đỉnh vẫn bị neighbor explosion dù hoàn toàn không bị over-smoothing hay over-squashing. Sự nhầm lẫn thường xuất phát từ việc cả ba vấn đề đều trở nên tồi hơn khi tăng số tầng, nhưng cơ chế và giải pháp của chúng hoàn toàn khác nhau.
+
+\section{Vấn đề bùng nổ lân cận}
+\label{sec:neighbor-explosion}
+
+\subsection{Phát biểu hình thức}
+
+Xét một GNN có $L$ tầng. Để tính biểu diễn cuối cùng $\mathbf{h}_v^{(L)}$ của một đỉnh đích $v$, ta cần biểu diễn ở tầng $L-1$ của tất cả lân cận trực tiếp của $v$; để tính các biểu diễn đó lại cần đến lân cận của lân cận, và cứ thế. Do đó, tập đỉnh cần thiết để tính ra $\mathbf{h}_v^{(L)}$ là toàn bộ vùng lân cận $L$-hop của $v$. Nếu gọi $\bar{d}$ là bậc trung bình của đồ thị, thì số đỉnh phụ thuộc tăng xấp xỉ theo $\mathcal{O}(\bar{d}^{L})$ --- tức tăng theo cấp số nhân với độ sâu. Đây chính là hiện tượng bùng nổ lân cận: khi GNN tăng độ sâu, trường tiếp nhận của mỗi đỉnh mở rộng theo cấp số nhân, dẫn đến chi phí bộ nhớ cao~\cite{Younesian2023GRAPES}.
+
+\paragraph{Ví dụ.} Xét đồ thị \texttt{ogbn-arxiv}~\cite{Hu2020OGB} có $N = 169\,343$ đỉnh và bậc trung bình $\bar{d} \approx 13$. Để huấn luyện một GNN 3 tầng, mỗi đỉnh đích cần đến vùng lân cận 3-hop, tức xấp xỉ $13^1 + 13^2 + 13^3 = 13 + 169 + 2{,}197 = 2{,}379$ đỉnh bổ sung. Với một mini-batch 512 đỉnh đích, số đỉnh thực sự cần nạp vào bộ nhớ có thể lên tới $512 \times 2{,}379 \approx \mathbf{1{,}2}$ \textbf{triệu đỉnh} --- lớn hơn toàn bộ tập đồ thị gốc. Điều này có nghĩa là việc chia mini-batch nhỏ \textit{không} giúp giảm bộ nhớ nếu không có kỹ thuật lấy mẫu.
+
+\subsection{Hệ quả về độ phức tạp}
+
+Đối với phương án huấn luyện toàn cục (\textit{full-batch}), một mô hình GCN $L$ tầng có độ phức tạp thời gian $\mathcal{O}(L|\mathcal{E}|d + LN d^{2})$ và độ phức tạp bộ nhớ $\mathcal{O}(LNd + Ld^{2})$~\cite{Chiang2019ClusterGCN}. Bùng nổ lân cận vừa làm tăng chi phí tính toán, vừa khiến việc chia mini-batch theo cách ngây thơ không giải quyết được vấn đề, bởi mỗi mini-batch nhỏ vẫn kéo theo một vùng lân cận khổng lồ.
+
+\paragraph{Ví dụ.} Vẫn với \texttt{ogbn-arxiv} ($N = 169\,343$, $|\mathcal{E}| = 1\,166\,243$, $d = 128$) và GCN 3 tầng:
+\begin{itemize}
+    \item \textbf{Full-batch, bộ nhớ activation}: $\mathcal{O}(LNd) = 3 \times 169{,}343 \times 128 \approx 65$ triệu số thực $\approx \mathbf{260}$\,\textbf{MB} chỉ riêng cho intermediate activations, chưa kể gradient và optimizer state.
+    \item \textbf{Mini-batch ngây thơ, 512 đỉnh đích}: như tính ở trên, vẫn phải nạp $\sim$1,2 triệu đỉnh --- tức gần như toàn bộ đồ thị --- khiến lợi ích của mini-batch gần như bằng không.
+    \item \textbf{So sánh}: Chiang và cộng sự~\cite{Chiang2019ClusterGCN} ghi nhận rằng huấn luyện GCN 4 tầng trên Amazon ($N = 2{,}4$M) theo cách thông thường thất bại hoàn toàn do OOM trên GPU 16\,GB, trong khi ClusterGCN giải quyết được bằng cách giới hạn kích thước đồ thị con mỗi mini-batch.
+\end{itemize}
+
+\subsection{Hướng giải quyết tổng quát}
+
+Để vượt qua rào cản này, ý tưởng chủ đạo trong tài liệu là lấy mẫu (\textit{sampling}): thay vì sử dụng toàn bộ lân cận, ta chỉ chọn một tập con đại diện các đỉnh (và cạnh) để tham gia tính toán ở mỗi mini-batch. Việc lấy mẫu lại các mini-batch ở mỗi vòng lặp giúp giảm nguy cơ bỏ sót thông tin quan trọng. Bài toán then chốt là thiết kế cách lấy mẫu sao cho vừa tối đa hóa độ chính xác, vừa tối thiểu hóa chi phí tính toán và bộ nhớ. Chương tiếp theo sẽ hệ thống hóa các nhóm phương pháp lấy mẫu đã được đề xuất.
