@@ -1,0 +1,29 @@
+{
+  "acquisition": "downloaded_now",
+  "artifact_url": "https://mcauleylab.ucsd.edu/public_datasets/data/amazon_2023/benchmark/0core/rating_only/Home_and_Kitchen.csv.gz",
+  "category": "Home_and_Kitchen",
+  "claim_boundary": "Provenance, exact bytes, schema, and row count only; no semantic, graph, feasibility, or scalability conclusion.",
+  "code_version": {
+    "audit_logic_sha256": "07d5718fa0e268154fc7edf88158ff7571dafae89724597247ee4d35a2d83f7c",
+    "execution_artifact": "self-contained Colab notebook",
+    "notebook_revision": "self-contained-portfolio-audit-v2-2026-09-02"
+  },
+  "compressed_bytes": 1420416432,
+  "dataset_family": "Amazon Reviews'23",
+  "retrieved_at": "2026-09-02T14:37:30+00:00",
+  "row_count": 66623880,
+  "schema": [
+    "user_id",
+    "parent_asin",
+    "rating",
+    "timestamp"
+  ],
+  "sha256": "9be4e2dc8b3dc513c02521644b2ae55f722b2941767e539dcfe518f6bdd4f70b",
+  "source": "https://mcauleylab.ucsd.edu/public_datasets/data/amazon_2023/benchmark/0core/rating_only/Home_and_Kitchen.csv.gz",
+  "status": "PROVENANCE_AND_SCHEMA_ONLY; FULL PROTOCOL NOT EXECUTED",
+  "drive_record": {
+    "file_id": "1T9dNLJzCkQETons8PRdJYO__Gitsg1MW",
+    "created_time": "2026-09-02T14:37:40.757Z",
+    "modified_time": "2026-09-02T14:37:40.757Z"
+  }
+}

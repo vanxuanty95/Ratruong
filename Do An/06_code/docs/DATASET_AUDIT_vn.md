@@ -1,7 +1,7 @@
 # Protocol Audit và Acceptance cho Dataset
 
-> **Trạng thái:** `ĐÃ EXECUTE TEMPORARY RAW AUDIT — DATASET GATE G2 CÒN MỞ`  
-> **Ghi nhận:** 2026-08-27  
+> **Trạng thái:** `ĐÃ EXECUTE PERSISTENT RAW AUDIT — DATASET GATE G2 CÒN MỞ`
+> **Ghi nhận:** 2026-09-02
 > **Phạm vi:** Luận văn Thạc sĩ độc lập về graph sampling cho large-scale GNN recommendation.  
 > **Ranh giới:** Protocol này kiểm soát data evidence; nó không chọn hoặc validate final sampling method.
 
@@ -18,14 +18,14 @@ Portfolio đầy đủ, lý do, source và gate được ghi trong [`DATASET_POR
 
 ## 2. Raw-audit evidence hiện có
 
-Project đã execute streaming raw audit trên temporary official Amazon rating-only 0-core artifact ngày 2026-08-26. Temporary raw copy đã được xóa; result record, URL và checksum derived vẫn còn.
+Project đã chạy lại exact streaming raw audit trên official Amazon rating-only 0-core artifact và lưu bền vững cả raw `.csv.gz` object lẫn JSON manifest trong private Google Drive folder `Phase2_Amazon_Audit` ngày 2026-09-02.
 
-| Artifact | Kết quả temporary audit do project tạo | Mục còn mở |
+| Artifact | Kết quả persistent audit do project tạo | Mục còn mở |
 |---|---|---|
-| `All_Beauty` | 693,929 valid row; 631,986 user; 112,565 item; zero exact duplicate user–item pair; 93.22% user singleton | Persistent acquisition/manifest và derived strict protocol |
-| `Baby_Products` | 5,953,891 valid parsed row; 3,386,206 user; 217,654 item; 70.01% user singleton; một rating `0.0` | Exact duplicate-pair count, persistent acquisition/manifest và derived strict protocol |
+| `All_Beauty` | 693,929 valid row; 631,986 user; 112,565 item; zero exact duplicate user–item row; 93.22% user singleton; 448 row tham gia timestamp tie | Hoàn chỉnh metadata G2-A và derived strict protocol |
+| `Baby_Products` | 5,953,891 valid parsed row; 3,386,206 user; 217,654 item; zero exact duplicate user–item row; 70.01% user singleton; một rating `0.0` | Exact timestamp-tie audit, hoàn chỉnh metadata G2-A và derived strict protocol |
 
-Exact SHA-256, rating distribution, degree summary, timestamp coverage và OOV diagnostic nằm trong [`DATASET_AUDIT_RESULTS_vn.md`](./DATASET_AUDIT_RESULTS_vn.md). Raw schema đã verify là `user_id`, `parent_asin`, `rating`, `timestamp`. Đây là temporary-run finding, không chứng minh durable final benchmark artifact đã tồn tại.
+Persistent hash là `54b894e68ad965aa73cdb80d8695c1ed37679c46f38b6f97b21ab0fb585aab24` cho `All_Beauty` và `e2a8d0498afed767ee2615db7fac549559d82490b1a73c7241b84b5e9e8c279e` cho `Baby_Products`. Raw schema đã verify là `user_id`, `parent_asin`, `rating`, `timestamp`. File [`DATASET_AUDIT_RESULTS_vn.md`](./DATASET_AUDIT_RESULTS_vn.md) cũ phải được đồng bộ trước khi được xem là numerical record hiện hành. Persistent raw evidence đã có, nhưng final transformed benchmark chưa có.
 
 Provider absolute split chỉ được audit như diagnostic. OOV coverage cao có nghĩa split này không thể được adopt âm thầm làm primary strict temporal warm-start task.
 
@@ -34,11 +34,12 @@ Provider absolute split chỉ được audit như diagnostic. OOV coverage cao c
 | Field | Trạng thái hiện tại |
 |---|---|
 | Amazon source family | `SOURCE IDENTIFIED` — Amazon Reviews'23 |
-| Raw schema/item key | `TEMPORARY AUDIT VERIFIED` — pure-ID schema với `parent_asin` |
-| Temporary checksum và raw count | `RECORDED` trong bilingual result record |
-| Persistent raw artifact trong `Do An` | `ABSENT BY DESIGN` — cần acquire raw data vào persistent Colab/project storage trước khi dùng chính thức |
-| Access/usage note | `OPEN` — ghi data terms áp dụng cùng persistent acquisition |
-| `Baby_Products` duplicate audit | `OPEN` — không suy ra từ provider statement |
+| Raw schema/item key | `PERSISTENT AUDIT VERIFIED` — pure-ID schema với `parent_asin` |
+| Persistent checksum và raw count | `RECORDED` trong private Drive JSON manifest; local result summary cần đồng bộ |
+| Persistent raw artifact | `PRESENT IN PRIVATE GOOGLE DRIVE` — raw `.csv.gz` object được giữ ngoài Git |
+| Access/usage note | `PARTIAL` — official page xác định McAuley Lab, citation, field và download; không thấy dataset-wide license grant tại đó, nên không gán repository MIT terms cho data |
+| `Baby_Products` duplicate audit | `VERIFIED: 0` repeated row theo `(user_id, parent_asin)` |
+| `Baby_Products` timestamp-tie audit | `OPEN` — exact counting bị tắt trong persistent run |
 | Interaction semantics và split | `OPEN` — freeze trước model training |
 
 Canonical source:
@@ -62,6 +63,25 @@ Repository MIT license chỉ áp dụng cho code/script trong repository; không
 6. **Scale diagnostic:** log sampled node/edge, memory, sampling time, throughput, degree/popularity divergence, head–tail coverage và connectivity từ training graph.
 
 Provider processing, project interaction semantics, project temporal split và project training-only filtering phải được report như transformation riêng. Provider 5-core data là reproducibility setting, không tự động là strict temporal graph của luận văn.
+
+### Evidence package trong một lần chạy
+
+Mỗi notebook trong cặp `01_amazon_dataset_audit_*` nay là self-contained: notebook nhúng toàn bộ analyzer và không gọi hay cần file `.py` riêng. Sau khi mount Drive, thao tác **Run all** xử lý tuần tự ba Amazon portfolio job. `All_Beauty` và `Baby_Products` chạy full protocol audit; output hợp lệ đã có được dùng lại trừ khi đặt `FORCE_RERUN = True`. `Home_and_Kitchen` chỉ chạy bounded provenance/schema/row-count audit ít tốn bộ nhớ; full scale stress vẫn bị khóa bởi G5-S. Notebook cũng ghi `dataset_portfolio_audit_index.json`. Mỗi full protocol result gồm:
+
+- exact duplicate-pair count và timestamp-tie count;
+- quarantine accounting cho rating ngoài `[1, 5]`;
+- de-duplication deterministic theo earliest timestamp rồi stable source-row;
+- semantic snapshot all-observed, P4 và P5;
+- degree, singleton rate, density, temporal partition, user/item OOV, warm-start target retention, training negative availability và exact full-catalog candidate-count diagnostic cho từng snapshot; và
+- artifact SHA-256, audit-configuration SHA-256, SHA-256 của audit logic nhúng trong notebook, notebook revision, retrieval metadata cùng access note.
+
+Notebook dùng temporary SQLite database cạnh cached artifact rồi xóa sau khi JSON hoàn tất. Disk space phải đủ cho compressed source cùng temporary event table và index. Run thất bại hoặc bị ngắt có thể để lại file `.protocol_audit.sqlite` để chẩn đoán; run mới sẽ thay file đó. Ba snapshot là evidence để chọn policy, không phải ba model experiment, và notebook chủ ý không tự chọn primary policy.
+
+Self-contained Baby run đầu tiên đã hoàn tất ngày 2026-09-02. Output ban đầu ghi source URL với placeholder `{DATASET_NAME}` chưa expand dù đã đọc đúng persistent bytes `Baby_Products.csv.gz`. Output và notebook đã được sửa minh bạch: category, byte size và SHA-256 vốn đã định danh artifact, mọi numerical result giữ nguyên, và JSON nay có record `provenance_correction`.
+
+Portfolio run đầu tiên hoàn tất hai full protocol job nhưng nhận HTTP 404 cho `Home_and_Kitchen` vì notebook ngoại suy một partial mirror URL sang file chưa được verify trên mirror đó. Notebook nay dùng đúng host/path do official 0-core download link cung cấp, `https://mcauleylab.ucsd.edu/public_datasets/data/...`, và sẽ ghi job `DOWNLOAD_FAILED` nhưng vẫn lưu portfolio index nếu acquisition về sau thất bại.
+
+Corrected rerun đã hoàn tất cả ba governed job và ghi portfolio index. Provenance `Home_and_Kitchen` ghi 1,420,416,432 compressed bytes, 66,623,880 row, schema bốn cột đúng yêu cầu và SHA-256 `9be4e2dc8b3dc513c02521644b2ae55f722b2941767e539dcfe518f6bdd4f70b`. Đây chỉ là exact-byte/source fact; full protocol và scale-stress measurement vẫn chưa execute.
 
 ## 5. Dataset Gate G2
 
@@ -88,4 +108,4 @@ Temporal/training-only control được thúc đẩy bởi [Ji et al., *A Critic
 
 ## 8. Hành động tiếp theo
 
-Lưu persistent primary Amazon artifact và hoàn thành G2-A đến G2-C cho `Baby_Products`. Song song, chỉ ghi provenance và size cho `Home_and_Kitchen`. Không train final sampler hoặc claim benchmark cho đến khi G2-D được quyết định.
+Hoàn chỉnh các manifest field G2-A còn lại; sau đó execute analysis G2-B/G2-C đã pre-register cho `Baby_Products`: quarantine row `0.0`, so P4/P5/all-observed mà không dùng model result, audit timestamp tie, xây training-only temporal graph và report warm-start/OOV attrition cùng exact candidate. Chỉ sau đó mới chạy bounded G2-D feasibility path. Không train final sampler hoặc claim benchmark ở G2.

@@ -3,6 +3,7 @@
 > **Status:** `RAW AUDIT EXECUTED; DATASET GATE G2 STILL OPEN`
 >
 > **Execution date:** 2026-08-26
+> **Synchronized:** 2026-09-02 — added complete protocol results for `All_Beauty`/`Baby_Products`, the P4 decision, and bounded provenance for `Home_and_Kitchen`; see Section 2a and Section 7.
 >
 > **Scope:** Official Amazon Reviews'23 pure-ID 0-core rating-only artifacts
 
@@ -19,7 +20,7 @@ These checksums identify the bytes used in this local run. The project must repe
 
 ## 2. Raw schema and quality
 
-Both files matched the exact header `user_id,parent_asin,rating,timestamp`. All rows had parseable IDs, ratings, and timestamps. `All_Beauty` had an exact SQLite duplicate-pair audit. The `Baby_Products` duplicate-pair audit was intentionally not completed in this run because the SQLite approach was too slow at this scale; its duplicate count remains `UNKNOWN`, despite the provider's de-duplication statement.
+Both files matched the exact header `user_id,parent_asin,rating,timestamp`. All rows had parseable IDs, ratings, and timestamps. `All_Beauty` had an exact SQLite duplicate-pair audit. The `Baby_Products` duplicate-pair audit was intentionally not completed in the original 2026-08-26 run because the SQLite approach was too slow at that temporary run's scale. A persistent protocol audit on 2026-09-02 (an exact SQLite pair audit on the same checksummed bytes, saved to Google Drive) completed it and confirmed **zero exact duplicate user–item rows** for `Baby_Products`; see Section 2a.
 
 | Measure | `All_Beauty` | `Baby_Products` |
 |---|---:|---:|
@@ -27,13 +28,24 @@ Both files matched the exact header `user_id,parent_asin,rating,timestamp`. All 
 | Valid parsed rows | 693,929 | 5,953,891 |
 | Unique users | 631,986 | 3,386,206 |
 | Unique items (`parent_asin`) | 112,565 | 217,654 |
-| Exact unique user–item pairs | 693,929 | `UNKNOWN` |
-| Exact duplicate user–item rows | 0 | `UNKNOWN` |
+| Exact unique user–item pairs | 693,929 | 5,953,891 (persistent audit 2026-09-02) |
+| Exact duplicate user–item rows | 0 | 0 (persistent audit 2026-09-02) |
 | Missing/parse-invalid fields | 0 | 0 |
 | Ratings outside expected 1–5 range | 0 | 1 (`rating = 0.0`) |
 | Rows sharing a timestamp value | 448 | 32,050 |
 
 The out-of-range Baby row is retained in the raw audit and is not silently discarded. Its handling must be explicitly decided before interaction conversion. The data are treated as `parent_asin`-keyed only because that is the key in the selected pure-ID artifact; raw review files with both `asin` and `parent_asin` must not be mixed into this pipeline.
+
+### 2a. Persistent protocol-audit update (2026-09-02)
+
+A persistent audit run on `Baby_Products_protocol_audit.json` (Google Drive, `sha256` `e2a8d0498afed767ee2615db7fac549559d82490b1a73c7241b84b5e9e8c279e`, `audit_config_sha256` `f72e6b62ae5210fb96078024177eb7e6d2bd6d9c0737acafcaea41007b1649e1`, `retrieved_at` 2026-09-02T11:49:02Z) confirms:
+
+- **Duplicates:** `duplicate_user_item_rows = 0` (exact SQLite pair audit) — replacing the `UNKNOWN` status recorded in Section 2.
+- **Timestamp ties:** 32,050 rows share a timestamp value with at least one other row (matches the count already in the table above; now re-measured and confirmed by a persistent, checksummed run).
+- **Semantic snapshots** (denominator: 5,953,890 events after quarantining 1 `rating = 0.0` row): `all_observed` retains 100.00% (user singleton rate 70.01%, item singleton rate 31.65%); `P4` (rating ≥ 4) retains 78.20% (user singleton rate 71.64%, item singleton rate 33.13%); `P5` (rating = 5) retains 66.74% (user singleton rate 73.18%, item singleton rate 34.34%).
+- **OOV/warm-start under the candidate split** (same `t1`/`t2` as Section 5 below): test-partition user OOV 83.23% / 85.14% / 86.22% and warm-start target retention 11.50% / 9.82% / 9.21% for `all_observed` / `P4` / `P5` respectively.
+
+The full table (including the validation partition) and its interpretation boundary are canonical in [`00_project/DATASET_PORTFOLIO_AND_ANALYSIS_PROTOCOL_en.md`](../../00_project/DATASET_PORTFOLIO_AND_ANALYSIS_PROTOCOL_en.md) Section 2.1; it is not fully duplicated here to avoid two records drifting apart. The JSON's own status is `EXACT_PRE_MODEL_PROTOCOL_AUDIT; NO POLICY SELECTED` — no policy has been chosen yet.
 
 ## 3. Degree and sparsity profile
 
@@ -96,17 +108,18 @@ Using the observed row degree, the minimum and median candidate-item pool sizes 
 | Category | Minimum available items | Median available items | Interpretation |
 |---|---:|---:|---|
 | `All_Beauty` | 112,401 | 112,564 | Exact for this run because duplicate-pair count is zero |
-| `Baby_Products` | 217,123 | 217,653 | Provisional lower bound while exact duplicate count is unknown |
+| `Baby_Products` | 217,123 | 217,653 | Exact, since the duplicate-pair count is now confirmed zero (persistent audit 2026-09-02) |
 
 This diagnostic does not freeze the negative policy. Negative validity must be checked against the declared positive universe, and the project must decide whether future validation/test positives are excluded from training-negative pools. The same triplets, negative items, and RNG protocol must be used when comparing baseline and learned samplers.
 
 ## 7. Conclusions and open decisions
 
 1. `All_Beauty` is suitable for pipeline and schema validation, but its singleton rate and candidate temporal OOV make it unsuitable as primary recommendation evidence under the current warm-start design.
-2. `Baby_Products` is the stronger primary stress-test candidate by interaction scale and item degree, but its warm-start OOV is still large and its exact duplicate-pair audit remains open.
+2. `Baby_Products` is the primary benchmark candidate; its exact duplicate-pair audit is closed (`VERIFIED 0`) and P4 (`rating >= 4`) is the selected primary interaction policy. Warm-start OOV remains high and must be reconciled in G2-C.
 3. The official absolute split cannot be adopted as the primary warm-start split without a documented protocol revision.
-4. The rating-to-implicit-positive rule, duplicate verification/handling, and negative eligibility remain open.
-5. No model was trained and no recommendation-quality, memory, runtime, or scalability claim follows from this audit.
+4. P4, quarantine of the single `rating = 0.0` row, the deterministic duplicate fallback, and the negative rule are recorded decisions; Baby G2-A/G2-B pass. The frozen training-only graph and exact evaluator remain open under G2-C/G2-D.
+5. `Home_and_Kitchen` provenance is executed: 1,420,416,432 compressed bytes, 66,623,880 rows, valid four-column schema, and SHA-256 `9be4e2dc8b3dc513c02521644b2ae55f722b2941767e539dcfe518f6bdd4f70b`. Full protocol and scale stress remain unexecuted.
+6. No model was trained and no recommendation-quality, memory, runtime, or scalability claim follows from this audit.
 
 ## 8. Evidence sources
 

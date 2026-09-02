@@ -12,10 +12,11 @@ Bảng này ánh xạ các quyết định của reference design và các toy t
 | D7: sampler ownership | `src/grapes_rec/models.py` | contract validation còn mở | `SPECIFIED` |
 | D9: transient positive-edge masking | `src/grapes_rec/data_protocol.py` | T23 | `TOY TEST EXECUTED` |
 | D11: full Bernoulli likelihood cho small/empty case | `src/grapes_rec/sampling.py` | T09 và edge case còn mở | `PARTIAL TOY TEST` |
-| Dataset Gate G2: provenance và graph audit | `scripts/analyze_amazon_dataset.py`; `notebooks/01_amazon_dataset_audit_vn.ipynb` | Toy fixture smoke check; local raw audit đã execute; persistent Colab rerun/protocol closure còn mở | `IMPLEMENTED; RAW AUDIT EXECUTED / G2 OPEN` |
+| Dataset Gate G2-A/G2-B: provenance và protocol audit | `scripts/analyze_amazon_dataset.py`; `notebooks/01_amazon_dataset_audit_vn.ipynb` | Portfolio audit đã execute và mirror | `EXECUTED; BABY G2-A/G2-B PASS` |
+| Dataset Gate G2-C/G2-D: training-only temporal graph và bounded traversal | `notebooks/02_baby_p4_temporal_graph_vn.ipynb` | `tests/test_g2c_notebook.py`: toy mapping/OOV/candidate traversal | `IMPLEMENTED; TOY EXECUTED / FULL BABY OPEN` |
 | T01–T03: target và graph ID | `src/grapes_rec/contracts.py` | T01–T03 | `TOY TEST EXECUTED` |
 | T05–T08: candidate và exact-k semantic | `src/grapes_rec/sampling.py` | T05–T08 | `TOY TEST EXECUTED` |
 
 ## Cố ý chưa có
 
-Scaffold hiện có streaming dataset-audit utility và local raw audit evidence. Vẫn chưa có persistent Amazon acquisition evidence đã finalized, temporal split do project freeze, negative sampling, PyTorch/PyG message passing, GRAPES policy training, checkpointed experiment, full-catalog evaluation hoặc recommendation result nào.
+Project hiện có persistent portfolio-audit evidence và path dựng G2-C/G2-D đã toy-execute. Vẫn chưa có full Baby temporal artifact được review, cutoff decision đã freeze, model-training negative sample, PyTorch/PyG message passing, GRAPES policy training, checkpointed experiment, scored full-catalog evaluation hoặc recommendation result nào.

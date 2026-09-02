@@ -1,0 +1,478 @@
+{
+  "acquisition": "local_input",
+  "artifact_url": "https://datarepo.eng.ucsd.edu/mcauley_group/data/amazon_2023/benchmark/0core/rating_only/All_Beauty.csv.gz",
+  "audit_config": {
+    "anomaly_policy": "quarantine_outside_rating_range_1_to_5",
+    "pair_audit": "exact_sqlite",
+    "protocol_audit": true,
+    "semantic_snapshots": [
+      "all_observed",
+      "P4",
+      "P5"
+    ],
+    "t1_ms": 1628643414042,
+    "t2_ms": 1658002729837,
+    "timestamp_audit": "exact_sqlite"
+  },
+  "audit_config_sha256": "f72e6b62ae5210fb96078024177eb7e6d2bd6d9c0737acafcaea41007b1649e1",
+  "audit_status": "PROJECT_DERIVED_FROM_EXACT_DOWNLOADED_BYTES",
+  "candidate_absolute_split": {
+    "note": "Candidate split only; not a frozen Phase 2 protocol until warm-start and filtering decisions are recorded.",
+    "partitions": {
+      "test_candidate": {
+        "items_not_in_training_candidate": 7052,
+        "rows": 38955,
+        "unique_items": 12226,
+        "unique_users": 36953,
+        "users_not_in_training_candidate": 34851
+      },
+      "train_candidate": {
+        "items_not_in_training_candidate": 0,
+        "rows": 583190,
+        "unique_items": 95431,
+        "unique_users": 534801,
+        "users_not_in_training_candidate": 0
+      },
+      "validation_candidate": {
+        "items_not_in_training_candidate": 12210,
+        "rows": 71784,
+        "unique_items": 24730,
+        "unique_users": 68386,
+        "users_not_in_training_candidate": 63008
+      }
+    },
+    "t1_ms": 1628643414042,
+    "t2_ms": 1658002729837
+  },
+  "category": "All_Beauty",
+  "code_version": {
+    "audit_logic_sha256": "07d5718fa0e268154fc7edf88158ff7571dafae89724597247ee4d35a2d83f7c",
+    "execution_artifact": "self-contained Colab notebook",
+    "notebook_revision": "self-contained-portfolio-audit-v2-2026-09-02"
+  },
+  "compressed_bytes": 21954519,
+  "dataset_family": "Amazon Reviews'23",
+  "duplicate_user_item_rows": 0,
+  "graph_density_if_valid_rows_are_binary_edges": 0.000009754481829422042,
+  "invalid_or_missing": {
+    "invalid_rating": 0,
+    "invalid_timestamp": 0,
+    "missing_parent_asin": 0,
+    "missing_user_id": 0,
+    "rating_out_of_expected_range_1_to_5": 0
+  },
+  "item_degree": {
+    "count": 112565,
+    "max": 1952,
+    "mean": 6.164695953449118,
+    "min": 1,
+    "p50": 2,
+    "p90": 11,
+    "p95": 21,
+    "p99": 72,
+    "singletons": 47947
+  },
+  "license_or_access_note": "Official Amazon Reviews'23 pages identify McAuley Lab, citation, fields, and downloads; no dataset-wide license grant was found there. Repository MIT terms are not attributed to the data.",
+  "local_artifact": "/content/drive/MyDrive/Phase2_Amazon_Audit/raw/All_Beauty.csv.gz",
+  "negative_pool_diagnostic": {
+    "definition": "item_count minus observed row degree per user; exact when duplicate_user_item_rows is zero",
+    "median_available_items_across_users": 112564,
+    "minimum_available_items_across_users": 112401
+  },
+  "pair_audit_mode": "exact_sqlite_protocol",
+  "post_filter_counts": {
+    "status": "NOT APPLIED"
+  },
+  "protocol_analysis": {
+    "anomaly_policy": "Quarantine ratings outside [1, 5] before semantic snapshots",
+    "clean_deduplicated_events": 693929,
+    "duplicate_policy": "Earliest timestamp, then stable source-row order",
+    "duplicate_user_item_rows": 0,
+    "selection_boundary": "Choose the primary policy from semantics and pre-model feasibility, never downstream test metrics.",
+    "semantic_snapshots": {
+      "all_observed": {
+        "bipartite_density": 0.000009754481829422042,
+        "event_count": 693929,
+        "item_degree": {
+          "count": 112565,
+          "max": 1952,
+          "mean": 6.164695953449118,
+          "min": 1,
+          "p50": 2,
+          "p90": 11,
+          "p95": 21,
+          "p99": 72,
+          "singleton_rate": 0.4259494514280638,
+          "singletons": 47947
+        },
+        "partitions": {
+          "test_candidate": {
+            "eligible_full_catalog_candidates_after_training_history": {
+              "count": 889,
+              "max": 95430,
+              "mean": 95429.1226096738,
+              "min": 95364,
+              "p50": 95430,
+              "p90": 95430,
+              "p95": 95430,
+              "p99": 95430,
+              "singleton_rate": 0,
+              "singletons": 0
+            },
+            "item_oov_rate": 0.5768035334532963,
+            "items_not_in_training": 7052,
+            "rows": 38955,
+            "unique_items": 12226,
+            "unique_users": 36953,
+            "user_oov_rate": 0.9431169323194328,
+            "users_not_in_training": 34851,
+            "warm_start_target_retention": 0.022821203953279426,
+            "warm_start_target_rows": 889
+          },
+          "train_candidate": {
+            "rows": 583190,
+            "unique_items": 95431,
+            "unique_users": 534801
+          },
+          "validation_candidate": {
+            "eligible_full_catalog_candidates_after_training_history": {
+              "count": 3427,
+              "max": 95430,
+              "mean": 95427.56988619785,
+              "min": 95275,
+              "p50": 95430,
+              "p90": 95430,
+              "p95": 95430,
+              "p99": 95430,
+              "singleton_rate": 0,
+              "singletons": 0
+            },
+            "item_oov_rate": 0.4937323089365144,
+            "items_not_in_training": 12210,
+            "rows": 71784,
+            "unique_items": 24730,
+            "unique_users": 68386,
+            "user_oov_rate": 0.9213581727254117,
+            "users_not_in_training": 63008,
+            "warm_start_target_retention": 0.04774044355288087,
+            "warm_start_target_rows": 3427
+          }
+        },
+        "policy": "all_observed",
+        "rating_predicate": "rating BETWEEN 1.0 AND 5.0",
+        "retention_from_clean_deduplicated_events": 1,
+        "training_negative_pool": {
+          "available_items_after_excluding_training_positives": {
+            "count": 534801,
+            "max": 95430,
+            "mean": 95429.90951961571,
+            "min": 95275,
+            "p50": 95430,
+            "p90": 95430,
+            "p95": 95430,
+            "p99": 95430,
+            "singleton_rate": 0,
+            "singletons": 0
+          },
+          "training_item_universe": 95431,
+          "users_with_zero_available_negatives": 0
+        },
+        "unique_items": 112565,
+        "unique_users": 631986,
+        "user_degree": {
+          "count": 631986,
+          "max": 164,
+          "mean": 1.0980132471288921,
+          "min": 1,
+          "p50": 1,
+          "p90": 1,
+          "p95": 2,
+          "p99": 3,
+          "singleton_rate": 0.9322405876079534,
+          "singletons": 589163
+        }
+      },
+      "p4": {
+        "bipartite_density": 0.000011909838049960381,
+        "event_count": 494769,
+        "item_degree": {
+          "count": 91187,
+          "max": 1759,
+          "mean": 5.4258721089629,
+          "min": 1,
+          "p50": 2,
+          "p90": 10,
+          "p95": 18,
+          "p99": 61,
+          "singleton_rate": 0.45331023062497944,
+          "singletons": 41336
+        },
+        "partitions": {
+          "test_candidate": {
+            "eligible_full_catalog_candidates_after_training_history": {
+              "count": 512,
+              "max": 78957,
+              "mean": 78956.294921875,
+              "min": 78936,
+              "p50": 78957,
+              "p90": 78957,
+              "p95": 78957,
+              "p99": 78957,
+              "singleton_rate": 0,
+              "singletons": 0
+            },
+            "item_oov_rate": 0.5622854611892371,
+            "items_not_in_training": 5078,
+            "rows": 26785,
+            "unique_items": 9031,
+            "unique_users": 25329,
+            "user_oov_rate": 0.9538473686288444,
+            "users_not_in_training": 24160,
+            "warm_start_target_retention": 0.019115176404704125,
+            "warm_start_target_rows": 512
+          },
+          "train_candidate": {
+            "rows": 422736,
+            "unique_items": 78958,
+            "unique_users": 391574
+          },
+          "validation_candidate": {
+            "eligible_full_catalog_candidates_after_training_history": {
+              "count": 1802,
+              "max": 78957,
+              "mean": 78954.19644839068,
+              "min": 78809,
+              "p50": 78957,
+              "p90": 78957,
+              "p95": 78957,
+              "p99": 78957,
+              "singleton_rate": 0,
+              "singletons": 0
+            },
+            "item_oov_rate": 0.49164281625643963,
+            "items_not_in_training": 8589,
+            "rows": 45248,
+            "unique_items": 17470,
+            "unique_users": 43099,
+            "user_oov_rate": 0.9344532355739112,
+            "users_not_in_training": 40274,
+            "warm_start_target_retention": 0.03982496463932107,
+            "warm_start_target_rows": 1802
+          }
+        },
+        "policy": "P4",
+        "rating_predicate": "rating >= 4.0 AND rating <= 5.0",
+        "retention_from_clean_deduplicated_events": 0.7129965745775144,
+        "training_negative_pool": {
+          "available_items_after_excluding_training_positives": {
+            "count": 391574,
+            "max": 78957,
+            "mean": 78956.92041861819,
+            "min": 78809,
+            "p50": 78957,
+            "p90": 78957,
+            "p95": 78957,
+            "p99": 78957,
+            "singleton_rate": 0,
+            "singletons": 0
+          },
+          "training_item_universe": 78958,
+          "users_with_zero_available_negatives": 0
+        },
+        "unique_items": 91187,
+        "unique_users": 455579,
+        "user_degree": {
+          "count": 455579,
+          "max": 156,
+          "mean": 1.0860224022617373,
+          "min": 1,
+          "p50": 1,
+          "p90": 1,
+          "p95": 2,
+          "p99": 3,
+          "singleton_rate": 0.9416061758772902,
+          "singletons": 428976
+        }
+      },
+      "p5": {
+        "bipartite_density": 0.000012875428128867368,
+        "event_count": 416190,
+        "item_degree": {
+          "count": 83385,
+          "max": 1611,
+          "mean": 4.991185465011693,
+          "min": 1,
+          "p50": 2,
+          "p90": 9,
+          "p95": 16,
+          "p99": 56,
+          "singleton_rate": 0.46943694909156325,
+          "singletons": 39144
+        },
+        "partitions": {
+          "test_candidate": {
+            "eligible_full_catalog_candidates_after_training_history": {
+              "count": 377,
+              "max": 72194,
+              "mean": 72193.63925729443,
+              "min": 72177,
+              "p50": 72194,
+              "p90": 72194,
+              "p95": 72194,
+              "p99": 72194,
+              "singleton_rate": 0,
+              "singletons": 0
+            },
+            "item_oov_rate": 0.5653977550024402,
+            "items_not_in_training": 4634,
+            "rows": 22860,
+            "unique_items": 8196,
+            "unique_users": 21909,
+            "user_oov_rate": 0.9599707882605322,
+            "users_not_in_training": 21032,
+            "warm_start_target_retention": 0.016491688538932632,
+            "warm_start_target_rows": 377
+          },
+          "train_candidate": {
+            "rows": 354682,
+            "unique_items": 72195,
+            "unique_users": 331845
+          },
+          "validation_candidate": {
+            "eligible_full_catalog_candidates_after_training_history": {
+              "count": 1252,
+              "max": 72194,
+              "mean": 72192.48402555911,
+              "min": 72136,
+              "p50": 72194,
+              "p90": 72194,
+              "p95": 72194,
+              "p99": 72194,
+              "singleton_rate": 0,
+              "singletons": 0
+            },
+            "item_oov_rate": 0.49751655629139074,
+            "items_not_in_training": 7813,
+            "rows": 38648,
+            "unique_items": 15704,
+            "unique_users": 37193,
+            "user_oov_rate": 0.9433495550237948,
+            "users_not_in_training": 35086,
+            "warm_start_target_retention": 0.03239494928586214,
+            "warm_start_target_rows": 1252
+          }
+        },
+        "policy": "P5",
+        "rating_predicate": "rating = 5.0",
+        "retention_from_clean_deduplicated_events": 0.5997587649456932,
+        "training_negative_pool": {
+          "available_items_after_excluding_training_positives": {
+            "count": 331845,
+            "max": 72194,
+            "mean": 72193.93118172641,
+            "min": 72104,
+            "p50": 72194,
+            "p90": 72194,
+            "p95": 72194,
+            "p99": 72194,
+            "singleton_rate": 0,
+            "singletons": 0
+          },
+          "training_item_universe": 72195,
+          "users_with_zero_available_negatives": 0
+        },
+        "unique_items": 83385,
+        "unique_users": 387652,
+        "user_degree": {
+          "count": 387652,
+          "max": 97,
+          "mean": 1.0736175745256054,
+          "min": 1,
+          "p50": 1,
+          "p90": 1,
+          "p95": 2,
+          "p99": 2,
+          "singleton_rate": 0.9475715332308359,
+          "singletons": 367328
+        }
+      }
+    },
+    "status": "EXACT_PRE_MODEL_PROTOCOL_AUDIT; NO POLICY SELECTED",
+    "syntactically_valid_events": 693929,
+    "timestamp_audit": {
+      "max_ms": 1694219976666,
+      "min_ms": 973052658000,
+      "mode": "exact_sqlite",
+      "rows_exactly_at_t1": 0,
+      "rows_exactly_at_t2": 0,
+      "rows_in_shared_timestamp_values": 448
+    }
+  },
+  "rating_counts": {
+    "1.0": 100862,
+    "2.0": 42594,
+    "3.0": 55704,
+    "4.0": 78579,
+    "5.0": 416190
+  },
+  "raw_schema": {
+    "columns": [
+      "user_id",
+      "parent_asin",
+      "rating",
+      "timestamp"
+    ],
+    "item_key": "parent_asin"
+  },
+  "retrieved_at": "2026-09-02T14:02:27+00:00",
+  "retrieved_or_reused_at_utc": "2026-09-02T14:02:27+00:00",
+  "row_count": 693929,
+  "rows_at_or_above_rating_threshold": {
+    "1": 693929,
+    "2": 593067,
+    "3": 550473,
+    "4": 494769,
+    "5": 416190
+  },
+  "schema": [
+    "user_id",
+    "parent_asin",
+    "rating",
+    "timestamp"
+  ],
+  "sha256": "54b894e68ad965aa73cdb80d8695c1ed37679c46f38b6f97b21ab0fb585aab24",
+  "source": "https://datarepo.eng.ucsd.edu/mcauley_group/data/amazon_2023/benchmark/0core/rating_only/All_Beauty.csv.gz",
+  "status": "ACQUIRED",
+  "temporal_cutoffs": {
+    "status": "CANDIDATE; NOT FROZEN",
+    "t1_ms": 1628643414042,
+    "t2_ms": 1658002729837
+  },
+  "timestamp_audit": {
+    "enabled": true,
+    "max_ms": 1694219976666,
+    "min_ms": 973052658000,
+    "rows_in_shared_timestamp_values": 448
+  },
+  "timestamp_audit_mode": "exact_sqlite_protocol",
+  "unique_items": 112565,
+  "unique_user_item_pairs": 693929,
+  "unique_users": 631986,
+  "user_degree": {
+    "count": 631986,
+    "max": 164,
+    "mean": 1.0980132471288921,
+    "min": 1,
+    "p50": 1,
+    "p90": 1,
+    "p95": 2,
+    "p99": 3,
+    "singletons": 589163
+  },
+  "valid_row_count": 693929,
+  "drive_record": {
+    "file_id": "1UsUsLtZ7cU4GMOsrG_PzgnRfdp_Loi5W",
+    "created_time": "2026-09-02T14:02:27.935Z",
+    "modified_time": "2026-09-02T14:02:27.935Z"
+  }
+}

@@ -1,7 +1,7 @@
 # Dataset Audit and Acceptance Protocol
 
-> **Status:** `TEMPORARY RAW AUDIT EXECUTED — DATASET GATE G2 OPEN`  
-> **Recorded:** 2026-08-27  
+> **Status:** `PERSISTENT RAW AUDIT EXECUTED — DATASET GATE G2 OPEN`
+> **Recorded:** 2026-09-02
 > **Scope:** Independent Master's thesis on graph sampling for large-scale GNN recommendation.  
 > **Boundary:** This protocol governs data evidence; it does not select or validate the final sampling method.
 
@@ -18,14 +18,14 @@ The full portfolio, reasons, sources, and gates are recorded in [`DATASET_PORTFO
 
 ## 2. Current raw-audit evidence
 
-The project executed a streaming raw audit on temporary official Amazon rating-only 0-core artifacts on 2026-08-26. The temporary raw copies have since been removed; the derived result record, URLs, and checksums remain available.
+The project re-executed the exact streaming raw audit on official Amazon rating-only 0-core artifacts and persisted both raw `.csv.gz` objects and JSON manifests in the private Google Drive folder `Phase2_Amazon_Audit` on 2026-09-02.
 
-| Artifact | Project-derived temporary-audit result | Open item |
+| Artifact | Project-derived persistent-audit result | Open item |
 |---|---|---|
-| `All_Beauty` | 693,929 valid rows; 631,986 users; 112,565 items; zero exact duplicate user–item pairs; 93.22% singleton users | Persistent acquisition/manifest and derived strict protocol |
-| `Baby_Products` | 5,953,891 valid parsed rows; 3,386,206 users; 217,654 items; 70.01% singleton users; one rating `0.0` | Exact duplicate-pair count, persistent acquisition/manifest, and derived strict protocol |
+| `All_Beauty` | 693,929 valid rows; 631,986 users; 112,565 items; zero exact duplicate user–item rows; 93.22% singleton users; 448 rows participating in timestamp ties | Complete G2-A metadata and derived strict protocol |
+| `Baby_Products` | 5,953,891 valid parsed rows; 3,386,206 users; 217,654 items; zero exact duplicate user–item rows; 70.01% singleton users; one rating `0.0` | Exact timestamp-tie audit, complete G2-A metadata, and derived strict protocol |
 
-The exact SHA-256 values, rating distributions, degree summaries, timestamp coverage, and OOV diagnostics are in [`DATASET_AUDIT_RESULTS_en.md`](./DATASET_AUDIT_RESULTS_en.md). The raw schema was verified as `user_id`, `parent_asin`, `rating`, `timestamp`. These are temporary-run findings, not proof that a durable, final benchmark artifact exists.
+The persistent hashes are `54b894e68ad965aa73cdb80d8695c1ed37679c46f38b6f97b21ab0fb585aab24` for `All_Beauty` and `e2a8d0498afed767ee2615db7fac549559d82490b1a73c7241b84b5e9e8c279e` for `Baby_Products`. The raw schema was verified as `user_id`, `parent_asin`, `rating`, `timestamp`. The earlier [`DATASET_AUDIT_RESULTS_en.md`](./DATASET_AUDIT_RESULTS_en.md) must be synchronized before it is treated as the current numerical record. Persistent raw evidence exists, but the final transformed benchmark does not.
 
 The provider absolute split was audited only as a diagnostic. Its high OOV coverage means it cannot be silently adopted as the primary strict temporal warm-start task.
 
@@ -34,11 +34,12 @@ The provider absolute split was audited only as a diagnostic. Its high OOV cover
 | Field | Current state |
 |---|---|
 | Amazon source family | `SOURCE IDENTIFIED` — Amazon Reviews'23 |
-| Raw schema/item key | `TEMPORARY AUDIT VERIFIED` — pure ID schema with `parent_asin` |
-| Temporary checksums and raw counts | `RECORDED` in the bilingual result record |
-| Persistent raw artifact in `Do An` | `ABSENT BY DESIGN` — raw data must be acquired in persistent Colab/project storage before final use |
-| Access/usage note | `OPEN` — record the applicable data terms with the persistent acquisition |
-| `Baby_Products` duplicate audit | `OPEN` — do not infer it from the provider statement |
+| Raw schema/item key | `PERSISTENT AUDIT VERIFIED` — pure ID schema with `parent_asin` |
+| Persistent checksums and raw counts | `RECORDED` in private Drive JSON manifests; local result summary needs synchronization |
+| Persistent raw artifact | `PRESENT IN PRIVATE GOOGLE DRIVE` — raw `.csv.gz` objects retained outside Git |
+| Access/usage note | `PARTIAL` — official pages identify McAuley Lab, citation, fields, and downloads; no dataset-wide license grant was found there, so repository MIT terms are not attributed to the data |
+| `Baby_Products` duplicate audit | `VERIFIED: 0` repeated rows under `(user_id, parent_asin)` |
+| `Baby_Products` timestamp-tie audit | `OPEN` — exact counting was disabled in the persistent run |
 | Interaction semantics and split | `OPEN` — freeze before model training |
 
 Canonical sources:
@@ -62,6 +63,25 @@ The repository MIT license applies to the repository code and scripts; it must n
 6. **Scale diagnostic:** log sampled nodes/edges, memory, sampling time, throughput, degree/popularity divergence, head–tail coverage, and connectivity from the training graph.
 
 Provider processing, project interaction semantics, project temporal split, and project training-only filtering must be reported as distinct transformations. Provider 5-core data are a reproducibility setting, not automatically the thesis's strict temporal graph.
+
+### One-run evidence package
+
+Each paired `01_amazon_dataset_audit_*` notebook is now self-contained: it embeds the complete analyzer and does not call or require a separate `.py` file. After Drive is mounted, **Run all** processes three Amazon portfolio jobs in sequence. `All_Beauty` and `Baby_Products` receive the full protocol audit; valid existing outputs are reused unless `FORCE_RERUN = True`. `Home_and_Kitchen` receives only a bounded low-memory provenance/schema/row-count audit; its full scale stress remains gated by G5-S. The notebook also writes `dataset_portfolio_audit_index.json`. Each full protocol result contains:
+
+- exact duplicate-pair and timestamp-tie counts;
+- quarantine accounting for ratings outside `[1, 5]`;
+- deterministic earliest-timestamp/stable-row de-duplication;
+- all-observed, P4, and P5 semantic snapshots;
+- per-snapshot degrees, singleton rates, density, temporal partitions, user/item OOV, warm-start target retention, training negative availability, and exact full-catalog candidate-count diagnostics; and
+- artifact SHA-256, audit-configuration SHA-256, embedded audit-logic SHA-256, notebook revision, retrieval metadata, and the access note.
+
+The notebook uses a temporary SQLite database beside the cached artifact and deletes it after the JSON is complete. Disk space must cover the compressed source plus the temporary event tables and indexes. A failed or interrupted run may leave the temporary `.protocol_audit.sqlite` file for diagnosis; a new run replaces it. The three snapshots are evidence for choosing a policy, not three model experiments, and the notebook deliberately does not select the primary policy.
+
+The first self-contained Baby run completed on 2026-09-02. Its original output recorded the source URL with an unexpanded `{DATASET_NAME}` placeholder while reading the correct persistent `Baby_Products.csv.gz` bytes. The output and notebook were corrected transparently: category, byte size, and SHA-256 already identified the artifact, all numerical results were left unchanged, and the JSON now includes a `provenance_correction` record.
+
+The first portfolio run completed the two full protocol jobs but received HTTP 404 for `Home_and_Kitchen` because a partial mirror URL was extrapolated beyond the files verified there. The notebook now uses the exact host/path exposed by the official 0-core download link, `https://mcauleylab.ucsd.edu/public_datasets/data/...`, and records a `DOWNLOAD_FAILED` job while still writing the portfolio index if a future acquisition fails.
+
+The corrected rerun completed all three governed jobs and wrote the portfolio index. `Home_and_Kitchen` provenance records 1,420,416,432 compressed bytes, 66,623,880 rows, the expected four-column schema, and SHA-256 `9be4e2dc8b3dc513c02521644b2ae55f722b2941767e539dcfe518f6bdd4f70b`. These are exact-byte/source facts only; the full protocol and scale-stress measurements remain unexecuted.
 
 ## 5. Dataset Gate G2
 
@@ -88,4 +108,4 @@ The temporal/training-only controls are motivated by [Ji et al., *A Critical Stu
 
 ## 8. Next action
 
-Persist the primary Amazon artifact and complete G2-A through G2-C for `Baby_Products`. In parallel, record only provenance and size information for `Home_and_Kitchen`. Do not train a final sampler or claim a benchmark until G2-D is decided.
+Complete the remaining G2-A manifest fields; then execute the pre-registered G2-B/G2-C analysis for `Baby_Products`: quarantine the `0.0` row, compare P4/P5/all-observed without model results, audit timestamp ties, construct the training-only temporal graph, and report warm-start/OOV attrition and exact candidates. Only then run the bounded G2-D feasibility path. Do not train a final sampler or claim a benchmark at G2.

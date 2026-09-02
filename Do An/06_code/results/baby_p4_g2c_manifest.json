@@ -1,0 +1,154 @@
+{
+  "artifacts": {
+    "item_mapping": {
+      "bytes": 1158646,
+      "path": "/content/drive/MyDrive/Phase2_Amazon_Audit/g2c_baby_p4/baby_p4_item_mapping.csv.gz",
+      "rows": 162125,
+      "sha256": "a98b60f05071f68f113a4293d000855e31fca2fc42799d9ee1db108a8ba19ccd"
+    },
+    "test_targets": {
+      "bytes": 702519,
+      "path": "/content/drive/MyDrive/Phase2_Amazon_Audit/g2c_baby_p4/baby_p4_test_targets.csv.gz",
+      "rows": 40587,
+      "sha256": "ca1ff454174160dc5e4e561f55dc9377f1e9593cffcb6338a9701c31db1eea61"
+    },
+    "train_edges": {
+      "bytes": 58038408,
+      "path": "/content/drive/MyDrive/Phase2_Amazon_Audit/g2c_baby_p4/baby_p4_train_edges.csv.gz",
+      "rows": 3868654,
+      "sha256": "33abbd98b1d75b179bf45ef41ba3f5622d80005ad4aaf414320dbe48c17aeb72"
+    },
+    "user_mapping": {
+      "bytes": 44447186,
+      "path": "/content/drive/MyDrive/Phase2_Amazon_Audit/g2c_baby_p4/baby_p4_user_mapping.csv.gz",
+      "rows": 2318308,
+      "sha256": "244a11fe7986f20cd4de06ee871ab9ff643399fb2661da00bb06647b620d5e6d"
+    },
+    "validation_targets": {
+      "bytes": 1405383,
+      "path": "/content/drive/MyDrive/Phase2_Amazon_Audit/g2c_baby_p4/baby_p4_validation_targets.csv.gz",
+      "rows": 81871,
+      "sha256": "fd807f68fd03787931546ac31d7c2fe8e7ffcc7c43d3b92c627dce98fa87afca"
+    }
+  },
+  "claim_boundary": "No recommender was trained. No NDCG/Recall, method comparison, final profiling, or scalability claim is produced.",
+  "code_version": {
+    "execution_artifact": "self-contained Colab notebook",
+    "implementation_sha256": "18dd46ad142491891ce6d5b1c4add4a8e6e5953a22c46bd429b3732798117998",
+    "notebook_revision": "g2c-baby-p4-self-contained-v1-2026-09-02"
+  },
+  "created_at_utc": "2026-09-02T15:24:53+00:00",
+  "g2d_feasibility": {
+    "catalog_comparisons": 16212500,
+    "catalog_items": 162125,
+    "chunk_size": 16384,
+    "claim_boundary": "Pipeline/evaluator traversal feasibility only; not comparable profiling, recommendation quality, or scalability evidence.",
+    "eligible_candidates_counted": 16209544,
+    "invariants": {
+      "chunked_count_matches_manifest_count": true,
+      "target_not_in_prior_history": true
+    },
+    "process_peak_rss_mb": 158.2421875,
+    "status": "BOUNDED_EVALUATOR_TRAVERSAL_EXECUTED; NO MODEL OR QUALITY METRIC",
+    "targets_executed": 100,
+    "targets_requested": 100,
+    "wall_seconds": 1.097641588999977
+  },
+  "input_counts": {
+    "duplicate_p4_rows_removed": 0,
+    "invalid_rows": 0,
+    "p4_rows_after_pair_dedup": 4655843,
+    "p4_rows_before_pair_dedup": 4655843,
+    "rating_zero_rows": 1,
+    "raw_rows": 5953891
+  },
+  "partitions": {
+    "test": {
+      "candidate_rows": 413413,
+      "excluded_total": 372826,
+      "excluded_unseen_item_only": 30316,
+      "excluded_unseen_user_and_item": 123381,
+      "excluded_unseen_user_only": 219129,
+      "reconciles": true,
+      "warm_retention": 0.09817543231586816,
+      "warm_rows": 40587
+    },
+    "validation": {
+      "candidate_rows": 373776,
+      "excluded_total": 291905,
+      "excluded_unseen_item_only": 17437,
+      "excluded_unseen_user_and_item": 34560,
+      "excluded_unseen_user_only": 239908,
+      "reconciles": true,
+      "warm_retention": 0.21903760541072728,
+      "warm_rows": 81871
+    }
+  },
+  "policy": {
+    "candidate_universe": "full frozen training-item universe minus prior mapped positives; target retained",
+    "cutoff_status": "CANDIDATE_EXECUTED; FREEZE REQUIRES G2-C REVIEW",
+    "duplicate": "earliest timestamp then source-row order",
+    "evaluation_history": "all mapped P4 events with timestamp strictly earlier than target; same-timestamp events are not prior",
+    "mapping": "lexicographic IDs from filtered training positives only",
+    "positive": "P4: rating >= 4 and rating <= 5",
+    "rating_zero": "quarantined",
+    "t1_ms": 1628643414042,
+    "t2_ms": 1658002729837,
+    "timestamp_tie_rule": "strict half-open intervals; events exactly at t1 enter validation and exactly at t2 enter test",
+    "training_filter": {
+      "iterations": [
+        {
+          "after_edges": 3868654,
+          "before_edges": 3868654,
+          "iteration": 0,
+          "removed_edges": 0
+        }
+      ],
+      "min_item_degree": 1,
+      "min_user_degree": 1
+    }
+  },
+  "source": {
+    "bytes": 148609233,
+    "path": "/content/drive/MyDrive/Phase2_Amazon_Audit/raw/Baby_Products.csv.gz",
+    "sha256": "e2a8d0498afed767ee2615db7fac549559d82490b1a73c7241b84b5e9e8c279e"
+  },
+  "status": "G2_C_ARTIFACTS_BUILT; G2_D_BOUNDED_TRAVERSAL_EXECUTED; GATE_REVIEW_REQUIRED",
+  "training_graph": {
+    "components": {
+      "components": 34288,
+      "largest_component_fraction": 0.9649875646711683,
+      "largest_component_nodes": 2393587,
+      "node_count": 2480433,
+      "singleton_components": 0
+    },
+    "density": 1.0292924011902233e-05,
+    "edges": 3868654,
+    "item_degree": {
+      "count": 162125,
+      "max": 21348,
+      "mean": 23.862168080185043,
+      "min": 1,
+      "p50": 3.0,
+      "p90": 32.0,
+      "p95": 75.0,
+      "p99": 397.0,
+      "singleton_rate": 0.3334957594448728,
+      "singletons": 54068
+    },
+    "items": 162125,
+    "user_degree": {
+      "count": 2318308,
+      "max": 340,
+      "mean": 1.6687403054296495,
+      "min": 1,
+      "p50": 1.0,
+      "p90": 3.0,
+      "p95": 4.0,
+      "p99": 9.0,
+      "singleton_rate": 0.7176341538742911,
+      "singletons": 1663697
+    },
+    "users": 2318308
+  }
+}

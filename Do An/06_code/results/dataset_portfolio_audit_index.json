@@ -1,0 +1,75 @@
+{
+  "generated_at_utc": "2026-09-02T14:31:44+00:00",
+  "jobs": [
+    {
+      "category": "All_Beauty",
+      "mode": "protocol",
+      "output": "/content/drive/MyDrive/Phase2_Amazon_Audit/audit_outputs/All_Beauty_protocol_audit.json",
+      "semantic_snapshots": {
+        "all_observed": {
+          "events": 693929,
+          "items": 112565,
+          "users": 631986
+        },
+        "p4": {
+          "events": 494769,
+          "items": 91187,
+          "users": 455579
+        },
+        "p5": {
+          "events": 416190,
+          "items": 83385,
+          "users": 387652
+        }
+      },
+      "sha256": "54b894e68ad965aa73cdb80d8695c1ed37679c46f38b6f97b21ab0fb585aab24",
+      "status": "REUSED_EXISTING_OUTPUT",
+      "unique_items": 112565,
+      "unique_users": 631986,
+      "valid_rows": 693929
+    },
+    {
+      "category": "Baby_Products",
+      "mode": "protocol",
+      "output": "/content/drive/MyDrive/Phase2_Amazon_Audit/audit_outputs/Baby_Products_protocol_audit.json",
+      "semantic_snapshots": {
+        "all_observed": {
+          "events": 5953890,
+          "items": 217654,
+          "users": 3386206
+        },
+        "p4": {
+          "events": 4655843,
+          "items": 194722,
+          "users": 2769312
+        },
+        "p5": {
+          "events": 3973866,
+          "items": 182226,
+          "users": 2476012
+        }
+      },
+      "sha256": "e2a8d0498afed767ee2615db7fac549559d82490b1a73c7241b84b5e9e8c279e",
+      "status": "REUSED_EXISTING_OUTPUT",
+      "unique_items": 217654,
+      "unique_users": 3386206,
+      "valid_rows": 5953891
+    },
+    {
+      "category": "Home_and_Kitchen",
+      "mode": "provenance_only",
+      "output": "/content/drive/MyDrive/Phase2_Amazon_Audit/audit_outputs/Home_and_Kitchen_raw_audit.json",
+      "sha256": "9be4e2dc8b3dc513c02521644b2ae55f722b2941767e539dcfe518f6bdd4f70b",
+      "status": "EXECUTED_NOW",
+      "unique_items": null,
+      "unique_users": null,
+      "valid_rows": 66623880
+    }
+  ],
+  "notebook_revision": "self-contained-portfolio-audit-v2-2026-09-02",
+  "drive_record": {
+    "file_id": "1tTrcOjzF2-1mWjwXhQVdKtN2hczAuuJV",
+    "created_time": "2026-09-02T14:37:40.774Z",
+    "modified_time": "2026-09-02T14:37:40.774Z"
+  }
+}

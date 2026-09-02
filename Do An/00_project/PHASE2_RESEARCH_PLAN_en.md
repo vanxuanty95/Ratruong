@@ -27,7 +27,7 @@ When this plan changes, update both language versions and add a concise pointer/
 | Area | Current status | Boundary |
 |---|---|---|
 | Thesis framing and living deliverables | Established | No final method or empirical result is claimed. |
-| Source scaffold and toy tests | 10 pure-Python toy contract tests passed locally | This is not a PyTorch/PyG recommender implementation or benchmark. |
+| Source scaffold and toy tests | 13 pure-Python tests passed locally; the self-contained Baby G2-C/G2-D path is implemented and toy-executed | This is not a full Baby execution, PyTorch/PyG recommender implementation, or benchmark. |
 | Amazon raw-data audit | Preliminary raw audits recorded | Persistent data provenance and Dataset Gate G2 remain open. |
 | Dataset portfolio | `Baby_Products` primary candidate; `All_Beauty` diagnostic; `Home_and_Kitchen` conditional scale stress | No dataset is finalized. |
 | Environment and compute | Python and Google Colab are available | Final environment/GPU configuration is not locked. |
@@ -69,7 +69,7 @@ G2-D is a feasibility boundary, not a baseline result. It may use a bounded subs
 |---|---|---|---|---|---|
 | G0 | `PASS` | None | Scope, bilingual governance, evidence boundaries, and this plan are recorded. Reopen if scope/title/deliverable rules change. | 2026-08-30 | On governance change |
 | G1 | `IN_PROGRESS` | None; runs in parallel with G2 | Preliminary source anchors and a GRAPES-informed reference exist; closest-work positioning and a predeclared selection rule are incomplete. | — | After targeted closest-work review |
-| G2 | `IN_PROGRESS` | E0-MIN for executable G2-D only | Temporary raw audits exist; persistent provenance, semantics, split/OOV/negative rules, retained graph, and bounded feasibility remain incomplete. | — | After G2-A–G2-C evidence package |
+| G2 | `IN_PROGRESS` | E0-MIN for executable G2-D only | Baby G2-A/G2-B `PASS`; full G2-C artifacts executed and reviewed on 2026-09-02. The candidate `t1`/`t2`, strict tie rule, training-only mappings, warm-start/OOV ledger, and exact-candidate rule are accepted, so G2-C is `PASS`. The 100-target G2-D traversal executed with both invariants true, but the manifest lacks an exact Python/platform/hardware fingerprint; G2-D and E0-MIN remain in a corrective completion loop. Home full scale remains conditional G5-S. | 2026-09-02 for G2-C | After environment fingerprint capture and bounded G2-D readback |
 | G3 | `NOT_STARTED` | G2 `PASS`; E0-MIN `PASS` | No deterministic end-to-end baseline/evaluator/resource path exists. | — | After prerequisites pass |
 | G4 | `NOT_STARTED` | G1 `PASS`; G2 `PASS`; G3 `PASS` | Final sampler is not selected or implemented. Reference-design toy tests do not satisfy this gate. | — | After prerequisites pass |
 | G5 | `NOT_STARTED` | G4 `PASS`; experiment matrix/configuration/seeds frozen; E0-FINAL for resource claims | No matched final experiment evidence exists. | — | After G4 readiness review |

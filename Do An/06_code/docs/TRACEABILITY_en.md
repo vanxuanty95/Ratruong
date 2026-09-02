@@ -12,10 +12,11 @@ This table maps reference-design decisions and the first executable toy tests. T
 | D7: sampler ownership | `src/grapes_rec/models.py` | contract validation pending | `SPECIFIED` |
 | D9: transient positive-edge masking | `src/grapes_rec/data_protocol.py` | T23 | `TOY TEST EXECUTED` |
 | D11: full Bernoulli likelihood for small/empty cases | `src/grapes_rec/sampling.py` | T09 and edge cases pending | `PARTIAL TOY TEST` |
-| Dataset Gate G2: provenance and graph audit | `scripts/analyze_amazon_dataset.py`; `notebooks/01_amazon_dataset_audit_en.ipynb` | Toy fixture smoke check; local raw audit executed; persistent Colab rerun/protocol closure open | `IMPLEMENTED; RAW AUDIT EXECUTED / G2 OPEN` |
+| Dataset Gate G2-A/G2-B: provenance and protocol audit | `scripts/analyze_amazon_dataset.py`; `notebooks/01_amazon_dataset_audit_en.ipynb` | Portfolio audit executed and mirrored | `EXECUTED; BABY G2-A/G2-B PASS` |
+| Dataset Gate G2-C/G2-D: training-only temporal graph and bounded traversal | `notebooks/02_baby_p4_temporal_graph_en.ipynb` | `tests/test_g2c_notebook.py`: toy mapping/OOV/candidate traversal | `IMPLEMENTED; TOY EXECUTED / FULL BABY OPEN` |
 | T01–T03: target and graph IDs | `src/grapes_rec/contracts.py` | T01–T03 | `TOY TEST EXECUTED` |
 | T05–T08: candidate and exact-k semantics | `src/grapes_rec/sampling.py` | T05–T08 | `TOY TEST EXECUTED` |
 
 ## Intentionally absent
 
-The scaffold includes a streaming dataset-audit utility and local raw audit evidence. It does not yet include finalized persistent Amazon acquisition evidence, project-frozen temporal splitting, negative sampling, PyTorch/PyG message passing, GRAPES policy training, checkpointed experiments, full-catalog evaluation, or any recommendation result.
+The project includes persistent portfolio-audit evidence and a toy-executed G2-C/G2-D construction path. It does not yet include the reviewed full Baby temporal artifacts, a frozen cutoff decision, model-training negative samples, PyTorch/PyG message passing, GRAPES policy training, checkpointed experiments, scored full-catalog evaluation, or any recommendation result.

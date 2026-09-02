@@ -1,8 +1,8 @@
 # Thesis Graph-Sampling Code Scaffold
 
-> **Status:** `DATASET GATE — TEMPORARY RAW AUDIT EXECUTED; PERSISTENCE AND PROTOCOL OPEN`  
+> **Status:** `DATASET GATE — PORTFOLIO AUDIT COMPLETE; BABY G2-C/G2-D IMPLEMENTED, FULL RUN OPEN`
 > **Purpose:** provide the first executable home for Phase 2 reference contracts, dataset controls, and the future project-developed graph sampler.  
-> **Not yet provided:** finalized Amazon artifact/manifest, PyTorch/PyG implementation, locked environment, benchmark runner, or recommendation-quality result.
+> **Not yet provided:** reviewed full Baby G2-C artifacts/cutoff freeze, PyTorch/PyG implementation, locked final environment, benchmark runner, or recommendation-quality result.
 
 The package is intentionally dependency-free at this early stage so the small contract tests can run on the local machine and in a clean Colab Python runtime. This is not the final model implementation. Under the canonical gate register, E0-MIN and G2 must pass before G3 execution; sampler implementation additionally waits for G1 and G3. E0-FINAL is required later for final resource evidence.
 
@@ -26,9 +26,9 @@ The scaffold currently encodes GRAPES-informed reference contracts from `02_prot
 | Area | Current status |
 |---|---|
 | Semantic contracts | `SCAFFOLDED` |
-| Toy correctness tests | `IMPLEMENTED AND EXECUTED: 10/10 PASS ON CPU` |
-| Amazon acquisition/preprocessing | `OPEN` |
-| Amazon dataset audit | `IMPLEMENTED; LOCAL RAW AUDIT EXECUTED; PERSISTENT COLAB RUN OPEN` |
+| Toy correctness tests | `IMPLEMENTED AND EXECUTED: 13/13 PASS ON CPU` |
+| Amazon acquisition/preprocessing | `G2-C/G2-D NOTEBOOK IMPLEMENTED AND TOY-EXECUTED; FULL BABY RUN OPEN` |
+| Amazon dataset audit | `PORTFOLIO AUDIT EXECUTED; BABY G2-A/G2-B PASS` |
 | PyTorch/PyG recommender | `NOT STARTED` |
 | GRAPES-informed learned reference variants | `NOT STARTED` |
 | Colab launcher | `THIN SKELETON` |
@@ -44,6 +44,7 @@ The scaffold currently encodes GRAPES-informed reference contracts from `02_prot
 ├── environment/ENVIRONMENT_LOCK_PENDING.txt
 ├── notebooks/00_colab_setup_and_oracles_en.ipynb / _vn.ipynb
 ├── notebooks/01_amazon_dataset_audit_en.ipynb / _vn.ipynb
+├── notebooks/02_baby_p4_temporal_graph_en.ipynb / _vn.ipynb
 ├── configs/toy_oracles.yaml
 ├── manifests/data_manifest.schema.json
 ├── src/grapes_rec/
@@ -53,10 +54,12 @@ The scaffold currently encodes GRAPES-informed reference contracts from `02_prot
 │   ├── objectives.py
 │   ├── data_protocol.py
 │   └── models.py
-├── tests/test_week1_oracles.py
+├── tests/test_week1_oracles.py / test_dataset_audit.py / test_g2c_notebook.py
 ├── scripts/analyze_amazon_dataset.py
-└── docs/TRACEABILITY_en.md / TRACEABILITY_vn.md / DATASET_AUDIT_en.md / _vn.md
+└── docs/TRACEABILITY_* / DATASET_AUDIT_* / G2C_TEMPORAL_GRAPH_*
 ```
+
+The `01_amazon_dataset_audit_*` notebook is an exception to the general thin-launcher status: each language version contains the complete audit implementation and runs independently without `scripts/analyze_amazon_dataset.py`. The local script remains a testable source mirror; it is not a Colab dependency.
 
 ## Local or Colab smoke command
 
@@ -66,17 +69,16 @@ From the `06_code` directory:
 python -m unittest discover -s tests -v
 ```
 
-The command tests only pure-Python contracts. The current 10/10 result must not be reported as a validated PyTorch/PyG implementation or an end-to-end Colab reproduction.
+The command currently runs 13 pure-Python tests: ten reference-contract tests, two audit tests, and one end-to-end toy G2-C/G2-D notebook test. The result must not be reported as a validated PyTorch/PyG implementation, a full Baby preprocessing execution, or an end-to-end model reproduction.
 
 ## Planned next implementation steps
 
-1. Follow the bounded dataset portfolio in [`DATASET_PORTFOLIO_AND_ANALYSIS_PROTOCOL_en.md`](../00_project/DATASET_PORTFOLIO_AND_ANALYSIS_PROTOCOL_en.md): `All_Beauty` only for development diagnostics; audit `Baby_Products` as the primary candidate; then perform a bounded `Home_and_Kitchen` scale audit.
-2. Resolve the high-OOV absolute-split result, then freeze the exact artifact, item key, duplicate policy, implicit-positive rule, temporal split, warm-start filtering, and negative-sampling policy from the audit evidence.
-3. Confirm the final Python/PyTorch/PyG/CUDA lock and record it in `environment/`.
-4. Replace the placeholder data interfaces with the authorized, checksummed Amazon artifact and leakage-safe preprocessing.
-5. Implement the dependency tests T01–T11 and T16–T17 around the same contracts.
-6. Implement and execute the high-risk oracles T12, T14, T18, T19, and T23.
-7. Add matched baseline samplers, the GRAPES-informed reference, and the project-developed sampler only after the shared contracts pass.
+1. Run all cells in `02_baby_p4_temporal_graph_vn.ipynb` or `_en.ipynb` on Drive and read back `baby_p4_g2c_manifest.json` plus its five compressed artifacts.
+2. Verify reconciliation, candidate invariants, artifact hashes, graph/component/OOV statistics, and bounded resource measurements; then accept or revise `t1`/`t2` and decide G2-C/G2-D.
+3. Confirm the rerunnable E0-MIN Python/environment record before G3; retain a separate final PyTorch/PyG/CUDA lock for profiling.
+4. Use the reviewed frozen artifacts as the shared data interface; do not reconstruct IDs or graph statistics from validation/test data.
+5. After G2 and E0-MIN pass, implement the shared exact evaluator and simplest baselines under G3.
+6. Add matched sampling controls and the GRAPES-informed reference only under the canonical gate dependencies; the project-developed sampler still waits for G1–G3.
 
 ## Source governance
 

@@ -27,7 +27,7 @@ Khi kế hoạch thay đổi, phải cập nhật cả hai bản ngôn ngữ và
 | Hạng mục | Trạng thái hiện tại | Ranh giới |
 |---|---|---|
 | Định hướng luận văn và các deliverable đang phát triển | Đã thiết lập | Chưa claim phương pháp cuối cùng hoặc kết quả thực nghiệm. |
-| Source scaffold và toy test | Đã pass 10 pure-Python toy contract test tại local | Đây không phải recommender PyTorch/PyG hoặc benchmark. |
+| Source scaffold và toy test | 13 pure-Python test đã pass local; path Baby G2-C/G2-D self-contained đã implement và toy-execute | Đây không phải full Baby execution, recommender PyTorch/PyG hoặc benchmark. |
 | Raw-data audit Amazon | Đã ghi preliminary raw audit | Persistent provenance và Dataset Gate G2 vẫn mở. |
 | Danh mục dataset | `Baby_Products` là primary candidate; `All_Beauty` là diagnostic; `Home_and_Kitchen` là scale stress có điều kiện | Chưa dataset nào được chốt. |
 | Environment và compute | Có Python và Google Colab | Chưa khóa cấu hình environment/GPU cuối. |
@@ -69,7 +69,7 @@ G2-D là ranh giới feasibility, không phải kết quả baseline. Có thể 
 |---|---|---|---|---|---|
 | G0 | `PASS` | Không | Scope, quản trị song ngữ, ranh giới bằng chứng và kế hoạch này đã được ghi. Mở lại nếu scope/title/deliverable rule thay đổi. | 2026-08-30 | Khi governance thay đổi |
 | G1 | `IN_PROGRESS` | Không; chạy song song với G2 | Có source anchor sơ bộ và GRAPES-informed reference; closest-work positioning và quy tắc chọn đăng ký trước chưa hoàn tất. | — | Sau targeted closest-work review |
-| G2 | `IN_PROGRESS` | Chỉ phần thực thi G2-D cần E0-MIN | Có temporary raw audit; persistent provenance, semantics, split/OOV/negative rule, retained graph và bounded feasibility chưa hoàn tất. | — | Sau evidence package G2-A–G2-C |
+| G2 | `IN_PROGRESS` | Chỉ phần thực thi G2-D cần E0-MIN | Baby G2-A/G2-B `PASS`; full artifact G2-C đã execute và review ngày 2026-09-02. Candidate `t1`/`t2`, strict tie rule, training-only mapping, warm-start/OOV ledger và exact-candidate rule được chấp nhận nên G2-C `PASS`. G2-D traversal 100 target đã execute với hai invariant đúng, nhưng manifest thiếu exact Python/platform/hardware fingerprint; G2-D và E0-MIN vẫn trong corrective completion loop. Full scale Home vẫn là conditional G5-S. | 2026-09-02 cho G2-C | Sau khi capture environment fingerprint và readback bounded G2-D |
 | G3 | `NOT_STARTED` | G2 `PASS`; E0-MIN `PASS` | Chưa có baseline/evaluator/resource path end-to-end deterministic. | — | Sau khi prerequisite pass |
 | G4 | `NOT_STARTED` | G1 `PASS`; G2 `PASS`; G3 `PASS` | Chưa chọn hoặc implement sampler cuối. Toy test của reference design không thỏa gate này. | — | Sau khi prerequisite pass |
 | G5 | `NOT_STARTED` | G4 `PASS`; đã freeze experiment matrix/configuration/seed; resource claim cần E0-FINAL | Chưa có matched final experiment evidence. | — | Sau G4 readiness review |
