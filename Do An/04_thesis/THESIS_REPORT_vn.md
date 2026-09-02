@@ -1,9 +1,9 @@
 # Phát triển phương pháp lấy mẫu đồ thị cho hệ thống gợi ý quy mô lớn sử dụng mạng nơ-ron đồ thị GNN
 
 > **Trạng thái:** `LUẬN VĂN BẢN LÀM VIỆC TÍCH LŨY — PHÁT TRIỂN PHƯƠNG PHÁP, DATA AUDIT VÀ KẾ HOẠCH NGHIÊN CỨU`  
-> **Cập nhật lần cuối:** 2026-08-26  
+> **Cập nhật lần cuối:** 2026-09-02
 > **Định danh Phase 2:** Luận văn Thạc sĩ độc lập; GRAPES là tài liệu khoa học tham khảo, không phải phương pháp luận văn đã cố định  
-> **Ranh giới evidence:** Đã có toy scaffold không dependency và mười local contract test; temporary raw Amazon audit đã execute, nhưng chưa có persistent finalized dataset artifact, PyTorch/PyG implementation Phase 2, full oracle suite, benchmark hoặc recommendation result.
+> **Ranh giới evidence:** Đã có toy scaffold không dependency và mười local contract test. Persistent checksummed raw-audit manifest cho hai Amazon category trong phạm vi hiện đã tồn tại trên Google Drive, nhưng interaction semantics, strict temporal warm-start dataset, PyTorch/PyG implementation Phase 2, full oracle suite, benchmark và recommendation result chưa được chốt.
 
 Đây là thesis report bản làm việc tiếng Việt. Đây là living artifact: evidence đã được xác minh về implementation, execution và validation sẽ thay các statement dạng kế hoạch khi nghiên cứu tiến triển. Bản tiếng Anh tương ứng là [`THESIS_REPORT_en.md`](./THESIS_REPORT_en.md).
 
@@ -13,7 +13,7 @@ Graph neural network trên đồ thị lớn có thể cần thông tin từ vù
 
 GRAPES-informed reference design hiện tại khảo sát sampler GNN, Gumbel Top-k và policy-learning objective cùng recommender kiểu LightGCN và Bayesian Personalized Ranking (BPR). Đây là candidate component—không mặc định là phương pháp cuối. Phương pháp cuối sẽ được xác định thông qua literature positioning, method rationale, data/protocol constraint, controlled comparison và ablation. Một scaffold không dependency hiện test một phần reference contract trên toy input; chưa có phương pháp Phase 2 cuối nào được implementation hoặc test.
 
-Trạng thái project hiện tạo nền tảng nghiên cứu có kiểm soát chứ chưa phải empirical result: primary source đã pin, literature matrix ban đầu và GRAPES-informed reference design đã ghi, toy scaffold tồn tại và raw dataset audit đã execute. Final method definition, persistent data protocol, environment lock, model implementation và performance evaluation vẫn mở.
+Trạng thái project hiện tạo nền tảng nghiên cứu có kiểm soát chứ chưa phải model-performance result: primary source đã pin, literature matrix ban đầu và GRAPES-informed reference design đã ghi, toy scaffold tồn tại và persistent raw dataset audit đã execute. Final interaction semantics, temporal warm-start construction, method definition, environment lock, model implementation và performance evaluation vẫn mở.
 
 ## 2. Phạm vi và động lực
 
@@ -159,21 +159,66 @@ Evidence portfolio được giới hạn có chủ đích. `Baby_Products` là A
 
 Decision record song ngữ, source, câu hỏi audit chính xác, preprocessing sequence, comparison rule và gate nằm trong [`DATASET_PORTFOLIO_AND_ANALYSIS_PROTOCOL_vn.md`](../00_project/DATASET_PORTFOLIO_AND_ANALYSIS_PROTOCOL_vn.md). Đặc biệt, official Amazon 5-core data là reproducibility reference, không tự động là strict temporal training graph của luận văn.
 
-### 7.1.1 Trạng thái dataset audit ban đầu
+### 7.1.1 Tại sao chọn các dataset này
 
-Audit local ngày 2026-08-26 không tìm thấy Amazon raw artifact trong `Do An` hoặc vùng tham khảo Phase 1. Tài liệu chính thức Amazon Reviews'23 xác định schema pure-ID 0-core rating-only là `user_id`, `parent_asin`, `rating` và `timestamp`, đồng thời công bố rounded pre-split count khoảng 632.0K user / 112.6K item / 693.9K rating cho `All_Beauty` và 3.4M / 217.7K / 6.0M cho `Baby_Products`. Đây là provider-published metadata, không phải project-derived result.
+Amazon Reviews'23 được chọn vì luận văn nghiên cứu graph sampling cho recommendation, do đó cần interaction user–item có timestamp và có thể biểu diễn thành bipartite graph quy mô lớn. Bản pure-ID 0-core giữ lại long tail thưa thay vì áp đặt population đã k-core từ phía provider trước khi project định nghĩa transformation chỉ dựa trên training. Dataset cũng có rating để kiểm tra các interaction semantics dạng implicit-positive và có timestamp để đánh giá theo thời gian.
 
-Project đã thêm streaming audit script bằng standard library và paired Colab notebook. Audit ghi exact source URL, acquisition state, compressed file size, SHA-256, schema, invalid row, duplicate user–item pair, rating distribution, timestamp range/tie, degree statistic, candidate absolute-split coverage, warm-start out-of-vocabulary count và negative-pool diagnostic. Official processing README nói repeated user–item review được de-duplicate bằng cách giữ review sớm nhất; behavior này phải được verify trên downloaded bytes thay vì giả định.
+`Baby_Products` là primary candidate vì kết hợp product-review domain, hàng triệu event, hơn ba triệu user và degree imbalance đáng kể. Quy mô này đủ lớn để bộc lộ graph-construction và sampling pressure nhưng vẫn giới hạn hơn các Amazon category lớn nhất. `All_Beauty` được giữ làm development control vì cùng schema và source family nhưng nhỏ hơn; singleton rate rất cao khiến nó không thể làm primary warm-start evidence. `Home_and_Kitchen` dành cho bounded scale-stress experiment nếu luận văn tiếp tục giữ large-scale claim. Như vậy, dataset được chọn theo vai trò nghiên cứu, không phải theo dataset nào về sau cho model score tốt nhất.
 
-Official absolute split với `t1 = 1628643414042` và `t2 = 1658002729837` milliseconds được giữ làm candidate reference. Split, item-key handling, rule chuyển rating thành implicit-positive, warm-start filtering và negative eligibility vẫn mở cho đến khi raw audit được execute. Không được dùng blind official leave-last-out vì singleton handling được document có thể để user/item nằm ngoài training universe.
+### 7.1.2 Audit để làm gì và dùng phương pháp nào
 
-### 7.1.2 Kết quả audit do project tạo ra
+Audit là phương pháp nghiên cứu trước model. Mục tiêu là xác định downloaded bytes có tái lập được không, semantics có hỗ trợ recommendation task dự kiến không, population nào còn lại sau leakage-safe temporal transformation, và graph kết quả có thực sự kiểm tra sampling method được không. Audit ngăn source error, hidden filtering, future-information leakage, negative không được định nghĩa và evaluation cohort mà pure-ID model không thể biểu diễn.
 
-Raw audit đã được execute thành công cho hai artifact trong scope. `All_Beauty` có 693,929 valid row, 631,986 user và 112,565 item; exact duplicate-pair count bằng zero. `Baby_Products` có 5,953,891 valid parsed row, 3,386,206 user và 217,654 item; một row có rating `0.0`, ngoài expected range 1–5, và exact duplicate-pair count vẫn mở vì SQLite scan quy mô lớn chưa hoàn thành. Cả hai artifact không có missing hoặc parse-invalid field.
+Project dùng **exact streaming descriptive audit kết hợp candidate temporal-split diagnostic**. Các row được parse tuần tự để kiểm tra toàn bộ compressed source mà không cần nạp cả table vào RAM. Exact counter và persistent keyed state được dùng khi cần cho ID, user–item pair, degree và split membership. Audit deterministic và ghi source URL, retrieval time, compressed size, SHA-256, schema, anomaly count, rating distribution, degree distribution, duplicate pair, timestamp diagnostic và candidate-split OOV coverage.
 
-Cả hai category đều rất sparse và bị chi phối bởi user singleton: 93.22% user của `All_Beauty` và 70.01% user của `Baby_Products` chỉ có một observed row. Candidate absolute split do provider công bố tạo OOV cao so với training partition. Với `All_Beauty`, validation/test OOV user là 63,008/34,851; với `Baby_Products` là 301,130/318,972. Đây là protocol finding, không phải model result: published absolute split chưa thể dùng trực tiếp làm primary warm-start split hiện tại nếu chưa có protocol decision rõ.
+Phương pháp này khác các cách liên quan ở những điểm quan trọng:
 
-Bảng đầy đủ, checksum, rating distribution, degree summary, split diagnostic và negative-pool diagnostic được ghi trong [`DATASET_AUDIT_RESULTS_vn.md`](../06_code/docs/DATASET_AUDIT_RESULTS_vn.md) và bản tiếng Anh tương ứng. `All_Beauty` chỉ còn vai trò development/diagnostic, còn `Baby_Products` vẫn là primary candidate nhưng chưa finalized. Rating-to-implicit-positive rule, duplicate handling, cold-start treatment và negative eligibility vẫn mở.
+- Provider metadata hữu ích cho provenance nhưng chỉ có aggregate claim đã làm tròn; project audit tính exact count từ acquired bytes và verify thay vì giả định provider behavior.
+- Exploratory in-memory analysis thuận tiện nhưng có thể vượt RAM hoặc âm thầm dùng sample; streaming analysis bao phủ mọi row với bounded working memory, dù exact high-cardinality check vẫn có thể cần disk-backed state.
+- Random sampling hoặc approximate sketch giảm chi phí nhưng tạo estimation error, nên không phù hợp cho checksum, anomaly, duplicate và gate-closing count nếu approximation không được khai báo tường minh.
+- Provider 5-core hoặc global pre-filtering tạo population dày hơn nhưng có thể dùng future activity trước temporal split. Project audit raw event 0-core trước rồi mới filtering từ training positive.
+- Model evaluation trả lời recommender đã train xếp hạng item tốt đến đâu. Dataset audit trả lời task, cohort, graph và evidence có hợp lệ không; nó không thể chứng minh NDCG, Recall, sampler superiority hoặc scalability.
+
+Các chỉ số audit chính được định nghĩa như sau:
+
+| Chỉ số | Định nghĩa và ý nghĩa nghiên cứu |
+|---|---|
+| Valid-row rate | Số parsed row thỏa constraint bắt buộc về ID, rating và timestamp chia cho tổng row; đo schema conformity, không đo positive-feedback validity |
+| Duplicate-pair rate | Số row vượt quá occurrence đầu tiên của cùng `(user_id, parent_asin)` chia cho valid row; phát hiện repeated-pair ambiguity cần policy deterministic |
+| P4/P5 retention | Số row có `rating >= 4` hoặc `rating == 5` chia cho valid row; đo hệ quả về quy mô của candidate implicit-positive semantics |
+| User/item degree | Số retained interaction incident trên mỗi user/item; quantile, mean, maximum và singleton rate mô tả bipartite sparsity cùng head–tail imbalance |
+| Singleton rate | Số node thuộc loại tương ứng có degree một chia cho tổng node loại đó; cho biết bao nhiêu population không đủ lịch sử cho warm-start split thông thường |
+| Bipartite density | `|E| / (|U| × |I|)` khi mỗi valid pair được xem là một edge; mô tả occupancy nhưng tự thân không chứng minh độ khó hay quy mô |
+| OOV rate | Số validation/test user hoặc item không có trong training universe chia cho unique validation/test user hoặc item tương ứng; đo mức không tương thích của cohort với pure-ID warm-start evaluation |
+| Warm-start retention | Số evaluation target có cả user và item thuộc frozen training universe chia cho tổng candidate target; định nghĩa retained estimand và phải report cùng OOV |
+| Timestamp-tie count | Số row tham gia các shared timestamp value ở resolution đã khai báo; phát hiện ambiguity tại temporal cutoff và nhu cầu stable tie rule |
+| Provenance identity | Exact URL, retrieval time, byte size và SHA-256; xác định artifact đã phân tích, không chứng minh semantics khoa học của nó đúng |
+
+### 7.1.3 Kết quả audit do project tạo ra và cách diễn giải
+
+Persistent JSON manifest đã được ghi vào Google Drive ngày 2026-09-02 từ exact downloaded bytes. `All_Beauty` có SHA-256 `54b894e68ad965aa73cdb80d8695c1ed37679c46f38b6f97b21ab0fb585aab24`; `Baby_Products` có SHA-256 `e2a8d0498afed767ee2615db7fac549559d82490b1a73c7241b84b5e9e8c279e`. Các hash này định danh artifact đã audit. G2-A vẫn cần access/usage note, source version, preprocessing configuration và code commit đầy đủ trong immutable manifest.
+
+| Finding | `All_Beauty` | `Baby_Products` | Diễn giải nghiên cứu |
+|---|---:|---:|---|
+| Valid row | 693,929 | 5,953,891 | Exact acquired-byte count phù hợp expected source scale; cả hai file không có missing required ID hoặc invalid timestamp |
+| Unique user / item | 631,986 / 112,565 | 3,386,206 / 217,654 | `Baby_Products` cung cấp primary graph lớn hơn rõ rệt; raw size tự thân không đóng G2 |
+| Exact repeated user–item row | 0 | 0 | Acquired release đã có một row trên mỗi user–item pair theo audited key; vẫn phải ghi deterministic policy để tái lập |
+| Rating anomaly | không có | một row `0.0` | Baby anomaly có tần suất không đáng kể nhưng là ngoại lệ schema/semantics cần quarantine hoặc xử lý bằng rule đã pre-register |
+| P4 / P5 retained row | 494,769 / 416,190 | 4,655,843 / 3,973,866 | Cả hai semantics giữ lại lượng event đáng kể; chọn P4 hay P5 phải theo feedback meaning và post-filter feasibility, không theo downstream score |
+| User singleton rate | 93.22% | 70.01% | Phần lớn user có quá ít raw history cho warm-start temporal evaluation thông thường; kết quả loại `All_Beauty` khỏi primary evidence và bắt buộc report retention cho Baby |
+| Item singleton rate | 42.59% | 31.65% | Cả hai graph có item tail lớn, tạo diagnostic có ý nghĩa cho coverage và sampling bias |
+| User degree p50 / p90 / p99 | 1 / 1 / 3 | 1 / 3 / 10 | Activity có long tail mạnh, đặc biệt phía user; aggregate average sẽ che population degree thấp chiếm ưu thế |
+| Item degree p50 / p90 / p99 | 2 / 11 / 72 | 3 / 36 / 450 | Item popularity tập trung mạnh, vì vậy sampler analysis về sau phải report head–tail exposure thay vì chỉ aggregate accuracy |
+| Candidate validation user OOV | 63,008/68,386 = 92.14% | 301,130/401,145 = 75.07% | Provider absolute split không tương thích với direct pure-ID warm-start evaluation cho phần lớn validation user |
+| Candidate test user OOV | 34,851/36,953 = 94.31% | 318,972/383,264 = 83.23% | Mức không tương thích tiếp tục hoặc tăng ở test; chỉ report retained user sẽ che severe cohort attrition |
+| Candidate validation/test item OOV | 49.37% / 57.68% | 36.51% / 54.11% | Future partition cũng có nhiều unseen item; primary pure-ID task phải loại và report chúng hoặc thêm cold-start mechanism riêng |
+| Timestamp-tie audit | 448 participating row | `UNKNOWN` vì exact tie counting bị tắt | All Beauty cần stable cutoff tie rule; Baby tie evidence chưa hoàn chỉnh và không được suy từ All Beauty |
+
+Các finding này chứng minh source identity, exact raw scale, bipartite sparsity mạnh, long-tail concentration và mức mismatch nghiêm trọng giữa provider absolute split với pure-ID warm-start estimand. Chúng biện minh cho việc giữ `Baby_Products` làm primary candidate, giới hạn `All_Beauty` ở development diagnostic và xây strict temporal task mới chỉ từ training information. Chúng **không** chứng minh recommendation quality, sampling effectiveness, memory reduction, runtime improvement, novelty hoặc large-scale generalization.
+
+Phân tích tuân theo chuỗi **observation → population và denominator → protocol consequence → action → excluded inference → gate status**. Theo evidence hiện tại, duplicate verification đã được giải quyết cho cả hai acquired file; cách xử lý Baby `0.0`, lựa chọn P4/P5/all-observed, exact Baby timestamp tie, strict temporal cutoff, training-only filtering, negative eligibility, warm-start retention và G2-D feasibility vẫn `OPEN`.
+
+Protocol chi tiết và quy tắc diễn giải nằm trong [`DATASET_PORTFOLIO_AND_ANALYSIS_PROTOCOL_vn.md`](../00_project/DATASET_PORTFOLIO_AND_ANALYSIS_PROTOCOL_vn.md). Result record local cũ vẫn nằm trong [`DATASET_AUDIT_RESULTS_vn.md`](../06_code/docs/DATASET_AUDIT_RESULTS_vn.md); file đó phải được đồng bộ với persistent manifest trước khi được xem là numerical summary hiện hành.
 
 ### 7.2 Chuẩn bị chống leakage
 
@@ -197,7 +242,7 @@ Semantic decision D1–D11 được ghi trong GRAPES-informed reference specific
 
 Code deliverable được dự kiến là modular Python package có CPU toy-graph path, deterministic configuration và seed handling, truy vết D-ID tới module tới T-ID, data/checksum manifest interface, logging và checkpoint contract, paired human-readable documentation và thin Colab launcher. Notebook chỉ nên install package, thu runtime metadata, chạy test và lưu log; không chứa implementation logic chính.
 
-Dataset-audit utility hiện được implement như pre-model gate dạng streaming, dependency-free. Utility đã được check trên toy CSV fixture của project và execute trên temporary raw artifact `All_Beauty` và `Baby_Products`. Evidence kết quả được ghi riêng; persistent Colab acquisition, protocol closure và post-filter training-universe statistics vẫn mở.
+Dataset-audit utility hiện được implement như pre-model gate dạng streaming, dependency-free. Utility đã được check trên toy CSV fixture của project và execute trên exact acquired bytes của `All_Beauty` và `Baby_Products`. Persistent checksummed JSON manifest hiện đã tồn tại trên Google Drive; các manifest field G2-A đầy đủ, protocol closure và post-filter training-universe statistic vẫn mở.
 
 Exact Python/PyTorch/PyG/CUDA lock và final GPU class chưa biết. Colab sẵn sàng cho development và smoke run, nhưng temporary Colab hardware không phải nền tảng profiling comparable cuối cùng.
 
@@ -208,7 +253,7 @@ Exact Python/PyTorch/PyG/CUDA lock và final GPU class chưa biết. Colab sẵn
 - GFlowNet likelihood và normalizer semantic cần test implementation tường minh.
 - Learned sampler có thể cải thiện ranking nhưng tăng memory/runtime; phải report cả hai phía của trade-off.
 - Exact Phase 1 commit provenance không có, làm giới hạn attribution của historical reproduction result.
-- Persistent Amazon artifact acquisition, license/access note, protocol decision và post-filter training-universe scale chưa khóa; temporary-run checksum và pre-filter diagnostic đã được ghi.
+- Persistent checksummed Amazon audit manifest đã có, nhưng license/access note, source/code/configuration manifest field, protocol decision và post-filter training-universe scale chưa hoàn chỉnh.
 - Thesis template, submission language, page limit, defense format và formal rubric của trường chưa biết.
 
 ## 10. Trạng thái hiện tại và research gate tiếp theo
@@ -221,11 +266,11 @@ Exact Python/PyTorch/PyG/CUDA lock và final GPU class chưa biết. Colab sẵn
 | Reference verification candidate T01–T25 | `PARTIAL TOY EXECUTION` | 10 toy check pass; final verification plan vẫn mở |
 | Report và slide working content | `CUMULATIVE DRAFT` | Living report và defense deck này |
 | Python/Colab source | `SCAFFOLDED AND TOY-TESTED` | 10/10 pure-Python test pass local; chưa benchmark implementation |
-| Amazon data | `RAW AUDIT EXECUTED / G2 OPEN` | Đã checksum temporary run và ghi derived result; persistent acquisition và protocol closure vẫn mở |
-| Environment/GPU | `OPEN` | Colab available; final lock chưa xác nhận |
+| Amazon data | `PERSISTENT RAW AUDIT / G2 OPEN` | Đã có checksummed Drive manifest; G2-A field, semantic/split decision, post-filter graph và G2-D vẫn mở |
+| Environment/GPU | `E0-MIN IN_PROGRESS; E0-FINAL NOT_STARTED` | Có Colab; development lock chạy lại được và final profiling lock chưa hoàn tất |
 | Recommendation result | `NOT STARTED` | Chưa có NDCG, Recall, runtime, memory hoặc scalability result |
 
-Gate tiếp theo là executable environment và data/provenance package, sau đó là toy correctness test. Không bắt đầu learned-policy experiment khi semantic hoặc data-leakage control còn mơ hồ.
+Registry chuẩn hiện có G0 `PASS`, G1/G2 `IN_PROGRESS` và G3–G6 `NOT_STARTED`. Closest-work/rationale G1 và protocol evidence G2 chạy song song với E0-MIN. Baseline khoa học chờ G2 cùng E0-MIN; implement proposed sampler chờ G1–G3. Toy test hiện có là reference evidence và không thỏa G4.
 
 ## 11. Tài liệu tham khảo
 

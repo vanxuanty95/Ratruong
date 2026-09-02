@@ -361,21 +361,23 @@ log Z(V^0) = mean_v r_Z[v,0]                  scalar
 
 Therefore, Phase 2 may claim sampled-training behavior only, not sampled-inference scalability.
 
-## 10. Decisions blocking Gate G1
+## 10. GRAPES-informed reference-design decisions
+
+These decisions are `REFERENCE-SPECIFIED`: they close ambiguity inside this comparator/reference design only. They do not select the thesis method and do not close canonical Gate G1.
 
 | ID | Decision | State | Required closure evidence |
 |---|---|---|---|
-| D1 | Block orientation and execution order | `CLOSED: SOURCE K^l TO TARGET K^(l-1); PREFIX DEPTHS` | Two-layer toy derivation and test oracle |
-| D2 | Exact sampled-local normalization | `CLOSED: RECTANGULAR BI-NORMALIZATION` | Formula plus full-coverage equivalence test |
-| D3 | Self-loop semantics | `CLOSED: NONE` | LightGCN source and adjacency test |
-| D4 | REINFORCE sign | `CLOSED: POSITIVE COST TIMES LOG-PROBABILITY` | Two-action gradient-direction test |
-| D5 | Ranking-only or regularized sampler signal | `CLOSED: DETACHED MEAN RANKING LOSS` | Credit-assignment rationale and invariance test |
-| D6 | `GCN_Z` recommendation construction | `CLOSED: TARGET-INDUCED GCN AND MEAN SCALAR` | Input/pooling/output specification |
-| D7 | Sampler embedding details | `CLOSED: SEPARATE SAMPLER-OWNED TABLES` | Ownership, initialization, optimizer, and OOV specification |
-| D8 | Cross-layer node re-entry | `CLOSED: ALLOWED` | Paper/code audit and explicit invariant |
-| D9 | Positive-edge masking stage | `CLOSED: RETAIN PRIMARY; TRANSIENT FULL-PIPELINE MASK ABLATION` | Candidate/propagation pseudocode |
-| D10 | BPR batch reduction | `CLOSED: MEAN` | Batch-scale invariance test |
-| D11 | Empty/small candidate likelihood | `CLOSED: FULL BERNOULLI` | Finite-likelihood definition and tests |
+| D1 | Block orientation and execution order | `REFERENCE-SPECIFIED: SOURCE K^l TO TARGET K^(l-1); PREFIX DEPTHS` | Two-layer toy derivation and test oracle |
+| D2 | Exact sampled-local normalization | `REFERENCE-SPECIFIED: RECTANGULAR BI-NORMALIZATION` | Formula plus full-coverage equivalence test |
+| D3 | Self-loop semantics | `REFERENCE-SPECIFIED: NONE` | LightGCN source and adjacency test |
+| D4 | REINFORCE sign | `REFERENCE-SPECIFIED: POSITIVE COST TIMES LOG-PROBABILITY` | Two-action gradient-direction test |
+| D5 | Ranking-only or regularized sampler signal | `REFERENCE-SPECIFIED: DETACHED MEAN RANKING LOSS` | Credit-assignment rationale and invariance test |
+| D6 | `GCN_Z` recommendation construction | `REFERENCE-SPECIFIED: TARGET-INDUCED GCN AND MEAN SCALAR` | Input/pooling/output specification |
+| D7 | Sampler embedding details | `REFERENCE-SPECIFIED: SEPARATE SAMPLER-OWNED TABLES` | Ownership, initialization, optimizer, and OOV specification |
+| D8 | Cross-layer node re-entry | `REFERENCE-SPECIFIED: ALLOWED` | Paper/code audit and explicit invariant |
+| D9 | Positive-edge masking stage | `REFERENCE-SPECIFIED: RETAIN PRIMARY; TRANSIENT FULL-PIPELINE MASK ABLATION` | Candidate/propagation pseudocode |
+| D10 | BPR batch reduction | `REFERENCE-SPECIFIED: MEAN` | Batch-scale invariance test |
+| D11 | Empty/small candidate likelihood | `REFERENCE-SPECIFIED: FULL BERNOULLI` | Finite-likelihood definition and tests |
 
 ## 11. Required unit tests
 
@@ -419,12 +421,14 @@ Therefore, Phase 2 may claim sampled-training behavior only, not sampled-inferen
 - `T24`: Full-graph inference is deterministic across repeated runs.
 - `T25`: Injecting a validation/test edge or statistic into training fails immediately.
 
-## 12. Gate G1 exit criteria
+## 12. Reference-design readiness boundary
 
-All semantic decisions D1–D11 are now closed. Gate G1 remains `OPEN FOR ENVIRONMENT LOCK` and closes when:
+All semantic decisions D1–D11 are specified for this reference design. They become executable acceptance criteria only if the relevant components are adopted. Canonical G1 is the research-design rationale gate in the [Phase 2 research plan](../00_project/PHASE2_RESEARCH_PLAN_en.md); environment readiness is tracked separately as E0-MIN/E0-FINAL.
+
+This reference design is ready for an implementation-gate review when:
 
 - the registered D1–D11 test oracles remain frozen as executable acceptance criteria for the implementation gates;
-- the exact Python/PyTorch/PyG/CUDA environment is locked on the confirmed final GPU class;
+- the applicable executable environment prerequisite is satisfied;
 - primary and ablation protocols cannot be selected using test performance;
 - the already pinned source versions and the executable environment are recorded together;
 - the bilingual specification remains semantically synchronized.

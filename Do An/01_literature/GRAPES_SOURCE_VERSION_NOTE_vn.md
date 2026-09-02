@@ -1,8 +1,8 @@
 # Ghi chú source và version GRAPES
 
-> **Trạng thái:** `WEEK 1 PIN RECORDED; PHASE 1 COMMIT UNKNOWN`  
+> **Trạng thái:** `REFERENCE PIN RECORDED; PHASE 1 COMMIT UNKNOWN`
 > **Ngày ghi:** 2026-08-26  
-> **Mục đích:** định nghĩa nguồn có thẩm quyền cho direct GRAPES-to-recommendation adaptation.
+> **Mục đích:** định nghĩa source GRAPES có version để làm scientific reference, comparator design và historical provenance. Note này không chọn phương pháp luận văn hoặc định nghĩa gate chuẩn.
 
 ## 1. Quyết định version
 
@@ -122,10 +122,10 @@ Dùng thứ tự ưu tiên:
 
 Khi paper và code không khớp, ghi discrepancy, thiết kế minimal falsification/unit test và freeze lựa chọn trong specification. Không bao giờ âm thầm chọn behavior tạo result tốt hơn.
 
-## 8. Trạng thái source Week 1
+## 8. Trạng thái source hiện tại
 
 - Paper version: `PINNED`.
 - Official code reference: `PINNED`.
 - Exact Phase 1 executed commit: `UNKNOWN` và không thể khôi phục từ artifact hiện tại.
 - Phase 2 environment: `OPEN`.
-- Gate G1: vẫn `OPEN` chờ specification decision và test.
+- G1 chuẩn vẫn `IN_PROGRESS` cho closest-work positioning, rationale và quy tắc chọn phương pháp đăng ký trước; xem [kế hoạch chuẩn](../00_project/PHASE2_RESEARCH_PLAN_vn.md). Environment readiness được theo dõi riêng bằng E0.

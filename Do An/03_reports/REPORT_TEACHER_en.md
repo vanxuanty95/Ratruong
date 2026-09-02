@@ -2,7 +2,7 @@
 
 > **Project:** *Development of a Graph Sampling Method for Large-Scale Recommender Systems Using Graph Neural Networks (GNNs)*  
 > **Status:** `CUMULATIVE BRIEFING — RESEARCH FOUNDATION AND DATA-PROTOCOL GATE`  
-> **Last updated:** 2026-08-27  
+> **Last updated:** 2026-08-30
 > **Use:** This is a current meeting brief, not a weekly thesis deliverable. Dated history is preserved in the continuity records.
 
 ## 1. Thesis identity
@@ -10,6 +10,8 @@
 Phase 2 is an independent Master's thesis. Phase 1 is read-only historical context: it explored the topic and studied/reproduced GRAPES for node classification. GRAPES is retained as a scientific reference, comparator, and source of candidate mechanisms; it is not the fixed thesis method or the thesis title.
 
 The final sampler remains `OPEN`. The existing GRAPES-informed reference design and its D1–D11/T01–T25 contracts are reference-design and verification candidates only. They can be adopted, changed, or rejected after literature positioning, implementation checks, ablations, and experiments.
+
+The canonical gate register currently records G0 `PASS`, G1/G2 `IN_PROGRESS`, and G3–G6 `NOT_STARTED`. Environment readiness is separate: E0-MIN is `IN_PROGRESS` and E0-FINAL is `NOT_STARTED`. G1 and G2 proceed in parallel; no baseline or sampler gate is bypassed.
 
 ## 2. Current evidence and maturity
 

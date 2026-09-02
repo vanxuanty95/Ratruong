@@ -1,9 +1,9 @@
 # Development of a Graph Sampling Method for Large-Scale Recommender Systems Using Graph Neural Networks
 
 > **Status:** `CUMULATIVE WORKING THESIS — METHOD DEVELOPMENT, DATA AUDIT, AND RESEARCH PLAN`  
-> **Last updated:** 2026-08-26  
+> **Last updated:** 2026-09-02
 > **Phase 2 identity:** Independent Master's thesis; GRAPES is a scientific reference, not the pre-fixed thesis method  
-> **Evidence boundary:** A dependency-free toy scaffold and ten local contract tests exist; a temporary raw Amazon audit has executed, but no persistent finalized dataset artifact, Phase 2 PyTorch/PyG implementation, full oracle suite, benchmark, or recommendation result exists yet.
+> **Evidence boundary:** A dependency-free toy scaffold and ten local contract tests exist. Persistent checksummed raw-audit manifests for the two scoped Amazon categories now exist in Google Drive, but the interaction semantics, strict temporal warm-start dataset, Phase 2 PyTorch/PyG implementation, full oracle suite, benchmark, and recommendation results are not finalized.
 
 This document is the English working thesis report. It is intentionally a living artifact: verified implementation, execution, and validation evidence will replace planned statements as the research progresses. The Vietnamese counterpart is [`THESIS_REPORT_vn.md`](./THESIS_REPORT_vn.md).
 
@@ -13,7 +13,7 @@ Large graph neural networks can require information from increasingly large mult
 
 The current GRAPES-informed reference design explores a sampler GNN, Gumbel Top-k selection, and policy-learning objectives alongside a LightGCN-style recommender and Bayesian Personalized Ranking (BPR). These are candidate components—not the final method by default. The final method will be defined through literature positioning, method rationale, data/protocol constraints, controlled comparisons, and ablations. A dependency-free scaffold tests a subset of reference contracts on toy inputs; no final Phase 2 method has yet been implemented or tested.
 
-The current project state provides a controlled research foundation rather than an empirical result: primary sources are pinned, the initial literature matrix and a GRAPES-informed reference design are recorded, a toy scaffold exists, and a raw dataset audit has been executed. Final method definition, persistent data protocol, environment locking, model implementation, and performance evaluation remain open.
+The current project state provides a controlled research foundation rather than a model-performance result: primary sources are pinned, the initial literature matrix and a GRAPES-informed reference design are recorded, a toy scaffold exists, and persistent raw dataset audits have been executed. Final interaction semantics, temporal warm-start construction, method definition, environment locking, model implementation, and performance evaluation remain open.
 
 ## 2. Scope and motivation
 
@@ -159,21 +159,66 @@ The evidence portfolio is deliberately bounded. `Baby_Products` is the mandatory
 
 The paired decision record, sources, exact audit questions, preprocessing sequence, comparison rules, and gates are in [`DATASET_PORTFOLIO_AND_ANALYSIS_PROTOCOL_en.md`](../00_project/DATASET_PORTFOLIO_AND_ANALYSIS_PROTOCOL_en.md). In particular, the official Amazon 5-core data are a reproducibility reference, not automatically the thesis's strict temporal training graph.
 
-### 7.1.1 Initial dataset-audit status
+### 7.1.1 Why these datasets were selected
 
-The local audit on 2026-08-26 found no Amazon raw artifact in `Do An` or the Phase 1 reference area. The official Amazon Reviews'23 documentation identifies the pure-ID 0-core rating-only schema as `user_id`, `parent_asin`, `rating`, and `timestamp`, and publishes rounded pre-split counts of approximately 632.0K users / 112.6K items / 693.9K ratings for `All_Beauty` and 3.4M / 217.7K / 6.0M for `Baby_Products`. These are provider-published metadata, not project-derived results.
+Amazon Reviews'23 is selected because the thesis studies graph sampling for recommendation and therefore needs timestamped user–item interactions that can be represented as a large bipartite graph. The pure-ID 0-core release preserves the sparse long tail instead of imposing a provider-side k-core population before the project defines its own training-only transformation. It also supplies rating values for testing alternative implicit-positive semantics and timestamps for temporal evaluation.
 
-The project has now added a standard-library streaming audit script and paired Colab notebooks. The audit records the exact source URL, acquisition state, compressed file size, SHA-256, schema, invalid rows, duplicate user–item pairs, rating distribution, timestamp range/ties, degree statistics, candidate absolute-split coverage, warm-start out-of-vocabulary counts, and a negative-pool diagnostic. The official processing README states that repeated user–item reviews are de-duplicated by keeping the earliest review; this behavior must be verified against the downloaded bytes rather than assumed.
+`Baby_Products` is the primary candidate because it combines a product-review domain, millions of events, more than three million users, and substantial degree imbalance. This scale is large enough to expose graph-construction and sampling pressure while remaining more bounded than the largest Amazon categories. `All_Beauty` is retained as a development control because it has the same schema and source family but is smaller; its very high singleton rate prevents it from serving as the main warm-start evidence. `Home_and_Kitchen` is reserved for a bounded scale-stress experiment if the thesis retains the large-scale claim. Dataset selection is thus role-based rather than based on which dataset later produces the best model score.
 
-The official absolute split with `t1 = 1628643414042` and `t2 = 1658002729837` milliseconds is retained as a candidate reference. The split, item-key handling, rating-to-implicit-positive rule, warm-start filtering, and negative eligibility remain open until the raw audit is executed. The official leave-last-out option is not adopted blindly because its documented singleton handling can leave users/items outside the training universe.
+### 7.1.2 Purpose and method of the audit
 
-### 7.1.2 Project-derived audit result
+The audit is a pre-model research method. Its purpose is to determine whether the downloaded bytes are reproducible, whether their semantics can support the intended recommendation task, what population would remain after a leakage-safe temporal transformation, and whether the resulting graph is capable of testing a sampling method. It prevents source errors, hidden filtering, future-information leakage, undefined negatives, and an evaluation cohort that a pure-ID model cannot represent.
 
-The raw audit executed successfully for both scoped artifacts. `All_Beauty` contains 693,929 valid rows, 631,986 users, and 112,565 items; its exact duplicate-pair count is zero. `Baby_Products` contains 5,953,891 valid parsed rows, 3,386,206 users, and 217,654 items; one row has rating `0.0`, outside the expected 1–5 range, and its exact duplicate-pair count remains open because the large-scale SQLite scan was not completed. No missing or parse-invalid fields were observed in either artifact.
+The project uses an **exact streaming descriptive audit with a candidate temporal-split diagnostic**. Rows are parsed sequentially so the full compressed source can be examined without loading the whole table into RAM. Exact counters and persistent keyed state are used where necessary for IDs, user–item pairs, degrees, and split membership. The audit is deterministic and records the source URL, retrieval time, compressed size, SHA-256, schema, anomaly counts, rating distribution, degree distribution, duplicate pairs, timestamp diagnostics, and candidate-split OOV coverage.
 
-Both categories are highly sparse and user-singleton dominated: 93.22% of `All_Beauty` users and 70.01% of `Baby_Products` users have one observed row. The provider's absolute split candidate produces high OOV coverage relative to the training partition. For `All_Beauty`, validation/test OOV users are 63,008/34,851; for `Baby_Products`, they are 301,130/318,972. This is a protocol finding, not a model result: the published absolute split cannot be used directly as the current warm-start primary split without an explicit protocol decision.
+This method differs from related alternatives in important ways:
 
-The complete tables, checksums, rating distributions, degree summaries, split diagnostics, and negative-pool diagnostics are recorded in [`DATASET_AUDIT_RESULTS_en.md`](../06_code/docs/DATASET_AUDIT_RESULTS_en.md) and its Vietnamese counterpart. `All_Beauty` remains development/diagnostic only; `Baby_Products` remains the primary candidate but is not finalized. The rating-to-implicit-positive rule, duplicate handling, cold-start treatment, and negative eligibility remain open.
+- Provider metadata is useful for provenance but contains rounded aggregate claims; the project audit derives exact counts from the acquired bytes and verifies rather than assumes provider behavior.
+- Exploratory in-memory analysis is convenient but may exceed RAM or silently use a sample; streaming analysis covers every row with bounded working memory, although exact high-cardinality checks can still require disk-backed state.
+- Random sampling or approximate sketches reduce cost but introduce estimation error, so they are unsuitable for checksum, anomaly, duplicate, and gate-closing counts unless approximation is explicitly declared.
+- Provider 5-core or global pre-filtering creates a denser population but can use future activity before the temporal split. The project first audits 0-core raw events and will apply filtering from training positives only.
+- Model evaluation answers whether a trained recommender ranks items well. Dataset audit instead answers whether the task, cohort, graph, and evidence are valid; it cannot establish NDCG, Recall, sampler superiority, or scalability.
+
+The principal audit indicators are defined as follows:
+
+| Indicator | Definition and research meaning |
+|---|---|
+| Valid-row rate | Parsed rows satisfying required ID, rating, and timestamp constraints divided by all rows; measures schema conformity, not positive-feedback validity |
+| Duplicate-pair rate | Rows beyond the first occurrence of the same `(user_id, parent_asin)` divided by valid rows; detects repeated-pair ambiguity requiring a deterministic policy |
+| P4/P5 retention | Rows with `rating >= 4` or `rating == 5`, divided by valid rows; measures the scale consequence of candidate implicit-positive semantics |
+| User/item degree | Number of retained incident interactions per user/item; quantiles, mean, maximum, and singleton rate describe bipartite sparsity and head–tail imbalance |
+| Singleton rate | Nodes of the relevant type with degree one divided by all nodes of that type; indicates how much of the population has insufficient history for common warm-start splitting |
+| Bipartite density | `|E| / (|U| × |I|)` when each valid pair is treated as one edge; describes occupancy but does not by itself prove difficulty or scale |
+| OOV rate | Validation/test users or items absent from the training universe divided by the corresponding unique validation/test users or items; measures cohort incompatibility with pure-ID warm-start evaluation |
+| Warm-start retention | Evaluation targets whose user and item both occur in the frozen training universe divided by all candidate targets; defines the retained estimand and must accompany OOV reporting |
+| Timestamp-tie count | Rows participating in shared timestamp values at a declared resolution; identifies ambiguity at temporal cutoffs and the need for a stable tie rule |
+| Provenance identity | Exact URL, retrieval time, byte size, and SHA-256; establishes which artifact was analyzed, not whether its scientific semantics are correct |
+
+### 7.1.3 Project-derived audit results and interpretation
+
+Persistent JSON manifests were written to Google Drive on 2026-09-02 from exact downloaded bytes. `All_Beauty` has SHA-256 `54b894e68ad965aa73cdb80d8695c1ed37679c46f38b6f97b21ab0fb585aab24`; `Baby_Products` has SHA-256 `e2a8d0498afed767ee2615db7fac549559d82490b1a73c7241b84b5e9e8c279e`. These hashes identify the audited artifacts. G2-A still requires a complete access/usage note, source version, preprocessing configuration, and code commit in the immutable manifest.
+
+| Finding | `All_Beauty` | `Baby_Products` | Research interpretation |
+|---|---:|---:|---|
+| Valid rows | 693,929 | 5,953,891 | Exact acquired-byte counts agree with the expected source scale; neither file has missing required IDs or invalid timestamps |
+| Unique users / items | 631,986 / 112,565 | 3,386,206 / 217,654 | `Baby_Products` supplies the materially larger primary graph; raw size alone does not close G2 |
+| Exact repeated user–item rows | 0 | 0 | The acquired releases already contain one row per user–item pair under the audited key; a deterministic policy must still be recorded for reproducibility |
+| Rating anomaly | none | one `0.0` row | The Baby anomaly is negligible in frequency but is a schema/semantic exception that must be quarantined or handled by a pre-registered rule |
+| P4 / P5 retained rows | 494,769 / 416,190 | 4,655,843 / 3,973,866 | Both semantics retain substantial event counts; choosing P4 versus P5 must follow feedback meaning and post-filter feasibility, not downstream scores |
+| User singleton rate | 93.22% | 70.01% | Most users have too little raw history for ordinary warm-start temporal evaluation; this rules out `All_Beauty` as primary evidence and requires explicit retention reporting for Baby |
+| Item singleton rate | 42.59% | 31.65% | A large item tail exists on both graphs, creating a meaningful coverage and sampling-bias diagnostic |
+| User degree p50 / p90 / p99 | 1 / 1 / 3 | 1 / 3 / 10 | Activity is strongly long-tailed, particularly on the user side; aggregate averages would hide the dominant low-degree population |
+| Item degree p50 / p90 / p99 | 2 / 11 / 72 | 3 / 36 / 450 | Item popularity is highly concentrated, so later sampler analysis must report head–tail exposure rather than aggregate accuracy alone |
+| Candidate validation user OOV | 63,008/68,386 = 92.14% | 301,130/401,145 = 75.07% | The provider absolute split is incompatible with direct pure-ID warm-start evaluation for most validation users |
+| Candidate test user OOV | 34,851/36,953 = 94.31% | 318,972/383,264 = 83.23% | The same incompatibility persists or increases at test time; reporting only retained users would otherwise conceal severe cohort attrition |
+| Candidate validation/test item OOV | 49.37% / 57.68% | 36.51% / 54.11% | Future partitions also contain many unseen items; the primary pure-ID task must exclude and report them or introduce a separate cold-start mechanism |
+| Timestamp-tie audit | 448 participating rows | `UNKNOWN` because exact tie counting was disabled | All Beauty needs a stable cutoff tie rule; Baby tie evidence remains incomplete and must not be inferred from All Beauty |
+
+These findings demonstrate source identity, exact raw scale, strong bipartite sparsity, long-tail concentration, and severe mismatch between the provider's absolute split and a pure-ID warm-start estimand. They justify retaining `Baby_Products` as the primary candidate, limiting `All_Beauty` to development diagnostics, and constructing a new strict temporal task from training-only information. They do **not** demonstrate recommendation quality, sampling effectiveness, memory reduction, runtime improvement, novelty, or large-scale generalization.
+
+The analysis follows the chain **observation → population and denominator → protocol consequence → action → excluded inference → gate status**. On current evidence, duplicate verification is resolved for both acquired files; the Baby `0.0` treatment, P4/P5/all-observed choice, exact Baby timestamp ties, strict temporal cutoffs, training-only filtering, negative eligibility, warm-start retention, and G2-D feasibility remain `OPEN`.
+
+The detailed protocol and interpretation rules are recorded in [`DATASET_PORTFOLIO_AND_ANALYSIS_PROTOCOL_en.md`](../00_project/DATASET_PORTFOLIO_AND_ANALYSIS_PROTOCOL_en.md). The earlier local result record remains in [`DATASET_AUDIT_RESULTS_en.md`](../06_code/docs/DATASET_AUDIT_RESULTS_en.md); it must be synchronized with the persistent manifests before being treated as the current numerical summary.
 
 ### 7.2 Leakage-safe preparation
 
@@ -197,7 +242,7 @@ Semantic decisions D1–D11 are recorded in the GRAPES-informed reference specif
 
 The code deliverable is planned as a modular Python package with a CPU toy-graph path, deterministic configuration and seed handling, D-ID-to-module-to-T-ID traceability, data/checksum manifest interfaces, logging and checkpoint contracts, paired human-readable documentation, and a thin Colab launcher. The notebook should install the package, capture runtime metadata, run tests, and persist logs; it should not contain the main implementation logic.
 
-The dataset-audit utility is implemented as a streaming, dependency-free pre-model gate. It has been checked on a project toy CSV fixture and executed on temporary raw `All_Beauty` and `Baby_Products` artifacts. The resulting evidence is recorded separately; persistent Colab acquisition, protocol closure, and post-filter training-universe statistics remain open.
+The dataset-audit utility is implemented as a streaming, dependency-free pre-model gate. It has been checked on a project toy CSV fixture and executed on exact acquired `All_Beauty` and `Baby_Products` bytes. Persistent checksummed JSON manifests now exist in Google Drive; complete G2-A manifest fields, protocol closure, and post-filter training-universe statistics remain open.
 
 The exact Python/PyTorch/PyG/CUDA lock and final GPU class are not yet known. Colab is available for development and smoke runs, but temporary Colab hardware is not the final comparable profiling platform.
 
@@ -208,7 +253,7 @@ The exact Python/PyTorch/PyG/CUDA lock and final GPU class are not yet known. Co
 - GFlowNet likelihood and normalizer semantics require explicit implementation tests.
 - A learned sampler may improve ranking while increasing memory or runtime; both sides of the trade-off must be reported.
 - Exact Phase 1 commit provenance is unavailable, limiting attribution of historical reproduction results.
-- Persistent Amazon artifact acquisition, license/access note, protocol decisions, and post-filter training-universe scale are not yet fixed; temporary-run checksums and pre-filter diagnostics are recorded.
+- Persistent checksummed Amazon audit manifests exist, but the license/access note, source/code/configuration manifest fields, protocol decisions, and post-filter training-universe scale are not yet complete.
 - University thesis template, submission language, page limit, defense format, and formal rubric are unknown.
 
 ## 10. Current status and next research gate
@@ -221,11 +266,11 @@ The exact Python/PyTorch/PyG/CUDA lock and final GPU class are not yet known. Co
 | Reference verification candidates T01–T25 | `PARTIAL TOY EXECUTION` | 10 toy checks pass; final verification plan remains open |
 | Report and slide working content | `CUMULATIVE DRAFT` | This living report and defense deck |
 | Python/Colab source | `SCAFFOLDED AND TOY-TESTED` | 10/10 pure-Python tests pass locally; no benchmark implementation |
-| Amazon data | `RAW AUDIT EXECUTED / G2 OPEN` | Checksummed temporary run and derived result record; persistent acquisition and protocol closure remain open |
-| Environment/GPU | `OPEN` | Colab available; final lock unconfirmed |
+| Amazon data | `PERSISTENT RAW AUDIT / G2 OPEN` | Checksummed Drive manifests exist; G2-A fields, semantic/split decisions, post-filter graph, and G2-D remain open |
+| Environment/GPU | `E0-MIN IN_PROGRESS; E0-FINAL NOT_STARTED` | Colab available; rerunnable development lock and final profiling lock remain incomplete |
 | Recommendation results | `NOT STARTED` | No NDCG, Recall, runtime, memory, or scalability result |
 
-The next gate is an executable environment and data/provenance package, followed by toy correctness tests. The project must not start learned-policy experiments while semantic or data leakage controls remain ambiguous.
+The canonical register has G0 `PASS`, G1/G2 `IN_PROGRESS`, and G3–G6 `NOT_STARTED`. G1 closest-work/rationale and G2 protocol evidence proceed in parallel with E0-MIN. Scientific baseline work waits for G2 and E0-MIN; proposed-sampler implementation waits for G1–G3. Existing toy tests are reference evidence and do not satisfy G4.
 
 ## 11. References
 

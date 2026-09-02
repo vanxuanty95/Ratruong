@@ -70,9 +70,9 @@ Provider processing, project interaction semantics, project temporal split, and 
 | G2-A: provenance | Official source, access note, persistent file, checksum, schema, and manifest complete |
 | G2-B: semantics | Duplicate policy, `0.0` treatment, primary positive rule, and negative rule pre-registered |
 | G2-C: evaluation validity | Temporal split, training-only graph/filtering, warm-start coverage, OOV exclusions, and exact candidate rule recorded |
-| G2-D: primary feasibility | `Baby_Products` retained graph supports planned baselines and exact evaluation on the confirmed compute budget |
-| G2-E: scale evidence | `Home_and_Kitchen` provenance/size audit complete and one pre-registered bounded stress configuration executed |
-| G2-F: optional expansion | MovieLens or Yelp considered only after the core gates complete |
+| G2-D: primary feasibility | Bounded non-headline execution records retained-graph statistics and pipeline/evaluator feasibility; no tuning, sampler comparison, or final-metric claim |
+| G5-S: conditional scale evidence | Actual `Home_and_Kitchen` stress execution occurs only after G3/G4 if the large-scale claim is retained; current work is provenance/size/planning only |
+| Optional expansion | MovieLens or Yelp is considered only after the Amazon core gates pass |
 
 ## 6. What this protocol does not establish
 

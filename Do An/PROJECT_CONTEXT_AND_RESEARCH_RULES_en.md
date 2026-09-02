@@ -2,8 +2,8 @@
 
 > Canonical English continuity file for the Master's thesis project. Read this file and its synchronized Vietnamese counterpart at the beginning of every new session. Update both whenever a research decision, verified result, open question, or working rule changes.
 
-**Last updated:** 2026-08-27  
-**Revision:** 20 — Canonical Phase 2 research plan centralized  
+**Last updated:** 2026-08-30
+**Revision:** 21 — Gate-driven research structure reset
 **User-facing discussion:** Vietnamese by default  
 **Analytical working language:** English  
 **Persistent artifact language:** Every language-bearing output must have a synchronized English version and Vietnamese version. English filenames end in `_en` and Vietnamese filenames end in `_vn`, immediately before the file extension.
@@ -264,8 +264,8 @@ Unless a later decision explicitly changes it, use this order:
 - Week 1 has started. GRAPES paper semantics are pinned to arXiv:2310.03399v3 and the current official code reference is pinned to commit `71ecebeaac896800aa4dd1d0f38c57ec222ef396`, accessed 2026-08-26.
 - The exact Phase 1 code commit is not recoverable from the current artifacts; its unversioned local snapshot is preserved only by a recorded content-manifest fingerprint and is not the Phase 2 canonical source.
 - Bilingual constraint, source-version, literature-matrix, and draft recommendation-specification artifacts now exist under `00_project`, `01_literature`, and `02_protocol`.
-- The recommendation specification now closes all semantic decisions D1–D11. It freezes inward source-to-target prefix propagation, rectangular sampled-block bi-normalization, the positive REINFORCE cost sign, detached mean ranking-only sampler cost, target-only `GCN_Z`, separate sampler-owned embeddings, and the retain-primary/transient-mask positive-edge protocol.
-- Gate G1 is still open only for the executable Python/PyTorch/PyG/CUDA lock on the confirmed GPU class. The registered oracles are frozen acceptance criteria and learned-policy implementation may not bypass them.
+- The recommendation specification marks D1–D11 as `REFERENCE-SPECIFIED` for the GRAPES-informed reference design. These decisions do not select or close the thesis method.
+- Canonical G1 is `IN_PROGRESS` for closest-work positioning, research-design rationale, matched comparison, and a predeclared method-selection rule. Environment execution is tracked separately as E0-MIN/E0-FINAL.
 - The current local machine is an Apple M4 Mac mini with 16 GB unified memory and no NVIDIA CUDA device. It is suitable for documentation and toy correctness tests after an environment is created, but it is not treated as the final benchmark platform.
 - User-supplied execution constraints are now recorded: 12 weeks, Python implementation, Amazon Reviews data sourced by the project, borrowable GPU capacity, Google Colab availability, and high expected thesis quality.
 - The active data proposal is Amazon-only: `All_Beauty` 0-core validates the pipeline and `Baby_Products` 0-core is the proposed primary thesis category. MovieLens is retired from the active plan.
@@ -279,7 +279,7 @@ Unless a later decision explicitly changes it, use this order:
 - The Week 2 dataset audit has progressed from setup to a temporary local raw execution. `All_Beauty` and `Baby_Products` were downloaded from the exact official URLs; their compressed sizes, SHA-256 values, raw schema, quality counts, degree summaries, candidate absolute-split OOV diagnostics, and negative-pool diagnostics are recorded in `06_code/docs/DATASET_AUDIT_RESULTS_*`. The raw files are not stored persistently.
 - The local audit found 693,929 valid `All_Beauty` rows with zero exact duplicate pairs, and 5,953,891 parsed `Baby_Products` rows with one out-of-range `rating=0.0`; the large-scale Baby duplicate-pair count remains unknown because the SQLite scan was not completed. The published absolute split has high validation/test OOV, so it is not accepted as the primary warm-start protocol yet.
 - The dependency-free streaming analyzer and paired Colab notebooks now cover provenance, SHA-256, schema, duplicate pairs, rating/timestamp checks, degree summaries, candidate absolute-split coverage, and negative-pool diagnostics. Persistent Colab acquisition, protocol closure, and post-filter training-universe statistics remain open.
-- Documentation drift is recorded: older status labels in `PHASE2_DIRECTION_REVIEW`, `PHASE2_CONSTRAINTS`, and `GRAPES_SOURCE_VERSION_NOTE` are superseded by the newer recommendation specification where D1–D11 are design-closed and Gate G1 remains open only for the executable environment lock. This audit did not rewrite those older artifacts.
+- Gate identity, status, dependencies, and blocking rules are governed only by the bilingual canonical plan. Active constraint/source/spec records now point to that registry; dated historical log entries remain historical evidence.
 
 ### Open questions within the locked Phase 2 direction
 
@@ -304,7 +304,7 @@ These remaining constraints do not reopen the research direction. Experiment sca
 
 ### Next executable action
 
-Create the locked Python project skeleton and implement T01–T25, beginning with the D1/D2/D4/D6/D9 oracles. In parallel, confirm the final GPU class, freeze the Python/PyTorch/PyG/CUDA environment, identify persistent cloud storage, and prepare thin Colab launchers that install from the lock. Then audit/checksum the Amazon pilot and primary artifacts for Gate G2.
+Advance G1 and G2 in parallel. For G1, complete the targeted closest-work review and predeclare the method-selection rule without selecting a sampler prematurely. For G2, complete persistent provenance and pre-register interaction, duplicate, split/OOV, and negative rules. In parallel, satisfy E0-MIN. Do not start G3 until G2 and E0-MIN pass, or G4 until G1–G3 pass.
 
 ## 8. Reference anchors
 
@@ -574,3 +574,16 @@ Files created or changed in Do An:
 - **Historical-record handling:** Replaced `PHASE2_DIRECTION_REVIEW_en.md` and `_vn.md` with clear historical redirects. Their prior direct-GRAPES-adaptation plan is not an active decision record.
 - **Review and claim boundary:** This was an information-governance correction, not a new scientific, method, dataset, or performance decision. No new research review was required; the independent scope/evidence reviews in Revision 18 remain applicable.
 - **Files created or changed in Do An:** `00_project/PHASE2_RESEARCH_PLAN_en.md`; `00_project/PHASE2_RESEARCH_PLAN_vn.md`; both superseded direction-review redirects; both continuity files; both thesis reports.
+
+### Gate-driven research-structure reset — 2026-08-30
+
+- **Decision or result:** Reset Phase 2 governance around one bilingual canonical gate register. Gate status is now separate from evidence maturity. Current status is G0 `PASS`, G1/G2 `IN_PROGRESS`, G3–G6 `NOT_STARTED`; E0-MIN and E0-FINAL separately track development and final-profiling execution readiness.
+- **Evidence/source:** Existing project artifacts and their internal consistency; no new external scientific source or experiment was introduced. The canonical evidence is `00_project/PHASE2_RESEARCH_PLAN_en.md` and its synchronized Vietnamese counterpart.
+- **Agents consulted, roles, and identifiers:** `gate_architecture` (`/root/gate_architecture`) independently audited gate identity, dependencies, exit criteria, and stop/go rules. `artifact_drift` (`/root/artifact_drift`) independently audited cross-artifact contradictions and evidence-maturity drift.
+- **Independent findings:** Both reviewers found that G1 had two conflicting meanings, G2-E created a circular dependency by requiring a scale run before training was authorized, and active legacy records still implied direct GRAPES adaptation.
+- **Cross-critique and disagreement:** The reviewers agreed on the single register, moving scale execution to G5-S, and relabeling D1–D11 as reference-specified. The main refinement from cross-critique was to split E0 into E0-MIN and E0-FINAL, tightly bound G2-D to non-headline feasibility, and defer literature expansion or a deep thesis rewrite because those require new research evidence.
+- **Adjudication and rationale:** Applied only changes that affect gate identity, status, dependency, blocking, or evidence boundaries. Literature expansion, sampler selection, environment locking, dataset decisions, new tests, and experiments remain future gated work. G5-S is conditional on retaining the large-scale claim; absence requires claim narrowing rather than silent waiver.
+- **Claims added, verified, contradicted, or retired:** No scientific, novelty, performance, or scalability claim was added. Retired active environment-as-G1 and mandatory-direct-GRAPES wording. Preserved GRAPES contracts as reference evidence only.
+- **What remains uncertain:** G1 closest-work completeness and method-selection rule; G2 provenance/semantics/split/negative/retained-graph evidence; E0 environment locks; final sampler, baseline configuration, and all empirical results.
+- **Next action:** Run G1 targeted closest-work review and G2-A–G2-C protocol work in parallel while completing E0-MIN. Do not start G3 before G2/E0-MIN pass or G4 before G1–G3 pass.
+- **Files created or changed in Do An:** both canonical plans; both continuity files; both constraint records; both dataset portfolio records; both GRAPES source notes; both GRAPES-informed reference specifications; both dataset-audit protocols; both thesis reports; both supervisor briefings; and both code READMEs.

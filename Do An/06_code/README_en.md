@@ -4,7 +4,7 @@
 > **Purpose:** provide the first executable home for Phase 2 reference contracts, dataset controls, and the future project-developed graph sampler.  
 > **Not yet provided:** finalized Amazon artifact/manifest, PyTorch/PyG implementation, locked environment, benchmark runner, or recommendation-quality result.
 
-The package is intentionally dependency-free at this early stage so the small contract tests can run on the local machine and in a clean Colab Python runtime. This is not the final model implementation. The scientific implementation will be added only after the exact Python/PyTorch/PyG/CUDA environment, dataset protocol, and remaining experiment choices are locked.
+The package is intentionally dependency-free at this early stage so the small contract tests can run on the local machine and in a clean Colab Python runtime. This is not the final model implementation. Under the canonical gate register, E0-MIN and G2 must pass before G3 execution; sampler implementation additionally waits for G1 and G3. E0-FINAL is required later for final resource evidence.
 
 ## Current scope
 

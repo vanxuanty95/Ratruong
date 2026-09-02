@@ -4,7 +4,7 @@
 > **Mục đích:** tạo nơi executable đầu tiên cho reference contract, dataset control và graph sampler do project phát triển trong Phase 2.  
 > **Chưa có:** Amazon artifact/manifest đã finalized, PyTorch/PyG implementation, environment đã khóa, benchmark runner hoặc recommendation-quality result.
 
-Package này cố ý chưa có dependency ngoài ở giai đoạn đầu để các contract test nhỏ có thể chạy trên local machine và clean Colab Python runtime. Đây chưa phải model implementation cuối cùng. Scientific implementation chỉ được bổ sung sau khi đã khóa exact Python/PyTorch/PyG/CUDA environment, dataset protocol và các lựa chọn experiment còn lại.
+Package này cố ý chưa có dependency ngoài ở giai đoạn đầu để các contract test nhỏ có thể chạy trên local machine và clean Colab Python runtime. Đây chưa phải model implementation cuối cùng. Theo registry gate chuẩn, E0-MIN và G2 phải pass trước khi execute G3; sampler implementation còn phải chờ G1 và G3. E0-FINAL được yêu cầu sau đó cho final resource evidence.
 
 ## Phạm vi hiện tại
 

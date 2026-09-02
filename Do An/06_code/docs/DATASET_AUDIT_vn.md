@@ -70,9 +70,9 @@ Provider processing, project interaction semantics, project temporal split và p
 | G2-A: provenance | Official source, access note, persistent file, checksum, schema và manifest hoàn chỉnh |
 | G2-B: semantics | Duplicate policy, xử lý `0.0`, primary positive rule và negative rule được pre-register |
 | G2-C: evaluation validity | Temporal split, training-only graph/filtering, warm-start coverage, OOV exclusion và exact candidate rule đã ghi |
-| G2-D: primary feasibility | Retained graph `Baby_Products` hỗ trợ baseline dự kiến và exact evaluation trong compute budget đã xác nhận |
-| G2-E: scale evidence | `Home_and_Kitchen` provenance/size audit hoàn chỉnh và một bounded stress configuration đã pre-register được execute |
-| G2-F: optional expansion | Chỉ xét MovieLens hoặc Yelp sau khi core gate hoàn thành |
+| G2-D: primary feasibility | Bounded execution không tạo headline result ghi retained-graph statistic và feasibility của pipeline/evaluator; không tune, so sánh sampler hay claim final metric |
+| G5-S: conditional scale evidence | Chỉ execute stress trên `Home_and_Kitchen` sau G3/G4 nếu giữ claim large-scale; hiện tại chỉ làm provenance/size/planning |
+| Optional expansion | Chỉ xét MovieLens hoặc Yelp sau khi các gate Amazon core pass |
 
 ## 6. Protocol này không xác lập điều gì
 

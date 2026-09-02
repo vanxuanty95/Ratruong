@@ -49,7 +49,36 @@ Với mọi candidate dataset, tạo immutable manifest gồm URL, ngày tải, 
 
 Raw-audit finding rằng provider absolute split có OOV rate cao là protocol finding, không phải lý do loại Amazon. Nó cho thấy published split không thể tự động là primary warm-start protocol.
 
-## 5. Protocol phương pháp và comparison
+## 5. Hướng dẫn diễn giải nghiên cứu cho dataset audit
+
+Audit là một chuỗi quyết định nghiên cứu, không phải checklist biến trực tiếp raw count thành quyết định chấp nhận dataset. Mỗi statistic được báo cáo phải nêu rõ **analysis population** mà nó mô tả: (a) raw valid event, (b) event được giữ theo từng candidate positive policy, (c) frozen training graph sau training-only filtering, hoặc (d) warm-start validation/test cohort. Không so sánh số liệu giữa các population này như thể chúng mô tả cùng một graph.
+
+| Evidence từ audit | Diễn giải có thể bảo vệ | Quyết định có thể được hỗ trợ | Điều **không** được suy ra |
+|---|---|---|---|
+| ID, rating hoặc timestamp không hợp lệ | Đo mức phù hợp với source/schema và xác định record cần quarantine theo cách deterministic | Chất lượng provenance G2-A và policy xử lý invalid row được ghi lại | Mọi event không bị flag đều là positive hợp lệ về mặt ngữ nghĩa |
+| User–item pair lặp và timestamp tie | Cho thấy sự mơ hồ về định danh hoặc thứ tự event; độ nhạy phụ thuộc số user/item và temporal target bị ảnh hưởng, không chỉ row count | Quy tắc duplicate/tie ở G2-B và nhu cầu targeted sensitivity check | Repeated review chắc chắn là duplicate do lỗi, hoặc provider đã xử lý đúng yêu cầu của project |
+| Rating distribution và mức giữ lại theo P4/P5/all-observed | Định lượng hệ quả về ngữ nghĩa và quy mô của từng candidate positive definition | Chọn primary interaction policy trước khi xem result, dựa đồng thời trên domain meaning và retained feasibility | Policy tạo graph lớn nhất hoặc metric tốt nhất về sau là policy hợp lệ nhất |
+| Degree quantile của user/item, singleton rate và head–tail concentration | Mô tả sparsity, activity imbalance và sampling pressure có khả năng xuất hiện; phải report cho cả hai phía của bipartite graph | Warm-start ranking task có còn ý nghĩa không và cần diagnostic theo popularity stratum nào | Chỉ riêng sparsity đã chứng minh dataset là large-scale, khó, hoặc thuận lợi cho proposed sampler |
+| Density và connected component | Mô tả fragmentation và cấu trúc reachable cho message passing sau mỗi transformation | Cách xử lý component, report isolated node và feasibility của GNN backbone đã chọn | Recommendation quality, sampler superiority hoặc multi-hop signal hữu hiệu |
+| Temporal coverage, tie tại cutoff và activity drift | Kiểm tra split đã chọn có đại diện cho ordered prediction task không và các period có khác nhau đáng kể không | Quy tắc cutoff/tie, temporal stratum và giới hạn khi generalize qua thời gian | Quan hệ nhân quả hoặc hoàn toàn không có temporal bias |
+| Warm-start retention và exclusion do user/item OOV | Định lượng estimand do pure-ID warm-start protocol tạo ra và tỷ lệ future cohort bị loại | Quyết định G2-C, định nghĩa cohort và nhu cầu thu hẹp claim hoặc thêm cold-start method riêng | Performance trên user/item bị loại hoặc quyền che giấu cohort có coverage thấp |
+| Kích thước eligible item universe và exclusion positive/negative | Định nghĩa độ khó của ranking task và xác minh candidate/negative tuân thủ ranh giới thời gian và thông tin | Feasibility của exact evaluation và negative/candidate policy đã đăng ký | Unobserved item là true negative, hoặc sampled-candidate metric có thể so sánh với full-catalog metric |
+| Retained node/edge cùng evaluator time và memory đo trong bounded dry-run | Chỉ xác lập pipeline và evaluator path đã khai báo có chạy được dưới configuration đã ghi hay không | G2-D feasibility và compute planning về sau | Model quality, thứ hạng sampler, scalability ngoài configuration đã test hoặc quyền tune ở G2-D |
+| Sampling-pressure diagnostic trên frozen training graph | Cho thấy exposure bias, coverage, overlap và structural distortion do sampler tạo ra | Sampler ablation và diễn giải accuracy–cost sau khi các gate liên quan pass | Lợi ích nếu chưa liên kết với downstream quality và resource evidence trong matched comparison |
+
+Áp dụng các quy tắc diễn giải sau:
+
+1. **Dùng denominator và attrition path.** Report cả count và rate, đồng thời nêu denominator. Đối soát đường đi từ downloaded row đến valid event, semantic positive, training edge và retained evaluation target; phần hao hụt không giải thích được là audit check thất bại.
+2. **Không tự đặt universal pass threshold.** Singleton, OOV, tail hoặc component rate cao là cảnh báo; hệ quả phụ thuộc estimand và model dự kiến. Acceptance criterion phải được pre-register và biện minh bằng task validity cùng compute feasibility, không được chọn sau khi xem model result.
+3. **Tách source fact, project transformation và derived finding.** Provider documentation, quan sát checksum/schema, transformation rule và computed statistic phải được gắn nhãn riêng. Count do project tính không verify provider claim nếu definition không trùng khớp.
+4. **Xem comparison là mô tả cho đến khi được kiểm soát.** Khác biệt giữa dataset hoặc snapshot P4/P5/all-observed có thể do semantics, filtering, time coverage và population composition. Chúng không cô lập causal effect của scale hay sparsity.
+5. **Lan truyền uncertainty và unresolved check.** Đánh dấu duplicate scan chưa hoàn tất, anomalous record, approximate count hoặc source behavior chưa verify bằng `OPEN`, `UNKNOWN` hoặc `NEEDS VERIFICATION`. Không để downstream table âm thầm biến chúng thành exact fact.
+6. **Khớp phạm vi claim với retained cohort.** Primary result chỉ có thể mô tả frozen warm-start population. Claim về cold-start, toàn bộ raw population, cross-domain và large-scale cần evidence riêng; nếu không phải thu hẹp wording của luận văn.
+7. **Giữ G2 không mang tính so sánh phương pháp.** Audit và bounded G2-D dry-run có thể chọn task hợp lệ và xác lập feasibility. Không được dùng chúng để chọn final sampler, tune model, report headline ranking metric hoặc claim cải thiện accuracy/resource.
+
+Một diễn giải audit chỉ hoàn chỉnh khi ghi: **observation → analysis population và denominator → protocol consequence hợp lý → action đã chọn → inference bị loại trừ → gate status**. Nếu còn nhiều hơn một action có thể bảo vệ về mặt khoa học, giữ quyết định là `OPEN` và pre-register evidence sẽ dùng để phân xử.
+
+## 6. Protocol phương pháp và comparison
 
 Luận văn đánh giá một **graph sampler do project phát triển** như module trong cùng GNN recommender backbone và fixed resource budget. Cơ chế sampling cuối chưa freeze trước literature positioning và ablation.
 
@@ -64,18 +93,18 @@ Comparison family tối thiểu:
 
 Mọi sampler phải dùng cùng split, training graph, ranking loss, negative rule, backbone depth/width, optimizer/tuning budget, random seed và sampling budget. Report Recall@10/20 và NDCG@10/20 từ exact full-catalog ranking, cùng peak GPU VRAM, CPU RAM, sampler time, train time, throughput, sampled graph size, seed variation và accuracy–cost Pareto curve. Report theo item-popularity stratum cùng aggregate.
 
-## 6. Decision gate
+## 7. Decision gate
 
 | Gate | Evidence cần có trước khi tiếp tục |
 |---|---|
 | G2-A: provenance | Official source, access note, exact file checksum, schema và manifest hoàn chỉnh |
 | G2-B: semantics | Duplicate policy, xử lý `0.0`, primary P4/P5/all-observed policy và negative rule được pre-register |
 | G2-C: evaluation validity | Temporal cutoff, training-only filtering, warm-start coverage, OOV exclusion và exact evaluation candidate được ghi lại |
-| G2-D: primary feasibility | Retained graph của `Baby_Products` hỗ trợ baseline và full-catalog evaluation trong compute budget đã xác nhận |
-| G2-E: scale evidence | Manifest/audit `Home_and_Kitchen` hoàn chỉnh và một bounded scale-stress configuration đã pre-register được chạy |
-| G2-F: optional expansion | Chỉ thêm MovieLens hoặc Yelp sau khi G2-A đến G2-E hoàn thành |
+| G2-D: primary feasibility | Một bounded dry-run được ghi rõ là không tạo headline result, ghi retained-graph statistic và chứng minh pipeline/evaluator path khả thi; không được tune hoặc so sánh sampler |
+| G5-S: conditional scale evidence | Nếu luận văn giữ claim large-scale, chạy một bounded `Home_and_Kitchen` scale-stress configuration đã pre-register sau G3/G4; trước đó chỉ làm provenance/size/feasibility planning |
+| Optional expansion | Chỉ thêm MovieLens hoặc Yelp sau khi các gate Amazon core pass và không được để chúng chặn core |
 
-## 7. Multi-agent review và adjudication
+## 8. Multi-agent review và adjudication
 
 Đã dùng hai reviewer độc lập, sau đó cho cross-critique.
 
@@ -84,6 +113,6 @@ Mọi sampler phải dùng cùng split, training graph, ranking loss, negative r
 
 Hai reviewer thống nhất raw 0-core `All_Beauty` và provider absolute split không thể được adopt làm primary warm-start evidence nếu chưa transformation và report coverage. Họ khác nhau về việc MovieLens 25M hay `Home_and_Kitchen` nên bắt buộc trong 12 tuần. Adjudication là yêu cầu **bounded `Home_and_Kitchen` scale stress test** nếu luận văn giữ large-scale claim, còn MovieLens và Yelp là tùy chọn. Cách này bảo toàn evidence trực tiếp về scale mà không cam kết experimental matrix đầy đủ thứ hai.
 
-## 8. Hành động tiếp theo
+## 9. Hành động tiếp theo
 
 Audit `Baby_Products` theo P4/P5/all-observed candidate semantics và strict training-only temporal protocol, sau đó quyết định retained graph có vượt G2-D không. Song song, chỉ acquire provenance/size audit cho `Home_and_Kitchen`; chưa xây final sampling method hoặc chạy full ablation cho đến khi G2-A đến G2-C được ghi record.

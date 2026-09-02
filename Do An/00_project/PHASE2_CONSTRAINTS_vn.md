@@ -1,21 +1,20 @@
 # Hồ sơ constraint Phase 2
 
 > **Trạng thái:** `ĐÃ GIẢI QUYẾT MỘT PHẦN — CÒN MỞ VIỆC ĐẶT GPU VÀ CHI TIẾT THỂ CHẾ`  
-> **Tuần:** 1  
 > **Ngày ghi:** 2026-08-26  
-> **Phạm vi:** chỉ chuyển trực tiếp GRAPES sang graph-based recommendation.
+> **Phạm vi hiện tại:** phát triển phương pháp thuộc project cho graph sampling trong GNN recommendation. GRAPES là reference/comparator; trạng thái gate chỉ do [`PHASE2_RESEARCH_PLAN_vn.md`](./PHASE2_RESEARCH_PLAN_vn.md) quản trị.
 
 ## 1. Constraint đã khóa
 
 | ID | Constraint | Trạng thái | Bằng chứng |
 |---|---|---|---|
-| C-001 | Phase 2 chỉ có một hướng: chuyển trực tiếp GRAPES sang recommendation | `LOCKED` | Chỉ dẫn trực tiếp của người dùng và hai continuity file đồng bộ |
+| C-001 | Phase 2 phát triển phương pháp graph-sampling thuộc project cho GNN recommendation; GRAPES là tài liệu reference/comparator | `LOCKED; THAY THẾ WORDING DIRECT-ADAPTATION` | Phạm vi luận văn hiện tại và continuity file đồng bộ |
 | C-002 | `ThucTap2` là tài liệu tham khảo chỉ đọc | `LOCKED` | Project rule |
 | C-003 | Mọi output lâu dài mới được lưu trong `Do An` | `LOCKED` | Project rule |
 | C-004 | Output có nội dung ngôn ngữ phải có cặp file `_en` và `_vn` đồng bộ | `LOCKED` | Project rule |
 | C-005 | Research/design task đáng kể cần hai agent độc lập và cross-critique | `LOCKED` | Project rule |
-| C-006 | Hai task variant chính là GRAPES-RL-Rec và GRAPES-GFN-Rec | `LOCKED SCOPE` | Phase 2 plan; implementation detail vẫn là proposal |
-| C-007 | Failure không cho phép chuyển sang hướng khác | `LOCKED` | Quyết định khóa phạm vi của người dùng |
+| C-006 | GRAPES-RL-Rec và GRAPES-GFN-Rec là reference variant tùy chọn, chỉ dùng nếu rationale G1 và gate sau đó biện minh | `REFERENCE CANDIDATES` | Kế hoạch chuẩn hiện tại |
+| C-007 | Gate failure cần corrective loop, stop hoặc rescope request được ghi; không cho phép unsupported claim hay pivot sang đề tài không liên quan | `LOCKED` | Kế hoạch chuẩn hiện tại |
 | C-008 | Phase 2 phải hoàn thành trong 12 tuần | `LOCKED` | Chỉ dẫn trực tiếp của người dùng ngày 2026-08-26 |
 | C-009 | Ngôn ngữ implementation là Python | `LOCKED` | Chỉ dẫn trực tiếp của người dùng ngày 2026-08-26 |
 | C-010 | Project dùng dữ liệu Amazon Reviews và phải tự source/chuẩn bị | `LOCKED DATA FAMILY` | Chỉ dẫn trực tiếp của người dùng ngày 2026-08-26 |
@@ -78,10 +77,10 @@ Official release báo cáo tổng cộng 571,54 triệu review. Raw `Baby_Produc
 
 ## 6. Ý nghĩa vận hành của kỳ vọng cao
 
-- đóng D1–D11 bằng equation, tensor shape và test oracle; pass T01–T25;
+- giữ D1–D11/T01–T25 làm GRAPES-informed reference oracle và chỉ áp dụng test liên quan nếu component được chọn;
 - đóng gói implementation Python được pin, modular, có deterministic configuration và automated test;
 - tạo Amazon data package immutable, định danh bằng checksum, rerunnable và leakage-safe;
-- chạy MostPop, BPR-MF, full LightGCN, Random-Sampling-Rec, Degree-Sampling-Rec, GRAPES-RL-Rec và GRAPES-GFN-Rec dưới controlled budget;
+- chạy baseline/comparator set được freeze qua G1/G3 dưới controlled budget; GRAPES variant là reference comparator có điều kiện, không phải phương pháp cuối bắt buộc;
 - dùng exact full-catalog NDCG@20 làm primary quality metric và Recall@20 làm secondary;
 - dùng một smoke seed, ba fixed development seed và năm paired final seed cho primary comparison khi measured compute cho phép;
 - báo cáo effect size, uncertainty, failed run, peak memory, wall-clock time, sampler/propagation time và throughput;
@@ -95,6 +94,6 @@ Official release báo cáo tổng cộng 571,54 triệu review. Raw `Baby_Produc
 - đo pilot end-to-end Week 3 trước khi freeze GPU-hours, batch size, embedding dimension, budget và trial count;
 - audit và pin exact artifact `Baby_Products` cùng post-filter scale;
 - lấy supervisor milestone, thesis template/language/page limit và formal evaluation rubric;
-- đóng D1, D2, D4, D5, D6, D7 và D9 trước implementation các learned variant.
+- pass G1 chuẩn trước khi chọn sampler, pass G2 và E0-MIN trước khi execute G3, và chỉ thỏa reference oracle liên quan cho component được chọn.
 
 Google công bố managed Colab resource limit, VM lifetime và GPU type thay đổi và không được đảm bảo; runtime VM là tạm thời. Vì vậy Colab loại local-disk blocker nhưng không thay thế provenance, persistent storage, environment lock hoặc final profiling trên cùng hardware. Nguồn: [Google Colab FAQ](https://research.google.com/colaboratory/faq.html).

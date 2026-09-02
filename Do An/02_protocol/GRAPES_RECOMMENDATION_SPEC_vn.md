@@ -361,21 +361,23 @@ log Z(V^0) = mean_v r_Z[v,0]                  scalar
 
 Vì vậy Phase 2 chỉ được claim sampled-training behavior, không được claim sampled-inference scalability.
 
-## 10. Các quyết định đang chặn Gate G1
+## 10. Các quyết định của GRAPES-informed reference design
+
+Các quyết định này có trạng thái `REFERENCE-SPECIFIED`: chúng chỉ đóng ambiguity bên trong comparator/reference design này. Chúng không chọn phương pháp luận văn và không đóng Gate G1 chuẩn.
 
 | ID | Quyết định | Trạng thái | Bằng chứng cần để đóng |
 |---|---|---|---|
-| D1 | Hướng block và thứ tự thực thi | `ĐÓNG: SOURCE K^l TỚI TARGET K^(l-1); PREFIX DEPTH` | Toy derivation hai layer và test oracle |
-| D2 | Sampled-local normalization chính xác | `ĐÓNG: RECTANGULAR BI-NORMALIZATION` | Công thức cộng full-coverage equivalence test |
-| D3 | Ngữ nghĩa self-loop | `ĐÓNG: KHÔNG CÓ` | Nguồn LightGCN và adjacency test |
-| D4 | Dấu REINFORCE | `ĐÓNG: POSITIVE COST NHÂN LOG-PROBABILITY` | Gradient-direction test có hai action |
-| D5 | Ranking-only hay regularized sampler signal | `ĐÓNG: DETACHED MEAN RANKING LOSS` | Lập luận credit assignment và invariance test |
-| D6 | Cách xây dựng `GCN_Z` cho recommendation | `ĐÓNG: TARGET-INDUCED GCN VÀ MEAN SCALAR` | Đặc tả input/pooling/output |
-| D7 | Chi tiết sampler embedding | `ĐÓNG: TABLE RIÊNG THUỘC SAMPLER` | Đặc tả ownership, initialization, optimizer và OOV |
-| D8 | Cross-layer node re-entry | `ĐÓNG: CHO PHÉP` | Paper/code audit và invariant tường minh |
-| D9 | Positive-edge masking stage | `ĐÓNG: RETAIN LÀ PHƯƠNG ÁN CHÍNH; TRANSIENT FULL-PIPELINE MASK ABLATION` | Candidate/propagation pseudocode |
-| D10 | BPR batch reduction | `ĐÓNG: MEAN` | Batch-scale invariance test |
-| D11 | Likelihood khi candidate rỗng/ít | `ĐÓNG: FULL BERNOULLI` | Định nghĩa likelihood hữu hạn và test |
+| D1 | Hướng block và thứ tự thực thi | `REFERENCE-SPECIFIED: SOURCE K^l TỚI TARGET K^(l-1); PREFIX DEPTH` | Toy derivation hai layer và test oracle |
+| D2 | Sampled-local normalization chính xác | `REFERENCE-SPECIFIED: RECTANGULAR BI-NORMALIZATION` | Công thức cộng full-coverage equivalence test |
+| D3 | Ngữ nghĩa self-loop | `REFERENCE-SPECIFIED: KHÔNG CÓ` | Nguồn LightGCN và adjacency test |
+| D4 | Dấu REINFORCE | `REFERENCE-SPECIFIED: POSITIVE COST NHÂN LOG-PROBABILITY` | Gradient-direction test có hai action |
+| D5 | Ranking-only hay regularized sampler signal | `REFERENCE-SPECIFIED: DETACHED MEAN RANKING LOSS` | Lập luận credit assignment và invariance test |
+| D6 | Cách xây dựng `GCN_Z` cho recommendation | `REFERENCE-SPECIFIED: TARGET-INDUCED GCN VÀ MEAN SCALAR` | Đặc tả input/pooling/output |
+| D7 | Chi tiết sampler embedding | `REFERENCE-SPECIFIED: TABLE RIÊNG THUỘC SAMPLER` | Đặc tả ownership, initialization, optimizer và OOV |
+| D8 | Cross-layer node re-entry | `REFERENCE-SPECIFIED: CHO PHÉP` | Paper/code audit và invariant tường minh |
+| D9 | Positive-edge masking stage | `REFERENCE-SPECIFIED: RETAIN LÀ PHƯƠNG ÁN CHÍNH; TRANSIENT FULL-PIPELINE MASK ABLATION` | Candidate/propagation pseudocode |
+| D10 | BPR batch reduction | `REFERENCE-SPECIFIED: MEAN` | Batch-scale invariance test |
+| D11 | Likelihood khi candidate rỗng/ít | `REFERENCE-SPECIFIED: FULL BERNOULLI` | Định nghĩa likelihood hữu hạn và test |
 
 ## 11. Unit test bắt buộc
 
@@ -419,12 +421,14 @@ Vì vậy Phase 2 chỉ được claim sampled-training behavior, không đượ
 - `T24`: Full-graph inference là deterministic qua các lần chạy lặp lại.
 - `T25`: Việc đưa validation/test edge hoặc statistic vào training phải fail ngay.
 
-## 12. Tiêu chí thoát Gate G1
+## 12. Ranh giới sẵn sàng của reference design
 
-Mọi semantic decision D1–D11 hiện đã đóng. Gate G1 vẫn `CHỜ KHÓA ENVIRONMENT` và đóng khi:
+Mọi semantic decision D1–D11 đã được specified cho reference design này. Chúng chỉ trở thành executable acceptance criteria nếu component liên quan được chọn. G1 chuẩn là gate rationale thiết kế nghiên cứu trong [kế hoạch Phase 2](../00_project/PHASE2_RESEARCH_PLAN_vn.md); environment readiness được theo dõi riêng bằng E0-MIN/E0-FINAL.
+
+Reference design này sẵn sàng cho review ở implementation gate khi:
 
 - các test oracle D1–D11 đã đăng ký tiếp tục được khóa làm executable acceptance criteria cho các implementation gate;
-- exact Python/PyTorch/PyG/CUDA environment được khóa trên final GPU class đã xác nhận;
+- prerequisite về executable environment áp dụng đã được thỏa;
 - primary và ablation protocol không thể được chọn dựa trên test performance;
 - source version đã pin và executable environment được ghi cùng nhau;
 - hai bản đặc tả song ngữ tiếp tục đồng bộ về ngữ nghĩa.

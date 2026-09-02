@@ -2,8 +2,8 @@
 
 > File continuity tiếng Việt được đồng bộ cho dự án luận văn Thạc sĩ. Phải đọc file này và bản tiếng Anh tương ứng vào đầu mỗi session mới. Cập nhật cả hai khi có thay đổi về quyết định nghiên cứu, kết quả đã kiểm chứng, câu hỏi mở hoặc quy tắc làm việc.
 
-**Cập nhật lần cuối:** 2026-08-27  
-**Revision:** 20 — Đã tập trung kế hoạch nghiên cứu Phase 2 chính thức  
+**Cập nhật lần cuối:** 2026-08-30
+**Revision:** 21 — Reset cấu trúc nghiên cứu theo gate-driven
 **Ngôn ngữ trao đổi với người dùng:** mặc định là tiếng Việt  
 **Ngôn ngữ làm việc phân tích:** tiếng Anh  
 **Ngôn ngữ artifact lâu dài:** Mọi output có nội dung ngôn ngữ phải có một bản tiếng Anh và một bản tiếng Việt được đồng bộ. Filename tiếng Anh kết thúc bằng `_en`, filename tiếng Việt kết thúc bằng `_vn`, đặt ngay trước phần mở rộng.
@@ -264,8 +264,8 @@ Trừ khi quyết định sau thay đổi rõ, dùng thứ tự sau:
 - Week 1 đã bắt đầu. Ngữ nghĩa paper GRAPES được pin vào arXiv:2310.03399v3 và current official code reference được pin vào commit `71ecebeaac896800aa4dd1d0f38c57ec222ef396`, truy cập ngày 2026-08-26.
 - Exact Phase 1 code commit không thể khôi phục từ artifact hiện có; unversioned local snapshot chỉ được giữ bằng content-manifest fingerprint đã ghi và không phải nguồn chuẩn của Phase 2.
 - Các artifact song ngữ về constraint, source version, literature matrix và bản nháp recommendation specification hiện đã có trong `00_project`, `01_literature` và `02_protocol`.
-- Recommendation specification hiện đã đóng mọi semantic decision D1–D11. Đặc tả khóa inward source-to-target prefix propagation, rectangular sampled-block bi-normalization, dấu positive REINFORCE cost, detached mean ranking-only sampler cost, target-only `GCN_Z`, embedding riêng thuộc sampler và positive-edge protocol retain-primary/transient-mask.
-- Gate G1 vẫn mở chỉ để khóa executable Python/PyTorch/PyG/CUDA trên GPU class đã xác nhận. Registered oracle là acceptance criteria đã khóa và learned-policy implementation không được bỏ qua chúng.
+- Recommendation specification đánh dấu D1–D11 là `REFERENCE-SPECIFIED` cho GRAPES-informed reference design. Các quyết định này không chọn hoặc đóng phương pháp luận văn.
+- G1 chuẩn đang `IN_PROGRESS` cho closest-work positioning, rationale thiết kế nghiên cứu, matched comparison và quy tắc chọn phương pháp đăng ký trước. Environment execution được theo dõi riêng bằng E0-MIN/E0-FINAL.
 - Máy local hiện tại là Mac mini Apple M4 với 16 GB unified memory và không có NVIDIA CUDA device. Máy phù hợp cho documentation và toy correctness test sau khi tạo environment, nhưng không được xem là final benchmark platform.
 - Các execution constraint do người dùng cung cấp đã được ghi: 12 tuần, implementation bằng Python, dữ liệu Amazon Reviews do project tự source, có thể mượn GPU, có Google Colab và kỳ vọng chất lượng luận văn cao.
 - Active data proposal chỉ dùng Amazon: `All_Beauty` 0-core validate pipeline và `Baby_Products` 0-core là proposed primary thesis category. MovieLens được loại khỏi active plan.
@@ -279,7 +279,7 @@ Trừ khi quyết định sau thay đổi rõ, dùng thứ tự sau:
 - Dataset audit Week 2 đã chuyển từ setup sang temporary local raw execution. `All_Beauty` và `Baby_Products` được download từ exact official URL; compressed size, SHA-256, raw schema, quality count, degree summary, candidate absolute-split OOV diagnostic và negative-pool diagnostic đã ghi trong `06_code/docs/DATASET_AUDIT_RESULTS_*`. Raw file không được lưu persistent.
 - Local audit cho 693,929 valid `All_Beauty` row với zero exact duplicate pair, và 5,953,891 parsed `Baby_Products` row với một `rating=0.0` ngoài range; duplicate-pair count quy mô lớn của Baby vẫn unknown vì SQLite scan chưa hoàn tất. Official absolute split có validation/test OOV cao nên chưa được chấp nhận làm primary warm-start protocol.
 - Streaming analyzer dependency-free và paired Colab notebook hiện cover provenance, SHA-256, schema, duplicate pair, rating/timestamp check, degree summary, candidate absolute-split coverage và negative-pool diagnostic. Persistent Colab acquisition, protocol closure và post-filter training-universe statistic vẫn mở.
-- Đã ghi nhận documentation drift: các status label cũ trong `PHASE2_DIRECTION_REVIEW`, `PHASE2_CONSTRAINTS` và `GRAPES_SOURCE_VERSION_NOTE` đã bị supersede bởi recommendation specification mới hơn, trong đó D1–D11 đã đóng ở mức thiết kế và Gate G1 chỉ còn mở cho executable environment lock. Audit này không rewrite các artifact cũ đó.
+- Định danh, trạng thái, dependency và blocking rule của gate chỉ do cặp kế hoạch chuẩn quản trị. Các constraint/source/spec record đang hoạt động nay trỏ về registry đó; dated historical log vẫn được giữ làm bằng chứng lịch sử.
 
 ### Câu hỏi mở trong hướng Phase 2 đã khóa
 
@@ -304,7 +304,7 @@ Các constraint còn lại không mở lại research direction. Experiment scal
 
 ### Hành động có thể thực thi tiếp theo
 
-Tạo Python project skeleton đã lock và implement T01–T25, bắt đầu bằng các oracle D1/D2/D4/D6/D9. Song song, xác nhận final GPU class, freeze Python/PyTorch/PyG/CUDA environment, xác định persistent cloud storage và chuẩn bị thin Colab launcher cài từ lock. Sau đó audit/checksum Amazon pilot cùng primary artifact cho Gate G2.
+Tiến hành G1 và G2 song song. Với G1, hoàn tất targeted closest-work review và đăng ký trước quy tắc chọn phương pháp, chưa chọn sampler sớm. Với G2, hoàn tất persistent provenance và pre-register interaction, duplicate, split/OOV cùng negative rule. Song song, thỏa E0-MIN. Không bắt đầu G3 trước khi G2 và E0-MIN pass, hoặc G4 trước khi G1–G3 pass.
 
 ## 8. Các nguồn tham chiếu khởi đầu
 
@@ -574,3 +574,16 @@ Files created or changed in Do An:
 - **Xử lý record lịch sử:** Đã thay `PHASE2_DIRECTION_REVIEW_en.md` và `_vn.md` bằng redirect lịch sử rõ ràng. Kế hoạch direct-GRAPES-adaptation cũ không còn là decision record hiệu lực.
 - **Review và ranh giới claim:** Đây là chỉnh về quản trị thông tin, không phải quyết định khoa học, phương pháp, dataset hoặc performance mới. Không cần research review mới; independent review về scope/evidence ở Revision 18 vẫn áp dụng.
 - **File được tạo hoặc sửa trong Do An:** `00_project/PHASE2_RESEARCH_PLAN_en.md`; `00_project/PHASE2_RESEARCH_PLAN_vn.md`; hai direction-review redirect đã thay thế; hai continuity file; hai thesis report.
+
+### Reset cấu trúc nghiên cứu theo gate-driven — 2026-08-30
+
+- **Quyết định hoặc kết quả:** Reset quản trị Phase 2 quanh một registry gate chuẩn song ngữ. Trạng thái gate nay tách khỏi maturity của bằng chứng. Trạng thái hiện tại là G0 `PASS`, G1/G2 `IN_PROGRESS`, G3–G6 `NOT_STARTED`; E0-MIN và E0-FINAL theo dõi riêng readiness cho development execution và final profiling.
+- **Bằng chứng/nguồn:** Tính nhất quán nội bộ của artifact project hiện có; không thêm external scientific source hoặc experiment mới. Bằng chứng chuẩn là `00_project/PHASE2_RESEARCH_PLAN_vn.md` và bản tiếng Anh đồng bộ.
+- **Agent được tham vấn, vai trò và định danh:** `gate_architecture` (`/root/gate_architecture`) audit độc lập định danh gate, dependency, exit criteria và stop/go rule. `artifact_drift` (`/root/artifact_drift`) audit độc lập mâu thuẫn giữa artifact và drift về evidence maturity.
+- **Phát hiện độc lập:** Cả hai reviewer đều phát hiện G1 đang có hai nghĩa xung đột, G2-E tạo dependency vòng vì đòi scale run trước khi cho phép training, và active legacy record vẫn ngụ ý direct GRAPES adaptation.
+- **Cross-critique và disagreement:** Hai reviewer đồng ý về single registry, chuyển scale execution sang G5-S và đổi D1–D11 thành reference-specified. Điều chỉnh chính sau cross-critique là tách E0 thành E0-MIN/E0-FINAL, giới hạn chặt G2-D ở feasibility không tạo headline result, đồng thời hoãn literature expansion hoặc deep thesis rewrite vì chúng cần evidence nghiên cứu mới.
+- **Phân xử và lý do:** Chỉ áp dụng thay đổi ảnh hưởng tới định danh, trạng thái, dependency, blocking hoặc evidence boundary của gate. Literature expansion, chọn sampler, khóa environment, quyết định dataset, test mới và experiment vẫn là công việc tương lai theo gate. G5-S có điều kiện theo việc giữ claim large-scale; nếu thiếu phải làm hẹp claim thay vì silent waiver.
+- **Claim được thêm, xác minh, bác bỏ hoặc hủy:** Không thêm claim khoa học, novelty, performance hoặc scalability. Retire wording environment-as-G1 và mandatory-direct-GRAPES đang hoạt động. Giữ contract GRAPES chỉ làm reference evidence.
+- **Điều còn chưa chắc chắn:** Mức đầy đủ closest-work và quy tắc chọn phương pháp của G1; provenance/semantics/split/negative/retained-graph evidence của G2; environment lock E0; sampler cuối, baseline configuration và toàn bộ empirical result.
+- **Hành động tiếp theo:** Chạy targeted closest-work review G1 và protocol work G2-A–G2-C song song trong khi hoàn tất E0-MIN. Không bắt đầu G3 trước khi G2/E0-MIN pass hoặc G4 trước khi G1–G3 pass.
+- **File được tạo hoặc sửa trong Do An:** hai kế hoạch chuẩn; hai continuity file; hai constraint record; hai dataset portfolio record; hai GRAPES source note; hai GRAPES-informed reference specification; hai dataset-audit protocol; hai thesis report; hai supervisor briefing; và hai code README.

@@ -1,8 +1,8 @@
 # GRAPES Source and Version Note
 
-> **Status:** `WEEK 1 PIN RECORDED; PHASE 1 COMMIT UNKNOWN`  
+> **Status:** `REFERENCE PIN RECORDED; PHASE 1 COMMIT UNKNOWN`
 > **Recorded:** 2026-08-26  
-> **Purpose:** define the authoritative sources for the direct GRAPES-to-recommendation adaptation.
+> **Purpose:** define versioned GRAPES sources for scientific reference, comparator design, and historical provenance. This note does not select the thesis method or define canonical gates.
 
 ## 1. Version decision
 
@@ -122,10 +122,10 @@ Use this precedence:
 
 When paper and code disagree, record the discrepancy, design a minimal falsification/unit test, and freeze the choice in the specification. Never silently choose whichever behavior produces a better result.
 
-## 8. Week 1 source status
+## 8. Current source status
 
 - Paper version: `PINNED`.
 - Official code reference: `PINNED`.
 - Exact Phase 1 executed commit: `UNKNOWN` and not recoverable from current artifacts.
 - Phase 2 environment: `OPEN`.
-- Gate G1: remains `OPEN` pending specification decisions and tests.
+- Canonical G1 remains `IN_PROGRESS` for closest-work positioning, rationale, and the predeclared method-selection rule; see the [canonical plan](../00_project/PHASE2_RESEARCH_PLAN_en.md). Environment readiness is tracked separately as E0.

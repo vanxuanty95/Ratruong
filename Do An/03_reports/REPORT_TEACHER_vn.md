@@ -2,7 +2,7 @@
 
 > **Dự án:** *Phát triển phương pháp lấy mẫu đồ thị cho hệ thống gợi ý quy mô lớn sử dụng mạng nơ-ron đồ thị GNN*  
 > **Trạng thái:** `BRIEFING TÍCH LŨY — NỀN TẢNG NGHIÊN CỨU VÀ DATA-PROTOCOL GATE`  
-> **Cập nhật lần cuối:** 2026-08-27  
+> **Cập nhật lần cuối:** 2026-08-30
 > **Cách dùng:** Đây là briefing hiện tại cho buổi trao đổi, không phải deliverable luận văn theo tuần. Lịch sử có ngày được giữ trong continuity record.
 
 ## 1. Định danh luận văn
@@ -10,6 +10,8 @@
 Phase 2 là luận văn Thạc sĩ độc lập. Phase 1 là bối cảnh lịch sử chỉ đọc: giai đoạn này khám phá đề tài và nghiên cứu/tái lập GRAPES cho node classification. GRAPES được giữ lại như nền tảng khoa học, comparator và nguồn candidate mechanism; nó không phải phương pháp luận văn đã cố định hay tên luận văn.
 
 Final sampler vẫn `OPEN`. GRAPES-informed reference design hiện có cùng các contract D1–D11/T01–T25 chỉ là reference-design và verification candidate. Các thành phần này có thể được chọn, thay đổi hoặc loại bỏ sau literature positioning, implementation check, ablation và experiment.
+
+Registry gate chuẩn hiện ghi G0 `PASS`, G1/G2 `IN_PROGRESS` và G3–G6 `NOT_STARTED`. Environment readiness được tách riêng: E0-MIN `IN_PROGRESS`, E0-FINAL `NOT_STARTED`. G1 và G2 chạy song song; không bỏ qua baseline gate hoặc sampler gate.
 
 ## 2. Evidence và maturity hiện tại
 

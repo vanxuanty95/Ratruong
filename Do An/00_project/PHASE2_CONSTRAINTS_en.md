@@ -1,21 +1,20 @@
 # Phase 2 Constraint Record
 
 > **Status:** `PARTIALLY RESOLVED — GPU RESERVATION AND INSTITUTIONAL DETAILS OPEN`  
-> **Week:** 1  
 > **Recorded:** 2026-08-26  
-> **Scope:** direct adaptation of GRAPES to graph-based recommendation only.
+> **Current scope:** independent thesis method development for graph sampling in GNN recommendation. GRAPES is a reference/comparator; gate status is governed only by [`PHASE2_RESEARCH_PLAN_en.md`](./PHASE2_RESEARCH_PLAN_en.md).
 
 ## 1. Locked constraints
 
 | ID | Constraint | Status | Evidence |
 |---|---|---|---|
-| C-001 | Phase 2 has one direction only: directly adapt GRAPES to recommendation | `LOCKED` | Direct user instruction and synchronized continuity files |
+| C-001 | Phase 2 develops a project-owned graph-sampling method for GNN recommendation; GRAPES is reference/comparator material | `LOCKED; SUPERSEDES DIRECT-ADAPTATION WORDING` | Current thesis scope and synchronized continuity files |
 | C-002 | `ThucTap2` is read-only reference material | `LOCKED` | Project rule |
 | C-003 | All new persistent outputs are stored under `Do An` | `LOCKED` | Project rule |
 | C-004 | Language-bearing outputs require synchronized `_en` and `_vn` files | `LOCKED` | Project rule |
 | C-005 | Substantive research/design work requires two independent agents and cross-critique | `LOCKED` | Project rule |
-| C-006 | Main task variants are GRAPES-RL-Rec and GRAPES-GFN-Rec | `LOCKED SCOPE` | Phase 2 plan; implementation details remain proposed |
-| C-007 | Failure does not authorize a new direction | `LOCKED` | Direct user scope decision |
+| C-006 | GRAPES-RL-Rec and GRAPES-GFN-Rec are optional reference variants, adopted only if G1 rationale and later gates justify them | `REFERENCE CANDIDATES` | Current canonical plan |
+| C-007 | Gate failure requires a recorded corrective loop, stop, or explicit rescope request; it does not authorize unsupported claims or an unrelated pivot | `LOCKED` | Current canonical plan |
 | C-008 | Phase 2 must finish within 12 weeks | `LOCKED` | Direct user instruction on 2026-08-26 |
 | C-009 | The implementation language is Python | `LOCKED` | Direct user instruction on 2026-08-26 |
 | C-010 | The project uses Amazon Reviews data and must source/prepare it independently | `LOCKED DATA FAMILY` | Direct user instruction on 2026-08-26 |
@@ -78,10 +77,10 @@ The official release reports 571.54 million reviews overall. Raw `Baby_Products`
 
 ## 6. Operational meaning of high expectations
 
-- close D1–D11 with equations, tensor shapes, and test oracles; pass T01–T25;
+- preserve D1–D11/T01–T25 as GRAPES-informed reference oracles and apply only the relevant tests if those components are adopted;
 - package a pinned, modular Python implementation with deterministic configuration and automated tests;
 - produce an immutable, checksum-addressed, rerunnable, leakage-safe Amazon data package;
-- execute MostPop, BPR-MF, full LightGCN, Random-Sampling-Rec, Degree-Sampling-Rec, GRAPES-RL-Rec, and GRAPES-GFN-Rec under controlled budgets;
+- execute the baseline and comparator set frozen through G1/G3 under controlled budgets; GRAPES variants are conditional reference comparators, not mandatory final methods;
 - use exact full-catalog NDCG@20 as the primary quality metric and report Recall@20 as secondary;
 - use one smoke seed, three fixed development seeds, and five paired final seeds for primary comparisons when measured compute permits;
 - report effect sizes, uncertainty, failed runs, peak memory, wall-clock time, sampler/propagation time, and throughput;
@@ -95,6 +94,6 @@ The official release reports 571.54 million reviews overall. Raw `Baby_Products`
 - measure a Week 3 end-to-end pilot before freezing GPU-hours, batch size, embedding dimension, budgets, and trial count;
 - audit and pin the exact `Baby_Products` artifact and post-filter scale;
 - obtain supervisor milestones, thesis template/language/page limit, and formal evaluation rubric;
-- close D1, D2, D4, D5, D6, D7, and D9 before implementation of the learned variants.
+- pass canonical G1 before selecting a sampler, pass G2 and E0-MIN before G3 execution, and satisfy the relevant reference oracles only for adopted components.
 
 Google states that managed Colab resource limits, VM lifetimes, and GPU types vary and are not guaranteed; runtime VMs are temporary. Therefore Colab removes the local-disk blocker but does not replace provenance, persistent storage, environment locks, or same-hardware final profiling. Source: [Google Colab FAQ](https://research.google.com/colaboratory/faq.html).

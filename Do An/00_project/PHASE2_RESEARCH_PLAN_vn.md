@@ -2,7 +2,7 @@
 
 > **Trạng thái:** Đang hiệu lực; đây là nguồn kế hoạch duy nhất của Phase 2.  
 > **Thời lượng dự án:** 12 tuần.  
-> **Cập nhật lần cuối:** 2026-08-27.  
+> **Cập nhật lần cuối:** 2026-08-30.
 > **Cặp ngôn ngữ:** Bản tiếng Anh: [`PHASE2_RESEARCH_PLAN_en.md`](./PHASE2_RESEARCH_PLAN_en.md).
 
 ## 1. Mục đích và cách quản trị
@@ -32,19 +32,55 @@ Khi kế hoạch thay đổi, phải cập nhật cả hai bản ngôn ngữ và
 | Danh mục dataset | `Baby_Products` là primary candidate; `All_Beauty` là diagnostic; `Home_and_Kitchen` là scale stress có điều kiện | Chưa dataset nào được chốt. |
 | Environment và compute | Có Python và Google Colab | Chưa khóa cấu hình environment/GPU cuối. |
 
-## 4. Cổng quyết định và phụ thuộc
+## 4. Registry gate chuẩn và dependency
+
+Cặp kế hoạch song ngữ này là **registry gate có thẩm quyền duy nhất**. Artifact khác có thể liên kết đến gate hoặc nêu snapshot ngắn, nhưng không được định nghĩa lại định danh, trạng thái, tiêu chí thoát hay dependency của gate.
+
+Trạng thái gate và maturity của bằng chứng là hai trục riêng. Trạng thái gate dùng `NOT_STARTED`, `IN_PROGRESS`, `READY_FOR_REVIEW`, `PASS`, `CORRECTIVE_LOOP`, `STOP`, `REOPENED` hoặc `WAIVED`. Maturity của bằng chứng tiếp tục dùng `planned -> specified -> implemented -> executed -> validated`; gate `PASS` không có nghĩa mọi artifact liên kết đều đã validated.
+
+### 4.1 Prerequisite về environment thực thi
+
+| ID | Trạng thái hiện tại | Tiêu chí thoát | Việc bị chặn |
+|---|---|---|---|
+| E0-MIN — thực thi development | `IN_PROGRESS` | Environment local/Colab được ghi version chính xác, có thể chạy lại data-audit và bounded test path | Phần thực thi G2-D và việc execute G3/G4 |
+| E0-FINAL — thực thi profiling cuối | `NOT_STARTED` | GPU cuối, software/CUDA lock, profiling procedure và nơi lưu output lâu dài đã được xác nhận và smoke-test | Resource claim ở G5 và representative rerun G6 |
+
+E0 không chặn literature work hoặc phần không cần thực thi của G2-A đến G2-C. Hai mức này ngăn việc chưa xác nhận GPU mượn cuối cùng làm chặn governance, literature review hoặc thiết kế protocol.
+
+### 4.2 Định nghĩa gate
 
 | Cổng | Quyết định cần có | Bằng chứng cần có trước khi đóng | Việc bị chặn khi chưa đóng |
 |---|---|---|---|
 | G0 — Governance | Phạm vi, artifact song ngữ và ranh giới bằng chứng | Kế hoạch chính thức này và continuity pointer đã đồng bộ | Không có; hoàn tất cho mục đích lập kế hoạch |
-| G1 — Lý do thiết kế nghiên cứu | Các cơ chế lấy mẫu ứng viên và thiết kế so sánh có kiểm soát | Định vị literature hiện tại, rationale tường minh và phát biểu so sánh có thể bác bỏ | Chọn sampler được đề xuất |
-| G2 — Dataset và evaluation protocol | Dataset chính và protocol chống leakage | Persistent provenance/manifest, interaction semantics, quy tắc duplicate, temporal split, xử lý warm-start/OOV, negative eligibility và training-only graph statistic | Huấn luyện recommender và headline evaluation |
+| G1 — Lý do thiết kế nghiên cứu | Các cơ chế lấy mẫu ứng viên và thiết kế so sánh có kiểm soát | RQ chính và hypothesis có thể bác bỏ; định vị closest work; cơ chế ứng viên; thiết kế matched comparison; quy tắc chọn phương pháp đăng ký trước | Chọn và implement sampler được đề xuất |
+| G2 — Dataset và evaluation protocol | Dataset chính và protocol chống leakage | G2-A provenance; G2-B interaction/duplicate/negative semantics; G2-C temporal, warm-start/OOV và exact-candidate rule; G2-D retained-graph statistic và bounded feasibility evidence | Huấn luyện baseline khoa học và headline evaluation |
 | G3 — Shared baseline path | Data pipeline, exact evaluator và các baseline tương ứng | Run xác định, sanity check và resource logging | Thí nghiệm sampler được đề xuất |
 | G4 — Proposed-sampler readiness | Phương pháp ứng viên đã implement và có diagnostic | Unit/integration test, loss hữu hạn, sample hợp lệ và development run có kiểm soát | So sánh cuối |
-| G5 — Final evidence | Experiment matrix và evidence package đã freeze | Paired seed, phân tích uncertainty, resource trace, failure và limitation | Claim ở phần Results/Conclusion |
+| G5 — Final evidence | Experiment matrix và evidence package đã freeze | Paired seed, phân tích uncertainty, resource trace, failure và limitation; G5-S bounded scale evidence nếu luận văn giữ claim large-scale | Claim ở phần Results/Conclusion |
 | G6 — Reproducibility và submission | Representative run tái lập được và artifact đầy đủ | Manifest/configuration, table/figure tái tạo, report, slide và source Colab chạy được | Nộp bài |
 
 Không đạt một gate không cho phép kết luận không có bằng chứng hoặc chuyển sang đề tài không liên quan. Cần chẩn đoán, ghi quyết định và sửa phần kế hoạch còn lại sao cho phù hợp bằng chứng.
+
+G2-D là ranh giới feasibility, không phải kết quả baseline. Có thể dùng bounded subset, non-GNN control hoặc fixed tiny baseline để kiểm tra pipeline/evaluator và resource envelope thô. Phải ghi scale và hardware; không được tune model, so sánh sampler, báo headline metric hoặc khái quát sang final run. Phần execute scale stress từng gọi là G2-E nay là `G5-S`; trước G5, công việc `Home_and_Kitchen` chỉ gồm provenance, size và lập kế hoạch feasibility.
+
+### 4.3 Trạng thái gate hiện tại
+
+| ID | Trạng thái | Prerequisite | Bằng chứng/khoảng trống hiện tại | Ngày quyết định | Lần review tiếp |
+|---|---|---|---|---|---|
+| G0 | `PASS` | Không | Scope, quản trị song ngữ, ranh giới bằng chứng và kế hoạch này đã được ghi. Mở lại nếu scope/title/deliverable rule thay đổi. | 2026-08-30 | Khi governance thay đổi |
+| G1 | `IN_PROGRESS` | Không; chạy song song với G2 | Có source anchor sơ bộ và GRAPES-informed reference; closest-work positioning và quy tắc chọn đăng ký trước chưa hoàn tất. | — | Sau targeted closest-work review |
+| G2 | `IN_PROGRESS` | Chỉ phần thực thi G2-D cần E0-MIN | Có temporary raw audit; persistent provenance, semantics, split/OOV/negative rule, retained graph và bounded feasibility chưa hoàn tất. | — | Sau evidence package G2-A–G2-C |
+| G3 | `NOT_STARTED` | G2 `PASS`; E0-MIN `PASS` | Chưa có baseline/evaluator/resource path end-to-end deterministic. | — | Sau khi prerequisite pass |
+| G4 | `NOT_STARTED` | G1 `PASS`; G2 `PASS`; G3 `PASS` | Chưa chọn hoặc implement sampler cuối. Toy test của reference design không thỏa gate này. | — | Sau khi prerequisite pass |
+| G5 | `NOT_STARTED` | G4 `PASS`; đã freeze experiment matrix/configuration/seed; resource claim cần E0-FINAL | Chưa có matched final experiment evidence. | — | Sau G4 readiness review |
+| G6 | `NOT_STARTED` | G5 `PASS`; E0-FINAL `PASS` | Chưa có clean representative rerun hoặc final evidence package được tái tạo. | — | Sau quyết định G5 |
+
+### 4.4 Quy tắc go, corrective loop, stop, waiver và reopen
+
+- Chỉ `GO` sang G3 khi G2 và E0-MIN pass; chỉ `GO` sang G4 khi G1, G2 và G3 pass; chỉ `GO` sang final experiment khi G4 pass và matrix đã freeze.
+- Dùng `CORRECTIVE_LOOP` khi evidence chưa đủ nhưng có cách sửa trong phạm vi. `STOP` ghi nhận impasse và cần quyết định rescope tường minh; không trạng thái nào tự cho phép đổi đề tài hoặc đưa positive claim.
+- Mở lại G2 khi interaction semantics, split, negative eligibility hoặc training graph thay đổi; invalidate hoặc mở lại evidence G3–G6 bị ảnh hưởng. Mở lại G3 và gate sau nó khi backbone, evaluator, budget hoặc resource logger thay đổi đáng kể. Mở lại G1/G4 và gate sau nó khi phương pháp được chọn thay đổi.
+- Chỉ cho `WAIVED` với phạm vi tùy chọn/hành chính, có authority, rationale, expiry và impact statement. Không được waive provenance, leakage control, train/test separation, matched comparison, raw-result traceability, uncertainty disclosure hay representative reproducibility. Thiếu evidence `G5-S` phải làm hẹp claim large-scale, không được silent waiver.
 
 ## 5. Tiến độ nghiên cứu 12 tuần
 
@@ -52,10 +88,10 @@ Không đạt một gate không cho phép kết luận không có bằng chứng
 |---|---|---|
 | 1 | Hợp nhất scope, evidence record và điểm xuất phát của dataset audit; lập kế hoạch chính thức này. | Record G0; trạng thái và rủi ro đang mở được nêu rõ. |
 | 2 | Thực hiện Amazon provenance/audit có thể lưu lâu dài trên Colab; pre-register interaction semantics, cách xử lý duplicate, temporal split ứng viên, xử lý warm-start/OOV và negative eligibility. | Gói bằng chứng G2 sẵn sàng để review; chưa huấn luyện mô hình. |
-| 3 | Xây data pipeline chống leakage, training-only graph statistic, exact full-catalog evaluator và simple non-GNN control. | Quyết định G2 hoặc corrective action đã ghi. |
+| 3 | Xây data pipeline chống leakage, training-only graph statistic, bounded evaluator feasibility path và simple non-GNN control; tiếp tục closest-work review G1 song song. | Quyết định G2 hoặc corrective action đã ghi; evidence package G1 sẵn sàng review. |
 | 4 | Thiết lập GNN recommender baseline dùng chung, configuration xác định, logging và đường đo resource. | Baseline path G3 vượt sanity check cần thiết. |
 | 5 | Implement và kiểm thử các sampling control có giới hạn (ví dụ uniform và degree-aware) trong cùng task và budget. | So sánh sampling control tương ứng có thể chạy. |
-| 6 | Hoàn thiện rationale cho phương pháp ứng viên dựa trên literature và implement cơ chế lấy mẫu được chọn, không claim thành công. | Review mức sẵn sàng G1 và G4. |
+| 6 | Chỉ sau khi G1 và G3 pass, implement cơ chế lấy mẫu được chọn, không claim thành công. | Review mức sẵn sàng G4. |
 | 7 | Chẩn đoán proposed sampler bằng development run có kiểm soát; chỉ sửa các vấn đề có bằng chứng. | Configuration ứng viên, diagnostic và ablation dự kiến được freeze cho development. |
 | 8 | Chạy development comparison và ablation thiết yếu với task/budget cố định; chỉ thay thiết kế khi có lý do được ghi lại. | Final experiment matrix, seed và analysis plan được freeze. |
 | 9 | Chạy primary matched experiment và ghi quality, resource, failure trace. | Gói bằng chứng cuối một phần. |

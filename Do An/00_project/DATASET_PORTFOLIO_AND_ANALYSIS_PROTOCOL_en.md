@@ -49,7 +49,36 @@ For every candidate dataset, create an immutable manifest with URL, retrieval da
 
 The raw-audit result that the provider absolute split has high OOV rates is a protocol finding, not a rejection of Amazon. It means that the published split cannot automatically be the primary warm-start protocol.
 
-## 5. Method and comparison protocol
+## 5. Research interpretation guide for the dataset audit
+
+The audit is a sequence of research decisions, not a checklist that converts raw counts directly into dataset acceptance. Every reported statistic must name the **analysis population** to which it applies: (a) raw valid events, (b) events retained by each candidate positive policy, (c) the frozen training graph after training-only filtering, or (d) the warm-start validation/test cohort. Do not compare numbers across these populations as if they described the same graph.
+
+| Audit evidence | Defensible interpretation | Decision it can inform | What it does **not** establish |
+|---|---|---|---|
+| Invalid IDs, ratings, or timestamps | Measures source/schema conformity and identifies records that need deterministic quarantine | G2-A provenance quality and a recorded invalid-row policy | That all unflagged events are semantically valid positives |
+| Repeated user–item pairs and timestamp ties | Shows ambiguity in event identity or ordering; sensitivity depends on how many users/items and temporal targets are affected, not only the row count | Duplicate/tie rule under G2-B and whether a targeted sensitivity check is needed | That repeated reviews are accidental duplicates, or that the provider already resolved them as required by this project |
+| Rating distribution and retention under P4/P5/all-observed | Quantifies the semantic and scale consequences of each candidate positive definition | Pre-result selection of the primary interaction policy, using domain meaning and retained feasibility together | That the policy with the largest graph or best later metric is the most valid one |
+| User/item degree quantiles, singleton rates, and head–tail concentration | Characterizes sparsity, activity imbalance, and likely sampling pressure; report both sides of the bipartite graph | Whether a warm-start ranking task remains meaningful and which popularity-stratified diagnostics are required | That sparsity alone makes a dataset large-scale, difficult, or favorable to the proposed sampler |
+| Density and connected components | Describes graph fragmentation and the reachable structure available to message passing after each transformation | Component handling, isolated-node reporting, and feasibility of the chosen GNN backbone | Recommendation quality, sampler superiority, or effective multi-hop signal |
+| Temporal coverage, ties at cutoffs, and activity drift | Tests whether the chosen split represents an ordered prediction task and whether periods differ materially | Cutoff/tie rules, temporal strata, and limitations on generalization across time | Causality or absence of all temporal bias |
+| Warm-start retention and user/item OOV exclusions | Quantifies the estimand produced by a pure-ID warm-start protocol and how much of the future cohort is excluded | G2-C acceptance, cohort definition, and the need to narrow claims or add a separate cold-start method | Performance on excluded users/items or the acceptability of hiding a low-coverage cohort |
+| Eligible item-universe size and positive/negative exclusions | Defines the ranking task's difficulty and verifies that candidates and negatives obey time and knowledge boundaries | Exact evaluation feasibility and the registered negative/candidate policy | That unobserved items are true negatives, or that sampled-candidate metrics are comparable with full-catalog metrics |
+| Retained nodes/edges plus measured evaluator time and memory in the bounded dry-run | Establishes only whether the declared pipeline and evaluator path are executable under the recorded configuration | G2-D feasibility and later compute planning | Model quality, sampler ranking, scalability beyond the tested configuration, or permission to tune at G2-D |
+| Sampling-pressure diagnostics on the frozen training graph | Reveals exposure bias, coverage, overlap, and structural distortion introduced by a sampler | Later sampler ablation and accuracy–cost interpretation after the relevant gates pass | A benefit unless it is linked to matched downstream quality and resource evidence |
+
+Apply these interpretation rules:
+
+1. **Use denominators and attrition paths.** Report both counts and rates, with the denominator stated. Reconcile the path from downloaded rows to valid events, semantic positives, training edges, and retained evaluation targets; unexplained loss is a failed audit check.
+2. **Do not invent universal pass thresholds.** A high singleton, OOV, tail, or component rate is a warning whose consequence depends on the intended estimand and model. Acceptance criteria must be pre-registered and justified from task validity and compute feasibility, not chosen after observing model results.
+3. **Separate source facts, project transformations, and derived findings.** Provider documentation, checksum/schema observations, transformation rules, and computed statistics must be labeled separately. A project-derived count does not verify a provider claim unless the definitions match.
+4. **Treat comparisons as descriptive until controlled.** Differences between datasets or P4/P5/all-observed snapshots may reflect semantics, filtering, time coverage, and population composition. They do not isolate a causal effect of scale or sparsity.
+5. **Propagate uncertainty and unresolved checks.** Mark incomplete duplicate scans, anomalous records, approximate counts, or unverified source behavior as `OPEN`, `UNKNOWN`, or `NEEDS VERIFICATION`. Do not let downstream tables silently convert them into exact facts.
+6. **Match claim scope to the retained cohort.** The primary result may describe only the frozen warm-start population. Cold-start, full raw-population, cross-domain, and large-scale claims require their own evidence; otherwise narrow the thesis wording.
+7. **Keep G2 non-comparative.** Audit and the bounded G2-D dry-run may select a valid task and establish feasibility. They must not be used to select the final sampler, tune models, report headline ranking metrics, or claim accuracy/resource improvement.
+
+An audit interpretation is complete only when it records: **observation → analysis population and denominator → plausible protocol consequence → chosen action → excluded inference → gate status**. If more than one action remains scientifically defensible, keep the decision `OPEN` and pre-register the evidence that will resolve it.
+
+## 6. Method and comparison protocol
 
 The thesis evaluates a **project-developed graph sampler** as a module under a matched GNN recommender backbone and a fixed resource budget. The final sampling mechanism is not frozen before literature positioning and ablation.
 
@@ -64,18 +93,18 @@ Minimum comparison family:
 
 All samplers must share the same split, training graph, ranking loss, negative rule, backbone depth/width, optimizer/tuning budget, random seeds, and sampling budget. Report Recall@10/20 and NDCG@10/20 from exact full-catalog ranking, along with peak GPU VRAM, CPU RAM, sampler time, train time, throughput, sampled graph size, seed variation, and accuracy–cost Pareto curves. Report results by item-popularity stratum as well as the aggregate.
 
-## 6. Decision gates
+## 7. Decision gates
 
 | Gate | Required evidence before proceeding |
 |---|---|
 | G2-A: provenance | Official source, access note, exact file checksum, schema, and manifest complete |
 | G2-B: semantics | Duplicate policy, `0.0` treatment, primary P4/P5/all-observed policy, and negative rule pre-registered |
 | G2-C: evaluation validity | Temporal cutoffs, training-only filtering, warm-start coverage, OOV exclusions, and exact evaluation candidates recorded |
-| G2-D: primary feasibility | `Baby_Products` retained graph supports baselines and full-catalog evaluation within the confirmed compute budget |
-| G2-E: scale evidence | `Home_and_Kitchen` manifest/audit complete and one pre-registered bounded scale-stress configuration has run |
-| G2-F: optional expansion | MovieLens or Yelp may be added only after G2-A through G2-E are complete |
+| G2-D: primary feasibility | A bounded, explicitly non-headline dry-run records retained-graph statistics and shows that the pipeline/evaluator path is feasible; no tuning or sampler comparison is allowed |
+| G5-S: conditional scale evidence | If the thesis retains a large-scale claim, execute one pre-registered bounded `Home_and_Kitchen` scale-stress configuration after G3/G4; before then, only provenance/size/feasibility planning is allowed |
+| Optional expansion | MovieLens or Yelp may be added only after the Amazon core gates pass and must not block them |
 
-## 7. Multi-agent review and adjudication
+## 8. Multi-agent review and adjudication
 
 Two independent reviewers were used, then cross-critiqued each other.
 
@@ -84,6 +113,6 @@ Two independent reviewers were used, then cross-critiqued each other.
 
 They agreed that raw 0-core `All_Beauty` and the provider absolute split cannot be adopted as primary warm-start evidence without transformation and coverage reporting. They disagreed over whether MovieLens 25M or `Home_and_Kitchen` should be mandatory in twelve weeks. The adjudication is to require the **bounded `Home_and_Kitchen` scale stress test** if the thesis retains a large-scale claim, while keeping MovieLens and Yelp optional. This preserves direct scale evidence without committing to a second full experimental matrix.
 
-## 8. Next action
+## 9. Next action
 
 Audit `Baby_Products` under P4/P5/all-observed candidate semantics and a strict training-only temporal protocol, then decide whether its retained graph passes G2-D. In parallel, acquire only the provenance/size audit for `Home_and_Kitchen`; do not build the final sampling method or start full ablations until G2-A through G2-C are recorded.
