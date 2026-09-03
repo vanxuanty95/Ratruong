@@ -1,8 +1,8 @@
 # Danh mục Dataset và Protocol Phân tích
 
-> **Trạng thái:** `DANH MỤC ĐỀ XUẤT — DATASET GATE G2 CÒN MỞ`  
+> **Trạng thái:** `ĐÃ KHÓA PRIMARY DATASET VÀ PROTOCOL — DATASET GATE G2 PASS`
 > **Ghi nhận:** 2026-08-26  
-> **Cập nhật:** 2026-09-02 — full Baby G2-C artifact và bounded G2-D traversal đã execute. G2-C được chấp nhận; G2 vẫn `IN_PROGRESS` vì G2-D còn thiếu exact environment fingerprint. Full execution `Home_and_Kitchen` thuộc conditional G5-S.
+> **Cập nhật:** 2026-09-03 — Baby manifest mới đã ghi exact environment metadata, verify năm artifact và replay bounded G2-D với mọi invariant đã đăng ký đều đúng. Baby G2-A đến G2-D và E0-MIN pass. Full execution `Home_and_Kitchen` vẫn thuộc conditional G5-S.
 > **Phạm vi:** Luận văn Thạc sĩ độc lập: *Phát triển phương pháp lấy mẫu đồ thị cho hệ thống gợi ý quy mô lớn sử dụng mạng nơ-ron đồ thị GNN.*  
 > **Ranh giới claim:** Đây là record cho thiết kế nghiên cứu, không phải kết quả thực nghiệm hoặc đặc tả phương pháp cuối.
 
@@ -24,7 +24,7 @@ G2 là **cổng quyết định dataset và evaluation protocol trước khi tra
 | Vai trò | Dataset và nguồn | Lý do đưa vào | Evidence cần có | Quyết định hiện tại |
 |---|---|---|---|---|
 | Chỉ development/diagnostic | Amazon Reviews'23 `All_Beauty`, pure-ID 0-core | Đã có exact audit; thuận tiện để validate deterministic preprocessing và sampler diagnostic trước các run tốn kém | Raw audit cho thấy 693,929 row, 631,986 user, 112,565 item và 93.22% user singleton | **Không dùng làm primary evidence.** Singleton rate khiến nó không phù hợp làm benchmark warm-start temporal chính. |
-| Primary benchmark candidate | Amazon Reviews'23 `Baby_Products` | Product-review domain; user–item rating có timestamp; raw scale đủ để kiểm tra trade-off accuracy–cost | Raw audit cùng full P4 temporal artifact: 3,868,654 training edge, 2,318,308 training user, 162,125 training item; exact OOV ledger và candidate | **Primary dataset; G2-A/G2-B/G2-C PASS.** G2-D environment completion còn mở. |
+| Primary benchmark | Amazon Reviews'23 `Baby_Products` | Product-review domain; user–item rating có timestamp; retained scale đủ để kiểm tra trade-off accuracy–cost | Raw audit cùng full P4 temporal artifact: 3,868,654 training edge, 2,318,308 training user, 162,125 training item; exact OOV ledger/candidate và bounded environment replay | **Primary dataset; G2-A/G2-B/G2-C/G2-D PASS.** |
 | Scale-stress candidate | Amazon Reviews'23 `Home_and_Kitchen` | Cùng source family và semantics với benchmark chính; artifact 0-core do project xác minh có 66,623,880 row (1,420,416,432 compressed bytes), còn metadata 5-core chính thức ghi 28.2M interaction, 2.9M user và 763.6K item | Provenance/schema/row-count audit đã `EXECUTED`; full protocol và bounded resource experiment vẫn bị gate | **Đã acquire provenance. Chỉ bắt buộc scale stress nếu luận văn giữ claim “large-scale”.** Không phải ablation suite đầy đủ thứ hai. |
 | Controlled diagnostic tùy chọn | MovieLens 25M | Dataset nghiên cứu ổn định, có timestamp và checksum, gồm 25,000,095 rating từ 162,541 user trên 62,423 phim | Manifest và protocol audit riêng | **Tùy chọn.** Chỉ dùng sau khi có core Amazon evidence; nó không phải bằng chứng chính cho web-scale sparsity. |
 | External-domain validation tùy chọn | Yelp Open Dataset | Domain doanh nghiệp địa phương khác; nguồn chính thức có review và business | Schema, terms và protocol audit riêng | **Tùy chọn.** Chỉ thêm nếu còn thời gian sau Amazon core; không được làm chậm evidence trung tâm. |
@@ -96,7 +96,7 @@ Manifest Drive `baby_p4_g2c_manifest.json` (file ID `1sOUhOCFugfATnDrzwnULcaaakR
 
 Arithmetic review xác nhận train + validation + test bằng toàn bộ 4,655,843 P4 event; mọi warm/excluded ledger và tổng exclusion-reason đều đối soát; mapping/edge/target artifact row count khớp graph/partition count; component node bằng user cộng item; dry traversal loại trung bình 29.56 prior-history item trên mỗi target được test.
 
-**Quyết định:** G2-C = `PASS`. Cutoff `t1 = 1628643414042`, `t2 = 1658002729837`, half-open tie rule, minimum degree 1, training-only mapping, warm-start cohort và full eligible training-item candidate rule được freeze cho primary Baby task. Warm retention thấp làm estimand hẹp nhưng không vô hiệu vì exclusion được công khai và vẫn còn 40,587 test target. G2-D đã execute thành công nhưng chưa `PASS`: manifest ghi code/configuration và process measurement nhưng thiếu exact Python, platform, CPU/RAM hoặc Colab runtime metadata do E0-MIN yêu cầu. Corrective action là capture fingerprint đó rồi chỉ rerun/readback bounded feasibility record; không có lý do thay đổi G2-C artifact.
+**Quyết định:** G2-C và G2-D = `PASS`; do đó Dataset Gate G2 và E0-MIN đóng ngày 2026-09-03. Cutoff `t1 = 1628643414042`, `t2 = 1658002729837`, half-open tie rule, minimum degree 1, training-only mapping, warm-start cohort và full eligible training-item candidate rule tiếp tục được freeze. Manifest mới verify byte size và SHA-256 của cả năm artifact. Environment ghi CPython 3.13.15, Linux 6.6.122, Intel Xeon 2 logical CPU, RAM 12,975.53 MiB, không GPU, Google Colab 1.0.0 và ipykernel 6.17.1. Replay 100 target tái lập 16,212,500 catalog comparison và 16,209,544 eligible candidate với cả bốn replay invariant đúng. Bằng chứng này chỉ xác lập bounded pipeline/evaluator feasibility có thể tái lập; không phải model-quality, comparative profiling, GPU hoặc scalability evidence.
 
 ## 3. Nguồn chính thức và ý nghĩa dữ liệu
 
@@ -176,7 +176,7 @@ Mọi sampler phải dùng cùng split, training graph, ranking loss, negative r
 | G5-S: conditional scale evidence | Nếu luận văn giữ claim large-scale, chạy một bounded `Home_and_Kitchen` scale-stress configuration đã pre-register sau G3/G4; trước đó chỉ làm provenance/size/feasibility planning |
 | Optional expansion | Chỉ thêm MovieLens hoặc Yelp sau khi các gate Amazon core pass và không được để chúng chặn core |
 
-**Cập nhật 2026-09-02:** Xem Mục 2.2–2.4. Baby G2-A/G2-B/G2-C đã `PASS`. G2-D bounded execution hoàn tất với candidate invariant đúng, nhưng environment fingerprint completion còn mở trong E0-MIN. Full scale Home vẫn là conditional G5-S.
+**Cập nhật 2026-09-03:** Xem Mục 2.2–2.4. Baby G2-A/G2-B/G2-C/G2-D và E0-MIN đều `PASS`; Dataset Gate G2 đã đóng. Full scale Home vẫn là conditional G5-S.
 
 ## 8. Multi-agent review và adjudication
 
@@ -189,4 +189,4 @@ Hai reviewer thống nhất raw 0-core `All_Beauty` và provider absolute split 
 
 ## 9. Hành động tiếp theo
 
-Baby G2-C nay đã freeze từ full-data artifact được review. Hành động tiếp theo là bổ sung exact Python/platform/CPU/RAM/Colab runtime metadata vào bounded feasibility evidence và đọc lại, không rebuild hoặc thay đổi G2-C graph đã chấp nhận. Nếu E0-MIN và G2-D cùng pass, G2 có thể đóng và bắt đầu G3 baseline. Không tune, so sánh sampler hoặc tạo headline result; full Home processing vẫn hoãn tới conditional G5-S.
+Baby G2 đã freeze từ full-data artifact được review và environment-completion record mới. Có thể bắt đầu baseline G3 dưới shared exact evaluator và matched control. Không có kết luận nào về sampler được suy ra từ G2; full Home processing vẫn hoãn tới conditional G5-S.

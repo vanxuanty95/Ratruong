@@ -1,6 +1,6 @@
 # Project-Derived Amazon Dataset Audit Results
 
-> **Status:** `RAW AUDIT EXECUTED; DATASET GATE G2 STILL OPEN`
+> **Status:** `RAW AUDIT EXECUTED; DATASET GATE G2 PASSED AFTER G2-C/G2-D REVIEW`
 >
 > **Execution date:** 2026-08-26
 > **Synchronized:** 2026-09-02 — added complete protocol results for `All_Beauty`/`Baby_Products`, the P4 decision, and bounded provenance for `Home_and_Kitchen`; see Section 2a and Section 7.
@@ -117,7 +117,7 @@ This diagnostic does not freeze the negative policy. Negative validity must be c
 1. `All_Beauty` is suitable for pipeline and schema validation, but its singleton rate and candidate temporal OOV make it unsuitable as primary recommendation evidence under the current warm-start design.
 2. `Baby_Products` is the primary benchmark candidate; its exact duplicate-pair audit is closed (`VERIFIED 0`) and P4 (`rating >= 4`) is the selected primary interaction policy. Warm-start OOV remains high and must be reconciled in G2-C.
 3. The official absolute split cannot be adopted as the primary warm-start split without a documented protocol revision.
-4. P4, quarantine of the single `rating = 0.0` row, the deterministic duplicate fallback, and the negative rule are recorded decisions; Baby G2-A/G2-B pass. The frozen training-only graph and exact evaluator remain open under G2-C/G2-D.
+4. P4, quarantine of the single `rating = 0.0` row, the deterministic duplicate fallback, and the negative rule are recorded decisions. Subsequent full temporal-graph and bounded-environment evidence closed Baby G2-A through G2-D on 2026-09-03; see the G2-C/G2-D execution guide and manifest.
 5. `Home_and_Kitchen` provenance is executed: 1,420,416,432 compressed bytes, 66,623,880 rows, valid four-column schema, and SHA-256 `9be4e2dc8b3dc513c02521644b2ae55f722b2941767e539dcfe518f6bdd4f70b`. Full protocol and scale stress remain unexecuted.
 6. No model was trained and no recommendation-quality, memory, runtime, or scalability claim follows from this audit.
 

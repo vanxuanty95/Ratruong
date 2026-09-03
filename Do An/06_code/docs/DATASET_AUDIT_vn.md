@@ -1,6 +1,6 @@
 # Protocol Audit và Acceptance cho Dataset
 
-> **Trạng thái:** `ĐÃ EXECUTE PERSISTENT RAW AUDIT — DATASET GATE G2 CÒN MỞ`
+> **Trạng thái:** `ĐÃ EXECUTE PERSISTENT RAW AUDIT — DATASET GATE G2 PASS`
 > **Ghi nhận:** 2026-09-02
 > **Phạm vi:** Luận văn Thạc sĩ độc lập về graph sampling cho large-scale GNN recommendation.  
 > **Ranh giới:** Protocol này kiểm soát data evidence; nó không chọn hoặc validate final sampling method.
@@ -108,4 +108,4 @@ Temporal/training-only control được thúc đẩy bởi [Ji et al., *A Critic
 
 ## 8. Hành động tiếp theo
 
-Hoàn chỉnh các manifest field G2-A còn lại; sau đó execute analysis G2-B/G2-C đã pre-register cho `Baby_Products`: quarantine row `0.0`, so P4/P5/all-observed mà không dùng model result, audit timestamp tie, xây training-only temporal graph và report warm-start/OOV attrition cùng exact candidate. Chỉ sau đó mới chạy bounded G2-D feasibility path. Không train final sampler hoặc claim benchmark ở G2.
+Baby P4 temporal graph cùng bounded environment replay về sau đã hoàn tất các bước này; G2-A đến G2-D nay đều pass. Tiếp tục shared evaluator/baseline G3 mà không xem measurement G2 là model benchmark.

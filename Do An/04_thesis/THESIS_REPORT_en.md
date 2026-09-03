@@ -1,9 +1,9 @@
 # Development of a Graph Sampling Method for Large-Scale Recommender Systems Using Graph Neural Networks
 
 > **Status:** `CUMULATIVE WORKING THESIS — METHOD DEVELOPMENT, DATA AUDIT, AND RESEARCH PLAN`  
-> **Last updated:** 2026-09-02
+> **Last updated:** 2026-09-03
 > **Phase 2 identity:** Independent Master's thesis; GRAPES is a scientific reference, not the pre-fixed thesis method  
-> **Evidence boundary:** Thirteen local pure-Python tests pass, the full Baby P4 temporal artifacts have executed, and G2-C is accepted. A bounded 100-target G2-D traversal executed with both candidate invariants true, but exact environment fingerprinting remains open. No Phase 2 PyTorch/PyG model, benchmark, recommendation result, final profiling, or scalability result exists.
+> **Evidence boundary:** G1 passes with a frozen research question, closest-work boundary, candidate family, matched comparison, and validation-only selection/no-selection rule. Baby G2-A through G2-D and E0-MIN pass after the amended Drive manifest verified all artifacts, recorded the CPU/Colab environment, and reproduced the bounded traversal counts. No Phase 2 PyTorch/PyG model, recommendation result, final profiling, or scalability result exists.
 
 This document is the English working thesis report. It is intentionally a living artifact: verified implementation, execution, and validation evidence will replace planned statements as the research progresses. The Vietnamese counterpart is [`THESIS_REPORT_vn.md`](./THESIS_REPORT_vn.md).
 
@@ -13,7 +13,7 @@ Large graph neural networks can require information from increasingly large mult
 
 The current GRAPES-informed reference design explores a sampler GNN, Gumbel Top-k selection, and policy-learning objectives alongside a LightGCN-style recommender and Bayesian Personalized Ranking (BPR). These are candidate components—not the final method by default. The final method will be defined through literature positioning, method rationale, data/protocol constraints, controlled comparisons, and ablations. A dependency-free scaffold tests a subset of reference contracts on toy inputs; no final Phase 2 method has yet been implemented or tested.
 
-The current project state provides a controlled research foundation rather than a model-performance result: primary sources are pinned, the initial literature matrix and a GRAPES-informed reference design are recorded, persistent portfolio audits have executed, and the Baby P4 temporal-graph construction is implemented and toy-checked. Full-data temporal evidence, cutoff review, method definition, environment locking, model implementation, and performance evaluation remain open.
+The current project state provides a controlled research foundation rather than a model-performance result. G1 freezes a testable question, representative closest-work position, candidate mechanisms, matched comparison, and a rule that may select no learned method. Persistent portfolio audits, the full Baby P4 temporal graph, and bounded environment replay have executed; G2 and E0-MIN pass. The shared baseline path, sampler selection/implementation, final GPU lock, and performance evaluation remain open.
 
 ## 2. Scope and motivation
 
@@ -29,27 +29,30 @@ In a user–item graph, graph collaborative filtering can benefit from multi-hop
 
 The thesis does not assume that any candidate sampling mechanism improves recommendation. It asks whether a carefully controlled project-developed method can be defined, implemented, and evaluated without conflating sampling effects with data, negative-sampling, inference, or hardware differences.
 
-## 3. Research questions and hypotheses
+## 3. Research questions and hypotheses — G1 frozen
 
 ### 3.1 Primary research question
 
-> How can a graph-sampling method for large-scale GNN-based recommendation be developed and evaluated so that its quality and resource trade-offs are measured fairly against matched sampling baselines?
+> On the frozen, leakage-safe Amazon Baby P4 warm-start task, and at the same declared layer-wise sampling budget, can a task-conditioned sampler produce a better exact full-catalog NDCG@20–resource trade-off than matched uniform and degree-aware sampling with the same LightGCN-style recommender?
 
 ### 3.2 Secondary questions
 
-1. How should recommendation targets and layer-wise candidate sets be constructed without leakage?
-2. Which graph-sampling signals remain usable when a user–item graph has sparse or no semantic node features?
-3. Which GRAPES-informed or alternative candidate mechanisms are justified by the closest-work review and controlled ablations?
-4. How much memory and training-time overhead does learned sampling add at a matched layer-wise budget?
+1. Does the trade-off change across small, medium, and large per-layer budgets?
+2. Does task conditioning improve tail-user or tail-item ranking without hiding a head-cohort loss?
+3. What sampler time, memory, instability, and failure risk accompany each learned mechanism?
+4. Which mechanism survives controlled development comparison strongly enough to justify G4 and final evaluation?
 
 ### 3.3 Hypotheses
 
 The following are `HYPOTHESIS` statements, not results:
 
-- **H1:** At the same declared sampling budget, a project-developed graph-sampling method may achieve a different NDCG@20/resource trade-off from matched random or static sampling baselines.
-- **H2:** Any benefit of learned or task-aware sampling may be more visible at smaller budgets, where uniform sampling discards more potentially useful context.
-- **H3:** Candidate sampling objectives and mechanisms may exhibit different stability, quality, and overhead profiles; none is assumed to dominate before measurement.
-- **H4:** Learned sampling is expected to add measurable memory and runtime overhead; the quality trade-off must be measured rather than assumed acceptable.
+- **H1:** At at least one predeclared budget, a valid task-conditioned candidate has positive paired NDCG@20 change against the best matched static control.
+- **H2:** At at least one budget, a task-conditioned candidate is non-dominated by static controls over validation NDCG@20, peak GPU memory, and epoch wall time.
+- **H3:** Any quality benefit is larger at tighter budgets than at the largest budget; the budget-by-method interaction is reported even if it contradicts this expectation.
+- **H4:** Aggregate gain does not conceal a negative paired change in the predeclared tail cohort; head, middle, and tail effects are reported separately.
+- **H5:** Learned sampling has non-zero overhead, so quality without sampler/propagation time, memory, throughput, and failure evidence is insufficient.
+
+The full estimand, negative-outcome rule, candidate family, and validation-only Pareto selection rule are frozen in the [`G1_RESEARCH_DESIGN_en.md`](../00_project/G1_RESEARCH_DESIGN_en.md) decision record. Passing G1 does not select a sampler; selection still waits for G2, E0-MIN, and G3.
 
 ## 4. Background and related work
 
@@ -58,12 +61,15 @@ The following are `HYPOTHESIS` statements, not results:
 | GRAPES, arXiv:2310.03399v3 | Formal source for layer-wise learned sampling, Gumbel Top-k, REINFORCE, GFlowNet/Trajectory Balance, and sampled computation graphs | `VERIFIED PRIMARY SOURCE`; recommendation is an adaptation target, not a completed evaluation in Phase 1 |
 | BPR, arXiv:1205.2618 | Pairwise ranking loss and implicit-feedback triplets | `VERIFIED PRIMARY SOURCE`; does not specify GRAPES sampling |
 | LightGCN, arXiv:2002.02126 | Graph collaborative-filtering propagation, layer aggregation, and dot-product recommendation score | `VERIFIED PRIMARY SOURCE`; sampled block semantics require an explicit adaptation contract |
-| PinSage, arXiv:1806.01973 | Scalable graph-recommendation and sampling context | `VERIFIED PRIMARY SOURCE ANCHOR`; not a GRAPES-style policy and not required as the primary baseline |
-| DSKReG, arXiv:2108.11883 | Closest-work warning for learned sampling in recommendation-related settings | `VERIFIED PRIMARY SOURCE ANCHOR`; different knowledge-graph setting, so novelty must remain narrow |
+| GraphSAGE; FastGCN; AS-GCN; LADIES | Node-wise, layer-wise, importance, and adaptive sampling foundations | `VERIFIED PRIMARY SOURCES`; mainly node-classification/general-graph settings rather than temporal full-catalog recommendation |
+| Cluster-GCN; GraphSAINT | Cluster/subgraph sampling and normalization alternatives | `VERIFIED PRIMARY SOURCES`; different minibatch intervention from this thesis's primary exact-k layer-wise question |
+| PinSage, arXiv:1806.01973 | Scalable graph-recommendation and sampling context | `VERIFIED PRIMARY SOURCE`; heuristic item–board sampling, not the matched plain bipartite task here |
+| DSKReG, arXiv:2108.11883 | Learned sampling in knowledge-graph recommendation | `VERIFIED PRIMARY SOURCE`; prevents a “first learned sampler for recommendation” claim |
+| Data-driven GraphSAGE; SubMix | Learned RL neighbor sampling and trainable heuristic mixtures | `VERIFIED PRIMARY SOURCES`; closest mechanism warnings outside this recommendation protocol |
 | Recommender leakage study, arXiv:2010.11060 | Supports temporal and training-only preprocessing controls | `VERIFIED PRIMARY SOURCE ANCHOR`; exact Amazon protocol remains to be frozen |
 | Sampled-metric analysis, arXiv:1912.02263 | Supports exact full-catalog ranking for the primary evaluation | `VERIFIED PRIMARY SOURCE ANCHOR`; final feasibility depends on measured scale |
 
-The current literature review is preliminary. It supports a defensible starting point for the method and protocol sections, but it does not support an exhaustive review or a “first learned sampler for recommendation” novelty claim.
+The targeted G1 review is representative rather than exhaustive. It supports a narrow position: if evidence succeeds, the contribution is a project-owned task-conditioned sampler and controlled evidence for plain implicit bipartite recommendation under exact full-catalog ranking and matched resource measurement. It does not support a “first learned sampler for recommendation” claim.
 
 ## 5. Phase 1 evidence and source governance
 
@@ -155,7 +161,7 @@ Primary inference is common deterministic full-graph LightGCN propagation follow
 
 ### 7.1 Dataset scope
 
-The evidence portfolio is deliberately bounded. `Baby_Products` is the mandatory primary Amazon candidate; `Home_and_Kitchen` is a required *bounded scale-stress test* if the thesis retains its large-scale claim. `All_Beauty` is development/diagnostic only, not primary evidence. MovieLens 25M and Yelp Open Dataset are optional additions after the Amazon core is complete; they must not delay the central experiment. All roles are `PROPOSED` until Dataset Gate G2 is closed.
+The evidence portfolio is deliberately bounded. `Baby_Products` is the frozen primary Amazon dataset; `Home_and_Kitchen` is a required *bounded scale-stress test* if the thesis retains its large-scale claim. `All_Beauty` is development/diagnostic only, not primary evidence. MovieLens 25M and Yelp Open Dataset are optional additions after the Amazon core is complete; they must not delay the central experiment. Dataset Gate G2 is closed; optional roles remain conditional.
 
 The paired decision record, sources, exact audit questions, preprocessing sequence, comparison rules, and gates are in [`DATASET_PORTFOLIO_AND_ANALYSIS_PROTOCOL_en.md`](../00_project/DATASET_PORTFOLIO_AND_ANALYSIS_PROTOCOL_en.md). In particular, the official Amazon 5-core data are a reproducibility reference, not automatically the thesis's strict temporal training graph.
 
@@ -240,15 +246,15 @@ The bounded `Home_and_Kitchen` provenance job also completed. The exact 0-core c
 
 These findings demonstrate source identity, exact raw scale, strong bipartite sparsity, long-tail concentration, and severe mismatch between the provider's absolute split and a pure-ID warm-start estimand. They justify retaining `Baby_Products` as the primary candidate, limiting `All_Beauty` to development diagnostics, and constructing a new strict temporal task from training-only information. They do **not** demonstrate recommendation quality, sampling effectiveness, memory reduction, runtime improvement, novelty, or large-scale generalization.
 
-The analysis follows the chain **observation → population and denominator → protocol consequence → action → excluded inference → gate status**. Baby G2-A/G2-B/G2-C now `PASS`. The full training-only graph, exact OOV ledger/candidate construction, deterministic artifacts, and bounded traversal executed and were read back. G2-D remains open only for the E0-MIN environment fingerprint; no data reconstruction or cutoff revision is currently justified.
+The analysis follows the chain **observation → population and denominator → protocol consequence → action → excluded inference → gate status**. Baby G2-A/G2-B/G2-C/G2-D and E0-MIN now `PASS`. The full training-only graph, exact OOV ledger/candidate construction, deterministic artifacts, bounded traversal, environment fingerprint, and replay were read back. No data reconstruction or cutoff revision is justified.
 
 The frozen graph contains 3,868,654 edges between 2,318,308 users and 162,125 items. User degree is strongly long-tailed (p50 1, p90 3, p99 9; 71.76% singleton), while item degree is more concentrated (p50 3, p90 32, p99 397, maximum 21,348; 33.35% singleton). The largest of 34,288 components contains 96.50% of all 2,480,433 nodes. These indicators show a sparse, imbalanced but predominantly connected message-passing graph; they do not show recommendation performance or sampler superiority.
 
-Validation retains 81,871/373,776 = 21.90% warm targets and test retains 40,587/413,413 = 9.82%. Every exclusion reconciles exactly into unseen-user only, unseen-item only, or both. The low test retention restricts the future headline estimand to a narrow pure-ID warm-start cohort; it is not evidence of a weak model. In the bounded traversal, 100 targets crossed the 162,125-item catalog in 16,212,500 comparisons, counted 16,209,544 eligible candidates, and passed both the chunked-count and target-not-in-prior-history invariants. The measured 1.098 seconds and 158.24 MiB peak RSS describe this traversal only.
+Validation retains 81,871/373,776 = 21.90% warm targets and test retains 40,587/413,413 = 9.82%. Every exclusion reconciles exactly into unseen-user only, unseen-item only, or both. The low test retention restricts the future headline estimand to a narrow pure-ID warm-start cohort; it is not evidence of a weak model. In the bounded traversal, 100 targets crossed the 162,125-item catalog in 16,212,500 comparisons, counted 16,209,544 eligible candidates, and passed both original invariants. The amended manifest verifies all artifact hashes and adds four successful replay invariants under CPython 3.13.15, Linux 6.6.122, two logical Xeon CPUs, 12,975.53 MiB RAM, and no GPU. The original 1.667-second traversal and 158.24 MiB peak RSS describe bounded CPU feasibility only; the 0.00387-second count-only replay is a different operation and is not a performance comparison.
 
 The detailed protocol and interpretation rules are recorded in [`DATASET_PORTFOLIO_AND_ANALYSIS_PROTOCOL_en.md`](../00_project/DATASET_PORTFOLIO_AND_ANALYSIS_PROTOCOL_en.md). Machine-readable mirrors are retained as [`Baby_Products_protocol_audit.json`](../06_code/results/Baby_Products_protocol_audit.json), [`All_Beauty_protocol_audit.json`](../06_code/results/All_Beauty_protocol_audit.json), [`Home_and_Kitchen_raw_audit.json`](../06_code/results/Home_and_Kitchen_raw_audit.json), and [`dataset_portfolio_audit_index.json`](../06_code/results/dataset_portfolio_audit_index.json).
 
-### 7.1.5 Remaining G2 steps and how their evidence will be interpreted
+### 7.1.5 G2 stages and how their evidence is interpreted
 
 | Step | What will be done | Why it is necessary | Indicators and what they mean | Exit condition |
 |---|---|---|---|---|
@@ -286,7 +292,7 @@ Semantic decisions D1–D11 are recorded in the GRAPES-informed reference specif
 
 The model-training deliverable is planned as a modular Python package with a CPU toy-graph path, deterministic configuration and seed handling, D-ID-to-module-to-T-ID traceability, data/checksum manifest interfaces, logging and checkpoint contracts, paired human-readable documentation, and a thin Colab launcher. By direct user requirement, the dataset-audit notebook is a scoped exception: it embeds its complete standard-library audit implementation so the portfolio audit can run from one Colab file without a separate Drive script.
 
-The portfolio-audit utility has executed on the governed artifacts. A second self-contained standard-library/SQLite notebook now implements the Baby G2-C/G2-D path and writes deterministic mappings, edges, warm targets, artifact hashes, graph/OOV statistics, and bounded traversal measurements. Only its toy fixture has executed so far; full-data statistics and feasibility measurements remain open.
+The portfolio-audit utility has executed on the governed artifacts. A second self-contained standard-library/SQLite notebook implements the Baby G2-C/G2-D path and writes deterministic mappings, edges, warm targets, artifact hashes, graph/OOV statistics, bounded traversal measurements, and the environment completion record. Its toy fixture and full Baby path have executed; the amended manifest has been read back and accepted for G2.
 
 The exact Python/PyTorch/PyG/CUDA lock and final GPU class are not yet known. Colab is available for development and smoke runs, but temporary Colab hardware is not the final comparable profiling platform.
 
@@ -305,16 +311,16 @@ The exact Python/PyTorch/PyG/CUDA lock and final GPU class are not yet known. Co
 | Work item | Current maturity | Evidence boundary |
 |---|---|---|
 | Scope and 12-week plan | `LOCKED / RECORDED` | [Canonical Phase 2 research plan](../00_project/PHASE2_RESEARCH_PLAN_en.md) |
-| Literature and source pins | `VERIFIED ARTIFACT / PRELIMINARY` | Primary-paper anchors and source note |
+| G1 research design and literature position | `PASS / FROZEN BEFORE MODEL RESULTS` | RQ, hypotheses, closest-work map, candidate family, matched comparison, and validation-only selection rule |
 | GRAPES-informed reference design D1–D11 | `REFERENCE DESIGN; NOT CANONICAL METHOD` | Bilingual reference specification |
 | Reference verification candidates T01–T25 | `PARTIAL TOY EXECUTION` | Earlier reference checks plus the G2-C toy path pass; final verification plan remains open |
 | Report and slide working content | `CUMULATIVE DRAFT` | This living report and defense deck |
-| Python/Colab source | `G2-C FULL EXECUTION; G2-D BOUNDED EXECUTION` | 13/13 local tests pass; full Baby artifacts read back; no model benchmark |
-| Amazon data | `BABY G2-A/G2-B/G2-C PASS; G2 IN_PROGRESS` | Cutoffs, graph, mappings, warm/OOV ledger, and candidate rule frozen; G2-D waits only for exact environment fingerprint |
-| Environment/GPU | `E0-MIN IN_PROGRESS; E0-FINAL NOT_STARTED` | Colab available; rerunnable development lock and final profiling lock remain incomplete |
+| Python/Colab source | `G2-C/G2-D FULL EXECUTION AND READBACK` | 13/13 local tests pass; full Baby artifacts and environment completion read back; no model benchmark |
+| Amazon data | `BABY G2-A/G2-B/G2-C/G2-D PASS; G2 PASS` | Primary P4 task, cutoffs, graph, mappings, warm/OOV ledger, candidate rule, and bounded feasibility are frozen |
+| Environment/GPU | `E0-MIN PASS; E0-FINAL NOT_STARTED` | CPU/Colab bounded environment recorded; final model/GPU profiling lock remains incomplete |
 | Recommendation results | `NOT STARTED` | No NDCG, Recall, runtime, memory, or scalability result |
 
-The canonical register has G0 `PASS`, G1/G2 `IN_PROGRESS`, and G3–G6 `NOT_STARTED`. G1 closest-work/rationale and G2 protocol evidence proceed in parallel with E0-MIN. Scientific baseline work waits for G2 and E0-MIN; proposed-sampler implementation waits for G1–G3. Existing toy tests are reference evidence and do not satisfy G4.
+The canonical register has G0, G1, G2, and E0-MIN `PASS`; G3–G6 remain `NOT_STARTED`. G3 shared evaluator and baseline execution may begin. Proposed-sampler implementation still waits for G3. Existing toy tests are reference evidence and do not satisfy G4.
 
 ## 11. References
 
@@ -322,6 +328,13 @@ The canonical register has G0 `PASS`, G1/G2 `IN_PROGRESS`, and G3–G6 `NOT_STAR
 2. Rendle et al., “BPR: Bayesian Personalized Ranking from Implicit Feedback,” arXiv:1205.2618. <https://arxiv.org/abs/1205.2618>
 3. He et al., “LightGCN: Simplifying and Powering Graph Convolution Network for Recommendation,” arXiv:2002.02126. <https://arxiv.org/abs/2002.02126>
 4. Ying et al., “Graph Convolutional Neural Networks for Web-Scale Recommender Systems,” arXiv:1806.01973. <https://arxiv.org/abs/1806.01973>
+5. Hamilton et al., “Inductive Representation Learning on Large Graphs,” arXiv:1706.02216. <https://arxiv.org/abs/1706.02216>
+6. Chen et al., “FastGCN,” ICLR 2018. <https://openreview.net/pdf?id=rytstxWAW>
+7. Huang et al., “Adaptive Sampling Towards Fast Graph Representation Learning,” NeurIPS 2018. <https://proceedings.neurips.cc/paper/2018/hash/01eee509ee2f68dc6014898c309e86bf-Abstract.html>
+8. Zou et al., “LADIES,” NeurIPS 2019. <https://proceedings.neurips.cc/paper/2019/hash/91ba4a4478a66bee9812b0804b6f9d1b-Abstract.html>
+9. Zeng et al., “GraphSAINT,” ICLR 2020. <https://openreview.net/forum?id=BJe8pkHFwS>
+10. Wang et al., “DSKReG,” arXiv:2108.11883. <https://arxiv.org/abs/2108.11883>
+11. Abu-El-Haija et al., “SubMix,” UAI 2023. <https://proceedings.mlr.press/v216/abu-el-haija23a.html>
 5. DSKReG, arXiv:2108.11883. <https://arxiv.org/abs/2108.11883>
 6. Amazon Reviews 2023 official documentation. <https://amazon-reviews-2023.github.io/main.html>
 7. Recommender evaluation leakage study, arXiv:2010.11060. <https://arxiv.org/abs/2010.11060>

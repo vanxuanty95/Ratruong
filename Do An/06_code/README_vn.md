@@ -1,10 +1,10 @@
 # Code Scaffold cho Thesis Graph-Sampling
 
-> **Trạng thái:** `DATASET GATE — PORTFOLIO AUDIT HOÀN TẤT; BABY G2-C/G2-D ĐÃ IMPLEMENT, FULL RUN CÒN MỞ`
+> **Trạng thái:** `DATASET GATE G2 PASS — BABY G2-C/G2-D ĐÃ EXECUTE VÀ REVIEW`
 > **Mục đích:** tạo nơi executable đầu tiên cho reference contract, dataset control và graph sampler do project phát triển trong Phase 2.  
-> **Chưa có:** full Baby G2-C artifact/cutoff freeze đã review, PyTorch/PyG implementation, final environment đã khóa, benchmark runner hoặc recommendation-quality result.
+> **Chưa có:** PyTorch/PyG implementation, final profiling environment đã khóa, benchmark runner hoặc recommendation-quality result.
 
-Package này cố ý chưa có dependency ngoài ở giai đoạn đầu để các contract test nhỏ có thể chạy trên local machine và clean Colab Python runtime. Đây chưa phải model implementation cuối cùng. Theo registry gate chuẩn, E0-MIN và G2 phải pass trước khi execute G3; sampler implementation còn phải chờ G1 và G3. E0-FINAL được yêu cầu sau đó cho final resource evidence.
+Package này cố ý chưa có dependency ngoài ở giai đoạn đầu để các contract test nhỏ có thể chạy trên local machine và clean Colab Python runtime. Đây chưa phải model implementation cuối cùng. E0-MIN, G1 và G2 nay đã pass nên có thể execute shared evaluator/baseline G3. Sampler implementation vẫn chờ G3. E0-FINAL được yêu cầu sau đó cho final resource evidence.
 
 ## Phạm vi hiện tại
 
@@ -27,12 +27,12 @@ Scaffold hiện encode các GRAPES-informed reference contract từ `02_protocol
 |---|---|
 | Semantic contract | `SCAFFOLDED` |
 | Toy correctness test | `IMPLEMENTED VÀ EXECUTED: 13/13 PASS TRÊN CPU` |
-| Amazon acquisition/preprocessing | `ĐÃ IMPLEMENT VÀ TOY-EXECUTE NOTEBOOK G2-C/G2-D; FULL BABY RUN CÒN MỞ` |
+| Amazon acquisition/preprocessing | `FULL BABY G2-C/G2-D ĐÃ EXECUTE, READBACK VÀ PASS` |
 | Amazon dataset audit | `PORTFOLIO AUDIT ĐÃ EXECUTE; BABY G2-A/G2-B PASS` |
 | PyTorch/PyG recommender | `NOT STARTED` |
 | Các learned reference variant có thông tin từ GRAPES | `NOT STARTED` |
 | Colab launcher | `THIN SKELETON` |
-| Environment lock | `OPEN` |
+| Environment lock | `E0-MIN PASS; E0-FINAL OPEN` |
 | Recommendation metric và resource result | `NOT STARTED` |
 
 ## Cấu trúc
@@ -69,16 +69,16 @@ Từ thư mục `06_code`:
 python -m unittest discover -s tests -v
 ```
 
-Lệnh hiện chạy 13 pure-Python test: mười reference-contract test, hai audit test và một end-to-end toy test cho notebook G2-C/G2-D. Kết quả không được báo cáo như PyTorch/PyG implementation đã validated, full Baby preprocessing execution hoặc end-to-end model reproduction.
+Lệnh hiện chạy 13 pure-Python test: mười reference-contract test, hai audit test và một end-to-end toy test cho notebook G2-C/G2-D. Full Baby preprocessing đã execute riêng và được mirror tại `results/baby_p4_g2c_manifest.json`; cả hai nguồn vẫn không phải PyTorch/PyG model hoặc recommender result đã validate.
 
 ## Bước implementation dự kiến tiếp theo
 
-1. Run all `02_baby_p4_temporal_graph_vn.ipynb` hoặc `_en.ipynb` trên Drive và đọc lại `baby_p4_g2c_manifest.json` cùng năm compressed artifact.
-2. Verify reconciliation, candidate invariant, artifact hash, graph/component/OOV statistic và bounded resource measurement; sau đó chấp nhận hoặc sửa `t1`/`t2` rồi quyết định G2-C/G2-D.
-3. Xác nhận E0-MIN Python/environment record chạy lại được trước G3; giữ final PyTorch/PyG/CUDA lock riêng cho profiling.
-4. Dùng reviewed frozen artifact làm shared data interface; không dựng lại ID hoặc graph statistic từ validation/test data.
-5. Sau khi G2 và E0-MIN pass, implement shared exact evaluator cùng baseline đơn giản nhất trong G3.
-6. Chỉ thêm matched sampling control và GRAPES-informed reference theo dependency của canonical gate; sampler do project phát triển vẫn chờ G1–G3.
+1. Implement shared exact evaluator G3 và sanity baseline đơn giản nhất.
+2. Thêm full-graph LightGCN reference cùng matched uniform/degree-aware control.
+3. Dùng reviewed frozen artifact làm shared data interface; không dựng lại ID hoặc graph statistic từ validation/test data.
+4. Ghi model environment riêng với bounded CPU/Colab E0-MIN record đã hoàn tất.
+5. Freeze final PyTorch/PyG/CUDA profiling environment sau khi xác nhận target GPU.
+6. Chỉ áp dụng quy tắc chọn phương pháp bằng validation của G1 sau khi G3 pass.
 
 ## Governance của source
 

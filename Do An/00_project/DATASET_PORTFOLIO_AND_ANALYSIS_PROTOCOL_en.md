@@ -1,8 +1,8 @@
 # Dataset Portfolio and Analysis Protocol
 
-> **Status:** `PROPOSED PORTFOLIO — DATASET GATE G2 OPEN`  
+> **Status:** `PRIMARY DATASET AND PROTOCOL FROZEN — DATASET GATE G2 PASS`
 > **Recorded:** 2026-08-26  
-> **Updated:** 2026-09-02 — full Baby G2-C artifacts and the bounded G2-D traversal executed. G2-C is accepted; G2 remains `IN_PROGRESS` because G2-D still needs an exact environment fingerprint. Full `Home_and_Kitchen` execution belongs to conditional G5-S.
+> **Updated:** 2026-09-03 — the amended Baby manifest records exact environment metadata, verifies all five artifacts, and replays bounded G2-D with every registered invariant true. Baby G2-A through G2-D and E0-MIN pass. Full `Home_and_Kitchen` execution remains conditional G5-S.
 > **Scope:** Independent Master's thesis: *Development of a Graph Sampling Method for Large-Scale Recommender Systems Using Graph Neural Networks (GNNs).*  
 > **Claim boundary:** This is a research-design decision record, not an experimental result or a final method specification.
 
@@ -24,7 +24,7 @@ G2 is the **pre-model dataset and evaluation-protocol decision gate**. It must e
 | Role | Dataset and source | Why it is included | Required evidence | Current decision |
 |---|---|---|---|---|
 | Development/diagnostic only | Amazon Reviews'23 `All_Beauty`, pure-ID 0-core | Existing exact audit; convenient for validating deterministic preprocessing and sampler diagnostics before expensive runs | Exact raw audit already shows 693,929 rows, 631,986 users, 112,565 items, and 93.22% singleton users | **Do not use as primary evidence.** Its singleton rate makes it unsuitable for the main temporal warm-start benchmark. |
-| Primary benchmark candidate | Amazon Reviews'23 `Baby_Products` | Product-review domain; timestamped user–item ratings; enough raw scale to test the accuracy–cost trade-off | Raw audit plus full P4 temporal artifact: 3,868,654 training edges, 2,318,308 training users, 162,125 training items; exact OOV ledger and candidates | **Primary dataset; G2-A/G2-B/G2-C PASS.** G2-D environment completion remains open. |
+| Primary benchmark | Amazon Reviews'23 `Baby_Products` | Product-review domain; timestamped user–item ratings; enough retained scale to test the accuracy–cost trade-off | Raw audit plus full P4 temporal artifact: 3,868,654 training edges, 2,318,308 training users, 162,125 training items; exact OOV ledger/candidates and bounded environment replay | **Primary dataset; G2-A/G2-B/G2-C/G2-D PASS.** |
 | Scale-stress candidate | Amazon Reviews'23 `Home_and_Kitchen` | Same source family and semantics as the primary benchmark; the project-verified 0-core artifact contains 66,623,880 rows (1,420,416,432 compressed bytes), while official 5-core metadata report 28.2M interactions, 2.9M users, and 763.6K items | Provenance/schema/row-count audit `EXECUTED`; full protocol and bounded resource experiment remain gated | **Provenance acquired. Required scale stress only if the thesis keeps the “large-scale” claim.** It is not a second exhaustive ablation suite. |
 | Optional controlled diagnostic | MovieLens 25M | Stable, timestamped, checksummed research dataset with 25,000,095 ratings from 162,541 users on 62,423 movies | Separate manifest and protocol audit | **Optional.** Use only after the core Amazon evidence is complete; it is not the primary proof of web-scale sparsity. |
 | Optional external-domain validation | Yelp Open Dataset | Different local-business domain; official data include reviews and businesses | Separate schema, terms, and protocol audit | **Optional.** Add only if time remains after the Amazon core; it must not delay the central evidence. |
@@ -96,7 +96,7 @@ The Drive manifest `baby_p4_g2c_manifest.json` (file ID `1sOUhOCFugfATnDrzwnULca
 
 Arithmetic review confirms that train + validation + test equals all 4,655,843 P4 events; every warm/excluded ledger and each exclusion-reason sum reconciles; mapping/edge/target artifact row counts match the graph and partition counts; component nodes equal users plus items; and the dry traversal averages 29.56 prior-history removals per tested target.
 
-**Decision:** G2-C = `PASS`. The cutoffs `t1 = 1628643414042` and `t2 = 1658002729837`, half-open tie rule, minimum degree 1, training-only mappings, warm-start cohort, and full eligible training-item candidate rule are frozen for the primary Baby task. Low warm retention narrows the estimand but does not invalidate it because exclusions are explicit and 40,587 test targets remain. G2-D has executed successfully but does not yet `PASS`: the manifest records code/configuration and process measurements but not exact Python, platform, CPU/RAM, or Colab runtime metadata required by E0-MIN. The corrective action is to capture that fingerprint and rerun/read back only the bounded feasibility record; no change to G2-C artifacts is justified.
+**Decision:** G2-C and G2-D = `PASS`; therefore Dataset Gate G2 and E0-MIN close on 2026-09-03. The cutoffs `t1 = 1628643414042` and `t2 = 1658002729837`, half-open tie rule, minimum degree 1, training-only mappings, warm-start cohort, and full eligible training-item candidate rule remain frozen. The amended manifest verifies the byte size and SHA-256 of all five artifacts. It records CPython 3.13.15, Linux 6.6.122, Intel Xeon 2 logical CPUs, 12,975.53 MiB RAM, no GPU, Google Colab 1.0.0, and ipykernel 6.17.1. The 100-target replay reproduces 16,212,500 catalog comparisons and 16,209,544 eligible candidates with all four replay invariants true. This establishes reproducible bounded pipeline/evaluator feasibility only; it is not model-quality, comparative profiling, GPU, or scalability evidence.
 
 ## 3. Official sources and data meaning
 
@@ -176,7 +176,7 @@ All samplers must share the same split, training graph, ranking loss, negative r
 | G5-S: conditional scale evidence | If the thesis retains a large-scale claim, execute one pre-registered bounded `Home_and_Kitchen` scale-stress configuration after G3/G4; before then, only provenance/size/feasibility planning is allowed |
 | Optional expansion | MovieLens or Yelp may be added only after the Amazon core gates pass and must not block them |
 
-**Update 2026-09-02:** See Sections 2.2-2.4. Baby G2-A/G2-B/G2-C are `PASS`. G2-D bounded execution completed with candidate invariants true, but environment fingerprint completion remains open under E0-MIN. Home full scale remains conditional G5-S.
+**Update 2026-09-03:** See Sections 2.2–2.4. Baby G2-A/G2-B/G2-C/G2-D and E0-MIN are `PASS`; Dataset Gate G2 is closed. Home full scale remains conditional G5-S.
 
 ## 8. Multi-agent review and adjudication
 
@@ -189,4 +189,4 @@ They agreed that raw 0-core `All_Beauty` and the provider absolute split cannot 
 
 ## 9. Next action
 
-Baby G2-C is now frozen from the reviewed full-data artifacts. The next action is to append exact Python/platform/CPU/RAM/Colab runtime metadata to the bounded feasibility evidence and read it back, without rebuilding or changing the accepted G2-C graph. If E0-MIN and G2-D then pass, G2 may close and G3 baseline work may begin. No tuning, sampler comparison, or headline result is allowed; full Home processing remains deferred to conditional G5-S.
+Baby G2 is frozen from the reviewed full-data artifacts and amended environment-completion record. G3 baseline work may now begin under the shared exact evaluator and matched controls. No sampler conclusion follows from G2; full Home processing remains deferred to conditional G5-S.

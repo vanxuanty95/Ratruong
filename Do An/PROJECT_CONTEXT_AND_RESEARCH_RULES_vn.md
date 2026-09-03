@@ -2,8 +2,8 @@
 
 > File continuity tiếng Việt được đồng bộ cho dự án luận văn Thạc sĩ. Phải đọc file này và bản tiếng Anh tương ứng vào đầu mỗi session mới. Cập nhật cả hai khi có thay đổi về quyết định nghiên cứu, kết quả đã kiểm chứng, câu hỏi mở hoặc quy tắc làm việc.
 
-**Cập nhật lần cuối:** 2026-08-30
-**Revision:** 21 — Reset cấu trúc nghiên cứu theo gate-driven
+**Cập nhật lần cuối:** 2026-09-03
+**Revision:** 23 — Đã verify environment completion G2-D; G2 pass
 **Ngôn ngữ trao đổi với người dùng:** mặc định là tiếng Việt  
 **Ngôn ngữ làm việc phân tích:** tiếng Anh  
 **Ngôn ngữ artifact lâu dài:** Mọi output có nội dung ngôn ngữ phải có một bản tiếng Anh và một bản tiếng Việt được đồng bộ. Filename tiếng Anh kết thúc bằng `_en`, filename tiếng Việt kết thúc bằng `_vn`, đặt ngay trước phần mở rộng.
@@ -12,6 +12,7 @@
 
 - **Kế hoạch nghiên cứu Phase 2:** [`00_project/PHASE2_RESEARCH_PLAN_vn.md`](./00_project/PHASE2_RESEARCH_PLAN_vn.md) và bản tiếng Anh đồng bộ. Đây là nguồn duy nhất cho tiến độ 12 tuần, các gate và dependency.
 - **Danh mục dataset và protocol candidate:** [`00_project/DATASET_PORTFOLIO_AND_ANALYSIS_PROTOCOL_vn.md`](./00_project/DATASET_PORTFOLIO_AND_ANALYSIS_PROTOCOL_vn.md).
+- **Quyết định thiết kế nghiên cứu G1:** [`00_project/G1_RESEARCH_DESIGN_vn.md`](./00_project/G1_RESEARCH_DESIGN_vn.md).
 - **Thesis report tích lũy:** [`04_thesis/THESIS_REPORT_vn.md`](./04_thesis/THESIS_REPORT_vn.md).
 - **Slide bảo vệ tích lũy:** [`05_slides/THESIS_PRESENTATION_vn.pptx`](./05_slides/THESIS_PRESENTATION_vn.pptx).
 - **Source chạy được và hướng dẫn Colab:** [`06_code/README_vn.md`](./06_code/README_vn.md).
@@ -265,7 +266,7 @@ Trừ khi quyết định sau thay đổi rõ, dùng thứ tự sau:
 - Exact Phase 1 code commit không thể khôi phục từ artifact hiện có; unversioned local snapshot chỉ được giữ bằng content-manifest fingerprint đã ghi và không phải nguồn chuẩn của Phase 2.
 - Các artifact song ngữ về constraint, source version, literature matrix và bản nháp recommendation specification hiện đã có trong `00_project`, `01_literature` và `02_protocol`.
 - Recommendation specification đánh dấu D1–D11 là `REFERENCE-SPECIFIED` cho GRAPES-informed reference design. Các quyết định này không chọn hoặc đóng phương pháp luận văn.
-- G1 chuẩn đang `IN_PROGRESS` cho closest-work positioning, rationale thiết kế nghiên cứu, matched comparison và quy tắc chọn phương pháp đăng ký trước. Environment execution được theo dõi riêng bằng E0-MIN/E0-FINAL.
+- G1 chuẩn đã `PASS` ngày 2026-09-03; rationale, ranh giới closest work, matched comparison và quy tắc chọn/không chọn đăng ký trước đã khóa trong [`G1_RESEARCH_DESIGN_vn.md`](./00_project/G1_RESEARCH_DESIGN_vn.md). Environment execution vẫn được theo dõi riêng bằng E0-MIN/E0-FINAL.
 - Máy local hiện tại là Mac mini Apple M4 với 16 GB unified memory và không có NVIDIA CUDA device. Máy phù hợp cho documentation và toy correctness test sau khi tạo environment, nhưng không được xem là final benchmark platform.
 - Các execution constraint do người dùng cung cấp đã được ghi: 12 tuần, implementation bằng Python, dữ liệu Amazon Reviews do project tự source, có thể mượn GPU, có Google Colab và kỳ vọng chất lượng luận văn cao.
 - Active data proposal chỉ dùng Amazon: `All_Beauty` 0-core validate pipeline và `Baby_Products` 0-core là proposed primary thesis category. MovieLens được loại khỏi active plan.
@@ -662,3 +663,47 @@ Files created or changed in Do An:
 - **Sửa mâu thuẫn:** Loại wording xem full Home execution là prerequisite G2 còn thiếu. G2 còn mở vì full Baby G2-C/G2-D execution và review.
 - **Agent được tham vấn:** Không có; đây là ghi rõ và làm nhất quán dataset role cùng gate dependency đã được quản trị.
 - **File đã sửa:** cặp dataset portfolio protocol, cặp thesis report và hai continuity file.
+
+### Readback full Baby G2-C artifact và review gate — 2026-09-02
+
+- **Quyết định hoặc kết quả:** Đã đọc manifest hoàn tất trên Drive và list đủ năm generated artifact. Chấp nhận Baby P4 temporal cutoff, strict half-open tie rule, minimum degree 1, training-only mapping, explicit warm-start/OOV cohort cùng full training-item candidate rule. Baby G2-C nay `PASS`.
+- **Evidence/nguồn:** Drive manifest ID `1sOUhOCFugfATnDrzwnULcaaakRLPCyHu`, tạo lúc 2026-09-02T15:24:53Z; local mirror `06_code/results/baby_p4_g2c_manifest.json`; implementation SHA-256 `18dd46ad142491891ce6d5b1c4add4a8e6e5953a22c46bd429b3732798117998`; source SHA-256 `e2a8d0498afed767ee2615db7fac549559d82490b1a73c7241b84b5e9e8c279e`. Drive byte size khớp manifest cho cả năm artifact.
+- **Finding chính:** 3,868,654 training edge, 2,318,308 user, 162,125 item, density `1.0293e-05`; 71.76% singleton user và 33.35% singleton item; 34,288 component với 96.50% node trong largest component. Validation giữ 81,871/373,776 = 21.90% warm target; test giữ 40,587/413,413 = 9.82%; mọi exclusion ledger đối soát.
+- **Bounded G2-D evidence:** 100 target, 162,125 catalog item, 16,212,500 comparison, 16,209,544 eligible candidate, hai invariant đã đăng ký đều đúng, wall time 1.098 giây và process peak RSS 158.24 MiB. Đây chỉ là traversal feasibility.
+- **Review arithmetic/invariant:** Train + validation + test bằng toàn bộ 4,655,843 P4 event; mọi warm/excluded và reason ledger đối soát; artifact row count khớp graph/partition count; component node bằng user cộng item; trung bình loại 29.56 prior-history item trên mỗi target test.
+- **Phân xử:** Test retention 9.82% thấp làm estimand hẹp vào pure-ID target warm-start được nêu rõ nhưng không vô hiệu task vì exclusion minh bạch và vẫn còn 40,587 retained target. G2-D chưa pass vì thiếu exact Python/platform/CPU/RAM/Colab runtime metadata, nên E0-MIN chưa hoàn tất. Capture fingerprint đó mà không rebuild frozen G2-C artifact.
+- **Agent được tham vấn:** Không có. Review áp pre-registered arithmetic, leakage, cohort, candidate và claim-boundary rule lên exact executed evidence.
+- **Claim bị loại trừ:** Không có recommender training, NDCG/Recall, sampler comparison, final profiling hoặc scalability claim.
+- **File đã sửa:** local G2-C manifest mirror; cặp canonical plan, dataset protocol, thesis report, code README, G2-C guide, traceability và hai continuity file.
+
+### Cell hoàn tất environment-only G2-D và briefing 10 phút cho giảng viên — 2026-09-02
+
+- **Quyết định hoặc kết quả:** Đã thêm final cell standalone vào cả hai notebook Baby G2-C/G2-D. Cell tự mount Drive nếu cần, đọc accepted manifest, verify byte size và SHA-256 của cả năm artifact, capture Python/SQLite/platform/CPU/RAM/GPU/Colab/package metadata, replay saved 100-target chunk-count traversal, check với original count và atomically bổ sung `g2d_environment_completion` vào manifest. Cell không gọi G2-C graph builder. `FORCE_REBUILD_G2C = False` cũng làm full-notebook rerun dùng lại frozen manifest thay vì rebuild, trừ khi chủ động override.
+- **Đồng bộ Drive:** Update tại chỗ notebook tiếng Anh ID `1rWEcvnXKlnuXpIUvP1WQwdum-yhaMwH4` và tiếng Việt ID `1oOfNrqsbITuMjFVysTBK-TbrB8-enqFb`; không tạo Drive file trùng.
+- **Trao đổi với giảng viên:** Thay current briefing đã cũ bằng briefing 10 phút EN/VN đồng bộ, chia theo thời gian: framing luận văn, G2, vai trò dataset, audit, full Baby graph finding, feasibility/claim boundary, evidence đã có/chưa có và bước tiếp theo/câu hỏi. Có thêm fallback script cực ngắn.
+- **Verification:** Hai notebook parse JSON hợp lệ và mọi code cell compile. Completion cell mới giữ core implementation SHA, không claim rằng nó regenerate frozen artifact.
+- **Agent được tham vấn:** Không có; đây là implementation và evidence communication có phạm vi, dùng finding đã review.
+- **Hành động tiếp theo:** Trong notebook tiếng Việt hoặc tiếng Anh, chỉ chạy final cell `Hoàn tất environment G2-D`. Nếu runtime mới, cell tự mount Drive. Sau đó đọc lại amended manifest và quyết định E0-MIN/G2-D.
+- **File đã sửa:** cặp Baby notebook, cặp supervisor briefing và hai continuity file.
+
+### Hoàn tất lý do thiết kế nghiên cứu G1 — 2026-09-03
+
+- **Quyết định hoặc kết quả:** Đóng G1 chuẩn ở trạng thái `PASS`. Câu hỏi chính cô lập biến can thiệp sampler trên bài toán Baby P4 warm-start đã khóa với ngân sách từng lớp matched. Giả thuyết bác bỏ được, closest-work map đại diện, cơ chế ứng viên M0–M5, matched-comparison control, diễn giải metric và quy tắc Pareto chỉ dùng validation để chọn/không chọn đã được khóa trước model result.
+- **Ranh giới closest work:** GraphSAGE, FastGCN, AS-GCN, LADIES, Cluster-GCN, GraphSAINT, PinSage, DSKReG, data-driven GraphSAGE sampling, SubMix và GRAPES được kiểm tra từ paper gốc. DSKReG ngăn claim rộng “learned sampler đầu tiên cho recommendation”. Đóng góp có điều kiện có thể bảo vệ hẹp hơn: sampler task-conditioned do đồ án phát triển và controlled evidence cho plain implicit bipartite recommendation dưới exact full-catalog ranking và matched resource measurement.
+- **Quản trị phương pháp:** Uniform và degree-aware sampling là matched control bắt buộc. Full-graph LightGCN là mốc backbone không matched ngân sách. G1 không chọn hoặc implement sampler cuối; việc chọn chờ G2, E0-MIN và G3. Chỉ development validation được đưa candidate đi tiếp; test result không được kích hoạt thay phương pháp. Nếu không learned candidate nào vào matched-budget Pareto set và cải thiện ít nhất một trục so với cả hai static control, quy tắc chọn không learned method nào và ghi negative finding.
+- **Bằng chứng/nguồn:** Cặp biên bản G1; literature matrix song ngữ mở rộng L-009–L-016; URL paper gốc ghi trong cả hai. Không claim model result, cải thiện performance hoặc novelty priority.
+- **Agent tham gia:** Không có agent mới. Main review đối chiếu nhiều primary publication độc lập; supervisor/external review vẫn tách khỏi gate evidence.
+- **File đã tạo hoặc sửa:** cặp biên bản G1, cặp canonical plan, cặp literature matrix, cặp thesis report, cặp supervisor briefing và hai continuity file.
+- **Bước tiếp theo:** Người dùng sẽ hoàn tất G2-D sau. Khi G2/E0-MIN đóng, implement shared evaluator G3, sanity baseline, full-graph LightGCN reference và matched uniform/degree-aware control; sau đó mới áp dụng quy tắc G1 đã khóa.
+
+### Readback Baby P4 manifest mới; đóng G2 và E0-MIN — 2026-09-03
+
+- **Quyết định hoặc kết quả:** Đã lấy `baby_p4_g2c_manifest.json` mới từ Drive file ID cũ `1sOUhOCFugfATnDrzwnULcaaakRLPCyHu`, modified lúc 2026-09-02T23:53:08.039Z. Environment-completion evidence mới thỏa G2-D và E0-MIN, vì vậy Baby G2-A/G2-B/G2-C/G2-D cùng Dataset Gate G2 nay `PASS`.
+- **Tính liên tục của artifact:** Byte size và SHA-256 của cả năm artifact đều khớp manifest đã chấp nhận: item/user mapping, training edge, validation target và test target. Graph count, partition, cutoff và hash không đổi. Manifest creation timestamp và bounded traversal time đổi vì notebook path được chạy lại; evidence không biện minh cho reconstruct hoặc thay đổi graph đã chấp nhận.
+- **Environment evidence:** CPython 3.13.15, Linux 6.6.122 x86_64 với glibc 2.35, Intel Xeon 2.20 GHz, 2 logical CPU, RAM 12,975.53 MiB, không GPU, Google Colab 1.0.0, ipykernel 6.17.1 và SQLite 3.37.2. Colab release tag cùng completion revision được giữ trong manifest.
+- **Bounded replay:** 100 target, 162,125 catalog item, 16,212,500 comparison và 16,209,544 eligible candidate. Bốn replay check—target count, comparison count, eligible count và target-not-in-prior-history—đều khớp evidence gốc. Traversal gốc ghi 1.667 giây và process peak RSS 158.24 MiB; count-only replay riêng ghi 0.00387 giây. Không được so hai timing như workload tương đương.
+- **Ranh giới claim:** Kết quả chỉ đóng một bounded CPU data/evaluator path có thể tái lập. Không cung cấp Recall/NDCG, model comparison, GPU profile hoặc scalability evidence; E0-FINAL vẫn mở.
+- **Trao đổi với giảng viên:** Briefing 10 phút song ngữ nay có phần riêng giải thích G1, quyết định G2-D đã hoàn tất và bảng G0–G6 ngắn gọn gồm mục đích, exit evidence, dependency cùng trạng thái hiện tại. Nội dung trình bày ranh giới novelty hẹp, giả thuyết, matched control, metric, quy tắc Pareto chọn/không chọn và công việc G3 tiếp theo.
+- **Agent tham gia:** Không có; đây là exact Drive readback, invariant review và đồng bộ evidence.
+- **File đã sửa:** local manifest mirror; cặp plan, dataset protocol, thesis report, supervisor briefing, code README, G2-C guide, traceability record và hai continuity file.
+- **Bước tiếp theo:** Bắt đầu G3 với shared exact evaluator, MostPop/BPR sanity baseline, full-graph LightGCN reference và matched uniform/degree-aware sampling control.

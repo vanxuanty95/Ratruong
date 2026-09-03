@@ -2,7 +2,7 @@
 
 > **Status:** Active, single source of truth for the Phase 2 research plan.  
 > **Project duration:** 12 weeks.  
-> **Last updated:** 2026-08-30.
+> **Last updated:** 2026-09-03.
 > **Language pair:** Vietnamese counterpart: [`PHASE2_RESEARCH_PLAN_vn.md`](./PHASE2_RESEARCH_PLAN_vn.md).
 
 ## 1. Purpose and governance
@@ -27,9 +27,9 @@ When this plan changes, update both language versions and add a concise pointer/
 | Area | Current status | Boundary |
 |---|---|---|
 | Thesis framing and living deliverables | Established | No final method or empirical result is claimed. |
-| Source scaffold and toy tests | 13 pure-Python tests passed locally; the self-contained Baby G2-C/G2-D path is implemented and toy-executed | This is not a full Baby execution, PyTorch/PyG recommender implementation, or benchmark. |
-| Amazon raw-data audit | Preliminary raw audits recorded | Persistent data provenance and Dataset Gate G2 remain open. |
-| Dataset portfolio | `Baby_Products` primary candidate; `All_Beauty` diagnostic; `Home_and_Kitchen` conditional scale stress | No dataset is finalized. |
+| Source scaffold and toy tests | 13 pure-Python tests passed locally; the self-contained Baby G2-C/G2-D path is implemented, full-data executed, and read back | This is not a PyTorch/PyG recommender implementation or benchmark. |
+| Amazon data and protocol | Baby G2-A through G2-D pass; Dataset Gate G2 is closed | This freezes the primary pre-model task, not a sampler or performance result. |
+| Dataset portfolio | `Baby_Products` primary; `All_Beauty` diagnostic; `Home_and_Kitchen` conditional scale stress | Primary role is frozen; full Home execution remains conditional G5-S. |
 | Environment and compute | Python and Google Colab are available | Final environment/GPU configuration is not locked. |
 
 ## 4. Canonical gate register and dependencies
@@ -42,7 +42,7 @@ Gate status and evidence maturity are separate. Gate status uses `NOT_STARTED`, 
 
 | ID | Current status | Exit criterion | Blocks |
 |---|---|---|---|
-| E0-MIN — development execution | `IN_PROGRESS` | A recorded, rerunnable local/Colab environment can execute the data-audit and bounded test path with exact versions captured | G2-D executable feasibility work and G3/G4 execution |
+| E0-MIN — development execution | `PASS` | A recorded, rerunnable local/Colab environment can execute the data-audit and bounded test path with exact versions captured | G2-D executable feasibility work and G3/G4 execution |
 | E0-FINAL — final profiling execution | `NOT_STARTED` | Final GPU class, software/CUDA lock, profiling procedure, and persistent output location are confirmed and smoke-tested | Resource claims in G5 and the representative G6 rerun |
 
 E0 does not block literature work or the non-executable parts of G2-A through G2-C. The two levels prevent uncertainty about the final borrowed GPU from blocking governance, literature review, or protocol design.
@@ -68,8 +68,8 @@ G2-D is a feasibility boundary, not a baseline result. It may use a bounded subs
 | ID | Status | Prerequisites | Active evidence / gap | Decision date | Next review |
 |---|---|---|---|---|---|
 | G0 | `PASS` | None | Scope, bilingual governance, evidence boundaries, and this plan are recorded. Reopen if scope/title/deliverable rules change. | 2026-08-30 | On governance change |
-| G1 | `IN_PROGRESS` | None; runs in parallel with G2 | Preliminary source anchors and a GRAPES-informed reference exist; closest-work positioning and a predeclared selection rule are incomplete. | — | After targeted closest-work review |
-| G2 | `IN_PROGRESS` | E0-MIN for executable G2-D only | Baby G2-A/G2-B `PASS`; full G2-C artifacts executed and reviewed on 2026-09-02. The candidate `t1`/`t2`, strict tie rule, training-only mappings, warm-start/OOV ledger, and exact-candidate rule are accepted, so G2-C is `PASS`. The 100-target G2-D traversal executed with both invariants true, but the manifest lacks an exact Python/platform/hardware fingerprint; G2-D and E0-MIN remain in a corrective completion loop. Home full scale remains conditional G5-S. | 2026-09-02 for G2-C | After environment fingerprint capture and bounded G2-D readback |
+| G1 | `PASS` | None; runs in parallel with G2 | Primary RQ/estimand, falsifiable hypotheses, representative closest-work map, candidate mechanisms, matched comparison, and a validation-only Pareto selection/no-selection rule are frozen in the [G1 decision record](./G1_RESEARCH_DESIGN_en.md). This does not select the final sampler. | 2026-09-03 | Reopen if the RQ, intervention, matched controls, or selection rule changes |
+| G2 | `PASS` | E0-MIN for executable G2-D only | Baby G2-A/G2-B/G2-C/G2-D pass. The amended Drive manifest verifies all five artifact hashes/sizes, records the exact CPU/Colab environment, and replays the bounded 100-target traversal with all registered invariants true. Home full scale remains conditional G5-S. | 2026-09-03 | Reopen only if data bytes, semantics, split, graph, cohort, candidates, or bounded-path contract changes |
 | G3 | `NOT_STARTED` | G2 `PASS`; E0-MIN `PASS` | No deterministic end-to-end baseline/evaluator/resource path exists. | — | After prerequisites pass |
 | G4 | `NOT_STARTED` | G1 `PASS`; G2 `PASS`; G3 `PASS` | Final sampler is not selected or implemented. Reference-design toy tests do not satisfy this gate. | — | After prerequisites pass |
 | G5 | `NOT_STARTED` | G4 `PASS`; experiment matrix/configuration/seeds frozen; E0-FINAL for resource claims | No matched final experiment evidence exists. | — | After G4 readiness review |
@@ -88,7 +88,7 @@ G2-D is a feasibility boundary, not a baseline result. It may use a bounded subs
 |---|---|---|
 | 1 | Consolidate scope, evidence records, and the dataset-audit starting point; establish this canonical plan. | G0 record; current status and open risks are explicit. |
 | 2 | Run persistent Amazon provenance/audit work in Colab; pre-register interaction semantics, duplicate treatment, candidate temporal split, warm-start/OOV treatment, and negative eligibility. | G2 evidence package is ready for review; no model training yet. |
-| 3 | Implement the leakage-safe data pipeline, training-only graph statistics, bounded evaluator feasibility path, and simple non-GNN control; continue G1 closest-work review in parallel. | G2 decision or a recorded corrective action; G1 evidence package ready for review. |
+| 3 | Close G1 and G2 from reviewed evidence; begin the shared exact evaluator and simple non-GNN controls. | G1/G2 decision records; initial G3 implementation path. |
 | 4 | Establish the shared GNN recommender baseline, deterministic configurations, logging, and resource measurement path. | G3 baseline path passes required sanity checks. |
 | 5 | Implement and test bounded graph-sampling controls (for example, uniform and degree-aware sampling) under the same task and budget. | Matched sampling-control comparison is runnable. |
 | 6 | Only after G1 and G3 pass, implement the selected proposed sampling mechanism without claiming success. | G4 readiness review. |
@@ -118,6 +118,7 @@ Every persistent narrative artifact must remain synchronized as `_en` and `_vn`.
 
 - [Project constraints](./PHASE2_CONSTRAINTS_en.md): user-provided operating constraints and compute assumptions.
 - [Dataset portfolio and analysis protocol](./DATASET_PORTFOLIO_AND_ANALYSIS_PROTOCOL_en.md): dataset roles and detailed protocol candidates.
+- [G1 research-design decision](./G1_RESEARCH_DESIGN_en.md): frozen RQ, closest-work boundary, candidate family, matched comparison, and method-selection rule.
 - [Bilingual continuity rules](../PROJECT_CONTEXT_AND_RESEARCH_RULES_en.md): working rules and dated change log; this document is linked there, not duplicated.
 - [Thesis report](../04_thesis/THESIS_REPORT_en.md): cumulative academic narrative.
 - [GRAPES-informed reference specification](../02_protocol/GRAPES_RECOMMENDATION_SPEC_en.md): reference design only, not the canonical thesis method.

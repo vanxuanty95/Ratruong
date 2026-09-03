@@ -1,9 +1,9 @@
 # Phát triển phương pháp lấy mẫu đồ thị cho hệ thống gợi ý quy mô lớn sử dụng mạng nơ-ron đồ thị GNN
 
 > **Trạng thái:** `LUẬN VĂN BẢN LÀM VIỆC TÍCH LŨY — PHÁT TRIỂN PHƯƠNG PHÁP, DATA AUDIT VÀ KẾ HOẠCH NGHIÊN CỨU`  
-> **Cập nhật lần cuối:** 2026-09-02
+> **Cập nhật lần cuối:** 2026-09-03
 > **Định danh Phase 2:** Luận văn Thạc sĩ độc lập; GRAPES là tài liệu khoa học tham khảo, không phải phương pháp luận văn đã cố định  
-> **Ranh giới evidence:** 13 local pure-Python test đã pass, full Baby P4 temporal artifact đã execute và G2-C được chấp nhận. Bounded G2-D traversal 100 target đã execute với hai candidate invariant đúng, nhưng exact environment fingerprint còn mở. Chưa có model PyTorch/PyG Phase 2, benchmark, recommendation result, final profiling hoặc scalability result.
+> **Ranh giới evidence:** G1 đã pass với research question, ranh giới closest work, họ ứng viên, matched comparison và quy tắc chỉ dùng validation để chọn/không chọn đã khóa. Baby G2-A đến G2-D và E0-MIN pass sau khi Drive manifest mới verify mọi artifact, ghi CPU/Colab environment và tái lập bounded traversal count. Chưa có model PyTorch/PyG Phase 2, recommendation result, final profiling hoặc scalability result.
 
 Đây là thesis report bản làm việc tiếng Việt. Đây là living artifact: evidence đã được xác minh về implementation, execution và validation sẽ thay các statement dạng kế hoạch khi nghiên cứu tiến triển. Bản tiếng Anh tương ứng là [`THESIS_REPORT_en.md`](./THESIS_REPORT_en.md).
 
@@ -13,7 +13,7 @@ Graph neural network trên đồ thị lớn có thể cần thông tin từ vù
 
 GRAPES-informed reference design hiện tại khảo sát sampler GNN, Gumbel Top-k và policy-learning objective cùng recommender kiểu LightGCN và Bayesian Personalized Ranking (BPR). Đây là candidate component—không mặc định là phương pháp cuối. Phương pháp cuối sẽ được xác định thông qua literature positioning, method rationale, data/protocol constraint, controlled comparison và ablation. Một scaffold không dependency hiện test một phần reference contract trên toy input; chưa có phương pháp Phase 2 cuối nào được implementation hoặc test.
 
-Trạng thái project hiện tạo nền tảng nghiên cứu có kiểm soát chứ chưa phải model-performance result: primary source đã pin, literature matrix ban đầu và GRAPES-informed reference design đã ghi, persistent portfolio audit đã execute, còn Baby P4 temporal-graph construction đã implement và toy-check. Full-data temporal evidence, cutoff review, method definition, environment lock, model implementation và performance evaluation vẫn mở.
+Trạng thái project hiện tạo nền tảng nghiên cứu có kiểm soát chứ chưa phải model-performance result. G1 đã khóa câu hỏi kiểm chứng được, vị trí closest work đại diện, cơ chế ứng viên, matched comparison và quy tắc cho phép không chọn learned method. Persistent portfolio audit, full Baby P4 temporal graph và bounded environment replay đã execute; G2 và E0-MIN pass. Shared baseline path, chọn/implement sampler, final GPU lock và performance evaluation vẫn mở.
 
 ## 2. Phạm vi và động lực
 
@@ -29,27 +29,30 @@ Trong user–item graph, graph collaborative filtering có thể tận dụng in
 
 Luận văn không giả định bất kỳ candidate sampling mechanism nào sẽ cải thiện recommendation. Câu hỏi là liệu một phương pháp do project phát triển, được kiểm soát chặt, có thể được định nghĩa, implement và evaluate mà không trộn lẫn sampling effect với khác biệt về data, negative sampling, inference hoặc hardware hay không.
 
-## 3. Câu hỏi nghiên cứu và hypothesis
+## 3. Câu hỏi nghiên cứu và giả thuyết — G1 đã khóa
 
 ### 3.1 Câu hỏi nghiên cứu chính
 
-> Có thể phát triển và đánh giá một phương pháp lấy mẫu đồ thị cho large-scale GNN-based recommendation như thế nào để quality và resource trade-off được đo công bằng trước các matched sampling baseline?
+> Trên bài toán Amazon Baby P4 warm-start đã đóng băng và chống leakage, với cùng ngân sách lấy mẫu theo lớp, sampler có điều kiện theo nhiệm vụ có tạo ra đánh đổi exact full-catalog NDCG@20–tài nguyên tốt hơn uniform và degree-aware sampling dưới cùng recommender kiểu LightGCN hay không?
 
 ### 3.2 Câu hỏi phụ
 
-1. Recommendation target và layer-wise candidate set nên được xây như thế nào mà không leakage?
-2. Graph-sampling signal nào còn phù hợp khi user–item graph có ít hoặc không có semantic node feature?
-3. GRAPES-informed hoặc candidate mechanism nào khác được closest-work review và controlled ablation biện minh?
-4. Learned sampling thêm bao nhiêu memory và training-time overhead ở cùng layer-wise budget?
+1. Đánh đổi có thay đổi giữa ngân sách từng lớp nhỏ, vừa và lớn không?
+2. Task conditioning có cải thiện xếp hạng tail-user hoặc tail-item mà không che giấu suy giảm ở head cohort không?
+3. Mỗi learned mechanism thêm bao nhiêu sampler time, memory, bất ổn và failure risk?
+4. Cơ chế nào sống sót qua controlled development comparison để xứng đáng sang G4 và đánh giá cuối?
 
 ### 3.3 Hypothesis
 
 Các statement sau là `HYPOTHESIS`, không phải result:
 
-- **H1:** Ở cùng sampling budget đã khai báo, một phương pháp lấy mẫu đồ thị do project phát triển có thể tạo NDCG@20/resource trade-off khác với matched random hoặc static sampling baseline.
-- **H2:** Nếu learned hoặc task-aware sampling có lợi, lợi ích có thể rõ hơn ở budget nhỏ, nơi uniform sampling loại bỏ nhiều context có thể hữu ích hơn.
-- **H3:** Candidate sampling objective và mechanism có thể có stability, quality và overhead profile khác nhau; chưa giả định cơ chế nào tốt hơn trước khi đo.
-- **H4:** Learned sampling được kỳ vọng thêm memory và runtime overhead có thể đo được; quality trade-off phải được đo thay vì giả định là chấp nhận được.
+- **H1:** Ở ít nhất một budget đã khai báo, ứng viên task-conditioned hợp lệ có sai khác NDCG@20 ghép cặp dương so với matched static control tốt nhất.
+- **H2:** Ở ít nhất một budget, ứng viên task-conditioned không bị static control thống trị trên validation NDCG@20, peak GPU memory và epoch wall time.
+- **H3:** Lợi ích chất lượng, nếu có, lớn hơn ở budget chặt so với budget lớn nhất; tương tác budget-by-method vẫn phải báo cáo nếu trái kỳ vọng.
+- **H4:** Aggregate gain không che giấu sai khác ghép cặp âm ở tail cohort đã khai báo; head, middle và tail được báo cáo riêng.
+- **H5:** Learned sampling có overhead khác 0, nên quality thiếu sampler/propagation time, memory, throughput và failure evidence là chưa đủ.
+
+Estimand đầy đủ, quy tắc kết quả âm, họ ứng viên và quy tắc Pareto chỉ dùng validation đã khóa trong biên bản [`G1_RESEARCH_DESIGN_vn.md`](../00_project/G1_RESEARCH_DESIGN_vn.md). G1 pass không có nghĩa đã chọn sampler; việc chọn vẫn chờ G2, E0-MIN và G3.
 
 ## 4. Nền tảng và nghiên cứu liên quan
 
@@ -58,12 +61,15 @@ Các statement sau là `HYPOTHESIS`, không phải result:
 | GRAPES, arXiv:2310.03399v3 | Nguồn formal cho layer-wise learned sampling, Gumbel Top-k, REINFORCE, GFlowNet/Trajectory Balance và sampled computation graph | `VERIFIED PRIMARY SOURCE`; recommendation là adaptation target, không phải evaluation đã hoàn thành ở Phase 1 |
 | BPR, arXiv:1205.2618 | Pairwise ranking loss và implicit-feedback triplet | `VERIFIED PRIMARY SOURCE`; không đặc tả GRAPES sampling |
 | LightGCN, arXiv:2002.02126 | Graph collaborative-filtering propagation, layer aggregation và dot-product recommendation score | `VERIFIED PRIMARY SOURCE`; sampled block semantic cần adaptation contract rõ ràng |
-| PinSage, arXiv:1806.01973 | Bối cảnh scalable graph recommendation và sampling | `VERIFIED PRIMARY SOURCE ANCHOR`; không phải policy kiểu GRAPES và không bắt buộc là primary baseline |
-| DSKReG, arXiv:2108.11883 | Cảnh báo về learned sampling trong recommendation-related setting | `VERIFIED PRIMARY SOURCE ANCHOR`; khác knowledge-graph setting, vì vậy novelty phải hẹp và chính xác |
+| GraphSAGE; FastGCN; AS-GCN; LADIES | Nền tảng node-wise, layer-wise, importance và adaptive sampling | `VERIFIED PRIMARY SOURCES`; chủ yếu node-classification/general-graph thay vì temporal full-catalog recommendation |
+| Cluster-GCN; GraphSAINT | Phương án cluster/subgraph sampling và normalization | `VERIFIED PRIMARY SOURCES`; biến can thiệp minibatch khác câu hỏi exact-k theo lớp chính của luận văn |
+| PinSage, arXiv:1806.01973 | Bối cảnh scalable graph recommendation và sampling | `VERIFIED PRIMARY SOURCE`; heuristic item–board sampling, không phải bài toán plain bipartite matched ở đây |
+| DSKReG, arXiv:2108.11883 | Learned sampling trong knowledge-graph recommendation | `VERIFIED PRIMARY SOURCE`; ngăn claim “learned sampler đầu tiên cho recommendation” |
+| Data-driven GraphSAGE; SubMix | Learned-RL neighbor sampling và trainable heuristic mixture | `VERIFIED PRIMARY SOURCES`; closest mechanism warning bên ngoài recommendation protocol này |
 | Recommender leakage study, arXiv:2010.11060 | Hỗ trợ temporal và training-only preprocessing control | `VERIFIED PRIMARY SOURCE ANCHOR`; Amazon protocol cụ thể vẫn cần khóa |
 | Sampled-metric analysis, arXiv:1912.02263 | Hỗ trợ exact full-catalog ranking cho primary evaluation | `VERIFIED PRIMARY SOURCE ANCHOR`; feasibility cuối cùng phụ thuộc scale đo được |
 
-Literature review hiện vẫn sơ bộ. Nó đủ làm nền cho method và protocol section, nhưng chưa đủ cho exhaustive review hoặc novelty claim “learned sampler đầu tiên cho recommendation”.
+Targeted review của G1 mang tính đại diện, không phải exhaustive. Nó hỗ trợ vị trí hẹp: nếu bằng chứng thành công, đóng góp là sampler task-conditioned do đồ án phát triển và controlled evidence cho plain implicit bipartite recommendation dưới exact full-catalog ranking cùng matched resource measurement. Nó không hỗ trợ claim “learned sampler đầu tiên cho recommendation”.
 
 ## 5. Evidence và source governance của Phase 1
 
@@ -155,7 +161,7 @@ Primary inference là deterministic full-graph LightGCN propagation chung cho m�
 
 ### 7.1 Phạm vi dataset
 
-Evidence portfolio được giới hạn có chủ đích. `Baby_Products` là Amazon primary candidate bắt buộc; `Home_and_Kitchen` là *bounded scale-stress test* bắt buộc nếu luận văn giữ large-scale claim. `All_Beauty` chỉ dành cho development/diagnostic, không phải primary evidence. MovieLens 25M và Yelp Open Dataset là các bổ sung tùy chọn sau khi Amazon core hoàn thành; chúng không được làm chậm central experiment. Mọi vai trò là `PROPOSED` cho đến khi Dataset Gate G2 đóng.
+Evidence portfolio được giới hạn có chủ đích. `Baby_Products` là primary Amazon dataset đã khóa; `Home_and_Kitchen` là *bounded scale-stress test* bắt buộc nếu luận văn giữ large-scale claim. `All_Beauty` chỉ dành cho development/diagnostic, không phải primary evidence. MovieLens 25M và Yelp Open Dataset là các bổ sung tùy chọn sau khi Amazon core hoàn thành; chúng không được làm chậm central experiment. Dataset Gate G2 đã đóng; optional role vẫn có điều kiện.
 
 Decision record song ngữ, source, câu hỏi audit chính xác, preprocessing sequence, comparison rule và gate nằm trong [`DATASET_PORTFOLIO_AND_ANALYSIS_PROTOCOL_vn.md`](../00_project/DATASET_PORTFOLIO_AND_ANALYSIS_PROTOCOL_vn.md). Đặc biệt, official Amazon 5-core data là reproducibility reference, không tự động là strict temporal training graph của luận văn.
 
@@ -240,15 +246,15 @@ Bounded provenance job `Home_and_Kitchen` cũng đã hoàn tất. Exact 0-core c
 
 Các finding này chứng minh source identity, exact raw scale, bipartite sparsity mạnh, long-tail concentration và mức mismatch nghiêm trọng giữa provider absolute split với pure-ID warm-start estimand. Chúng biện minh cho việc giữ `Baby_Products` làm primary candidate, giới hạn `All_Beauty` ở development diagnostic và xây strict temporal task mới chỉ từ training information. Chúng **không** chứng minh recommendation quality, sampling effectiveness, memory reduction, runtime improvement, novelty hoặc large-scale generalization.
 
-Phân tích tuân theo chuỗi **observation → population và denominator → protocol consequence → action → excluded inference → gate status**. Baby G2-A/G2-B/G2-C nay đã `PASS`. Full training-only graph, exact OOV ledger/candidate construction, deterministic artifact cùng bounded traversal đã execute và readback. G2-D chỉ còn mở vì E0-MIN environment fingerprint; hiện không có lý do rebuild data hoặc sửa cutoff.
+Phân tích tuân theo chuỗi **observation → population và denominator → protocol consequence → action → excluded inference → gate status**. Baby G2-A/G2-B/G2-C/G2-D và E0-MIN nay đã `PASS`. Full training-only graph, exact OOV ledger/candidate construction, deterministic artifact, bounded traversal, environment fingerprint và replay đã execute và readback. Không có lý do rebuild data hoặc sửa cutoff.
 
 Frozen graph có 3,868,654 edge giữa 2,318,308 user và 162,125 item. User degree long-tail mạnh (p50 1, p90 3, p99 9; singleton 71.76%), còn item degree tập trung hơn (p50 3, p90 32, p99 397, maximum 21,348; singleton 33.35%). Largest trong 34,288 component chứa 96.50% của toàn bộ 2,480,433 node. Các chỉ số cho thấy message-passing graph thưa, mất cân bằng nhưng chủ yếu liên thông; chúng không chứng minh recommendation performance hoặc sampler superiority.
 
-Validation giữ 81,871/373,776 = 21.90% warm target và test giữ 40,587/413,413 = 9.82%. Mọi exclusion đối soát chính xác vào chỉ unseen user, chỉ unseen item hoặc cả hai. Test retention thấp giới hạn headline estimand tương lai vào pure-ID warm-start cohort hẹp; đây không phải evidence model yếu. Trong bounded traversal, 100 target đi qua catalog 162,125 item với 16,212,500 comparison, đếm 16,209,544 eligible candidate và pass cả chunked-count lẫn target-not-in-prior-history invariant. Measurement 1.098 giây và 158.24 MiB peak RSS chỉ mô tả traversal này.
+Validation giữ 81,871/373,776 = 21.90% warm target và test giữ 40,587/413,413 = 9.82%. Mọi exclusion đối soát chính xác vào chỉ unseen user, chỉ unseen item hoặc cả hai. Test retention thấp giới hạn headline estimand tương lai vào pure-ID warm-start cohort hẹp; đây không phải evidence model yếu. Trong bounded traversal, 100 target đi qua catalog 162,125 item với 16,212,500 comparison, đếm 16,209,544 eligible candidate và pass hai invariant gốc. Manifest mới verify mọi artifact hash và thêm bốn replay invariant đúng dưới CPython 3.13.15, Linux 6.6.122, hai logical Xeon CPU, RAM 12,975.53 MiB và không GPU. Traversal gốc 1.667 giây cùng peak RSS 158.24 MiB chỉ mô tả bounded CPU feasibility; count-only replay 0.00387 giây là thao tác khác và không phải performance comparison.
 
 Protocol chi tiết và quy tắc diễn giải nằm trong [`DATASET_PORTFOLIO_AND_ANALYSIS_PROTOCOL_vn.md`](../00_project/DATASET_PORTFOLIO_AND_ANALYSIS_PROTOCOL_vn.md). Machine-readable mirror được lưu tại [`Baby_Products_protocol_audit.json`](../06_code/results/Baby_Products_protocol_audit.json), [`All_Beauty_protocol_audit.json`](../06_code/results/All_Beauty_protocol_audit.json), [`Home_and_Kitchen_raw_audit.json`](../06_code/results/Home_and_Kitchen_raw_audit.json) và [`dataset_portfolio_audit_index.json`](../06_code/results/dataset_portfolio_audit_index.json).
 
-### 7.1.5 Các bước G2 còn lại và cách diễn giải evidence
+### 7.1.5 Các bước G2 và cách diễn giải evidence
 
 | Bước | Sẽ làm gì | Tại sao cần làm | Chỉ số và ý nghĩa | Điều kiện hoàn thành |
 |---|---|---|---|---|
@@ -286,7 +292,7 @@ Semantic decision D1–D11 được ghi trong GRAPES-informed reference specific
 
 Model-training deliverable được dự kiến là modular Python package có CPU toy-graph path, deterministic configuration và seed handling, truy vết D-ID tới module tới T-ID, data/checksum manifest interface, logging và checkpoint contract, paired human-readable documentation và thin Colab launcher. Theo yêu cầu trực tiếp của người dùng, dataset-audit notebook là ngoại lệ có phạm vi: notebook nhúng toàn bộ standard-library audit implementation để portfolio audit chạy từ một file Colab mà không cần Drive script riêng.
 
-Portfolio-audit utility đã execute trên các governed artifact. Một notebook standard-library/SQLite self-contained thứ hai nay implement path Baby G2-C/G2-D và ghi deterministic mapping, edge, warm target, artifact hash, graph/OOV statistic cùng bounded traversal measurement. Hiện mới toy fixture của path này đã execute; full-data statistic và feasibility measurement vẫn mở.
+Portfolio-audit utility đã execute trên các governed artifact. Một notebook standard-library/SQLite self-contained thứ hai implement path Baby G2-C/G2-D và ghi deterministic mapping, edge, warm target, artifact hash, graph/OOV statistic, bounded traversal measurement cùng environment completion record. Toy fixture và full Baby path đều đã execute; manifest mới đã readback và được chấp nhận cho G2.
 
 Exact Python/PyTorch/PyG/CUDA lock và final GPU class chưa biết. Colab sẵn sàng cho development và smoke run, nhưng temporary Colab hardware không phải nền tảng profiling comparable cuối cùng.
 
@@ -305,16 +311,16 @@ Exact Python/PyTorch/PyG/CUDA lock và final GPU class chưa biết. Colab sẵn
 | Hạng mục | Maturity hiện tại | Ranh giới evidence |
 |---|---|---|
 | Scope và kế hoạch 12 tuần | `LOCKED / RECORDED` | [Kế hoạch nghiên cứu Phase 2 chính thức](../00_project/PHASE2_RESEARCH_PLAN_vn.md) |
-| Literature và source pin | `VERIFIED ARTIFACT / PRELIMINARY` | Primary-paper anchor và source note |
+| Thiết kế nghiên cứu và literature position G1 | `PASS / KHÓA TRƯỚC MODEL RESULT` | RQ, giả thuyết, closest-work map, họ ứng viên, matched comparison và selection rule chỉ dùng validation |
 | GRAPES-informed reference design D1–D11 | `REFERENCE DESIGN; NOT CANONICAL METHOD` | Bilingual reference specification |
 | Reference verification candidate T01–T25 | `PARTIAL TOY EXECUTION` | Các reference check trước cùng G2-C toy path pass; final verification plan vẫn mở |
 | Report và slide working content | `CUMULATIVE DRAFT` | Living report và defense deck này |
-| Python/Colab source | `G2-C FULL EXECUTION; G2-D BOUNDED EXECUTION` | 13/13 local test pass; full Baby artifact đã readback; chưa có model benchmark |
-| Amazon data | `BABY G2-A/G2-B/G2-C PASS; G2 IN_PROGRESS` | Cutoff, graph, mapping, warm/OOV ledger và candidate rule đã freeze; G2-D chỉ chờ exact environment fingerprint |
-| Environment/GPU | `E0-MIN IN_PROGRESS; E0-FINAL NOT_STARTED` | Có Colab; development lock chạy lại được và final profiling lock chưa hoàn tất |
+| Python/Colab source | `G2-C/G2-D FULL EXECUTION VÀ READBACK` | 13/13 local test pass; full Baby artifact và environment completion đã readback; chưa có model benchmark |
+| Amazon data | `BABY G2-A/G2-B/G2-C/G2-D PASS; G2 PASS` | Primary P4 task, cutoff, graph, mapping, warm/OOV ledger, candidate rule và bounded feasibility đã freeze |
+| Environment/GPU | `E0-MIN PASS; E0-FINAL NOT_STARTED` | Bounded CPU/Colab environment đã ghi; final model/GPU profiling lock chưa hoàn tất |
 | Recommendation result | `NOT STARTED` | Chưa có NDCG, Recall, runtime, memory hoặc scalability result |
 
-Registry chuẩn hiện có G0 `PASS`, G1/G2 `IN_PROGRESS` và G3–G6 `NOT_STARTED`. Closest-work/rationale G1 và protocol evidence G2 chạy song song với E0-MIN. Baseline khoa học chờ G2 cùng E0-MIN; implement proposed sampler chờ G1–G3. Toy test hiện có là reference evidence và không thỏa G4.
+Registry chuẩn hiện có G0, G1, G2 và E0-MIN `PASS`; G3–G6 vẫn `NOT_STARTED`. Có thể bắt đầu shared evaluator và baseline G3. Implement proposed sampler vẫn chờ G3. Toy test hiện có là reference evidence và không thỏa G4.
 
 ## 11. Tài liệu tham khảo
 
@@ -322,6 +328,13 @@ Registry chuẩn hiện có G0 `PASS`, G1/G2 `IN_PROGRESS` và G3–G6 `NOT_STAR
 2. Rendle et al., “BPR: Bayesian Personalized Ranking from Implicit Feedback,” arXiv:1205.2618. <https://arxiv.org/abs/1205.2618>
 3. He et al., “LightGCN: Simplifying and Powering Graph Convolution Network for Recommendation,” arXiv:2002.02126. <https://arxiv.org/abs/2002.02126>
 4. Ying et al., “Graph Convolutional Neural Networks for Web-Scale Recommender Systems,” arXiv:1806.01973. <https://arxiv.org/abs/1806.01973>
+5. Hamilton et al., “Inductive Representation Learning on Large Graphs,” arXiv:1706.02216. <https://arxiv.org/abs/1706.02216>
+6. Chen et al., “FastGCN,” ICLR 2018. <https://openreview.net/pdf?id=rytstxWAW>
+7. Huang et al., “Adaptive Sampling Towards Fast Graph Representation Learning,” NeurIPS 2018. <https://proceedings.neurips.cc/paper/2018/hash/01eee509ee2f68dc6014898c309e86bf-Abstract.html>
+8. Zou et al., “LADIES,” NeurIPS 2019. <https://proceedings.neurips.cc/paper/2019/hash/91ba4a4478a66bee9812b0804b6f9d1b-Abstract.html>
+9. Zeng et al., “GraphSAINT,” ICLR 2020. <https://openreview.net/forum?id=BJe8pkHFwS>
+10. Wang et al., “DSKReG,” arXiv:2108.11883. <https://arxiv.org/abs/2108.11883>
+11. Abu-El-Haija et al., “SubMix,” UAI 2023. <https://proceedings.mlr.press/v216/abu-el-haija23a.html>
 5. DSKReG, arXiv:2108.11883. <https://arxiv.org/abs/2108.11883>
 6. Amazon Reviews 2023 official documentation. <https://amazon-reviews-2023.github.io/main.html>
 7. Recommender evaluation leakage study, arXiv:2010.11060. <https://arxiv.org/abs/2010.11060>

@@ -37,7 +37,90 @@
     "implementation_sha256": "18dd46ad142491891ce6d5b1c4add4a8e6e5953a22c46bd429b3732798117998",
     "notebook_revision": "g2c-baby-p4-self-contained-v1-2026-09-02"
   },
-  "created_at_utc": "2026-09-02T15:24:53+00:00",
+  "created_at_utc": "2026-09-02T23:52:54+00:00",
+  "g2d_environment_completion": {
+    "artifact_readback": {
+      "item_mapping": {
+        "bytes": 1158646,
+        "bytes_match": true,
+        "exists": true,
+        "sha256": "a98b60f05071f68f113a4293d000855e31fca2fc42799d9ee1db108a8ba19ccd",
+        "sha256_match": true
+      },
+      "test_targets": {
+        "bytes": 702519,
+        "bytes_match": true,
+        "exists": true,
+        "sha256": "ca1ff454174160dc5e4e561f55dc9377f1e9593cffcb6338a9701c31db1eea61",
+        "sha256_match": true
+      },
+      "train_edges": {
+        "bytes": 58038408,
+        "bytes_match": true,
+        "exists": true,
+        "sha256": "33abbd98b1d75b179bf45ef41ba3f5622d80005ad4aaf414320dbe48c17aeb72",
+        "sha256_match": true
+      },
+      "user_mapping": {
+        "bytes": 44447186,
+        "bytes_match": true,
+        "exists": true,
+        "sha256": "244a11fe7986f20cd4de06ee871ab9ff643399fb2661da00bb06647b620d5e6d",
+        "sha256_match": true
+      },
+      "validation_targets": {
+        "bytes": 1405383,
+        "bytes_match": true,
+        "exists": true,
+        "sha256": "fd807f68fd03787931546ac31d7c2fe8e7ffcc7c43d3b92c627dce98fa87afca",
+        "sha256_match": true
+      }
+    },
+    "bounded_replay": {
+      "catalog_comparisons": 16212500,
+      "catalog_items": 162125,
+      "chunk_size": 16384,
+      "eligible_candidates_counted": 16209544,
+      "invariants": {
+        "comparison_count_matches_original": true,
+        "eligible_count_matches_original": true,
+        "original_target_not_in_prior_history": true,
+        "target_count_matches_original": true
+      },
+      "process_peak_rss_mb": 158.2421875,
+      "targets_replayed": 100,
+      "wall_seconds": 0.0038731339998321346
+    },
+    "captured_at_utc": "2026-09-02T23:52:57+00:00",
+    "claim_boundary": "Environment/readback feasibility only; no model quality, comparative profiling, or scalability claim.",
+    "completion_revision": "g2d-env-completion-v1-2026-09-02",
+    "environment": {
+      "colab": {
+        "COLAB_BACKEND_VERSION": "next",
+        "COLAB_GPU": "",
+        "COLAB_RELEASE_TAG": "release-colab-external-images_20260831-060044_RC00",
+        "CUDA_VISIBLE_DEVICES": null
+      },
+      "cpu_model": "Intel(R) Xeon(R) CPU @ 2.20GHz",
+      "gpu": null,
+      "logical_cpu_count": 2,
+      "machine": "x86_64",
+      "memory_total_mib": 12975.53125,
+      "package_versions": {
+        "google-colab": "1.0.0",
+        "ipykernel": "6.17.1"
+      },
+      "platform": "Linux-6.6.122+-x86_64-with-glibc2.35",
+      "processor": "x86_64",
+      "python_executable": "/usr/bin/python3",
+      "python_implementation": "CPython",
+      "python_version": "3.13.15 (main, Aug  6 2026, 11:06:23) [GCC 11.4.0]",
+      "release": "6.6.122+",
+      "sqlite_version": "3.37.2",
+      "system": "Linux"
+    },
+    "status": "ENVIRONMENT_FINGERPRINT_AND_BOUNDED_REPLAY_EXECUTED"
+  },
   "g2d_feasibility": {
     "catalog_comparisons": 16212500,
     "catalog_items": 162125,
@@ -52,7 +135,7 @@
     "status": "BOUNDED_EVALUATOR_TRAVERSAL_EXECUTED; NO MODEL OR QUALITY METRIC",
     "targets_executed": 100,
     "targets_requested": 100,
-    "wall_seconds": 1.097641588999977
+    "wall_seconds": 1.667328064000003
   },
   "input_counts": {
     "duplicate_p4_rows_removed": 0,
@@ -113,7 +196,7 @@
     "path": "/content/drive/MyDrive/Phase2_Amazon_Audit/raw/Baby_Products.csv.gz",
     "sha256": "e2a8d0498afed767ee2615db7fac549559d82490b1a73c7241b84b5e9e8c279e"
   },
-  "status": "G2_C_ARTIFACTS_BUILT; G2_D_BOUNDED_TRAVERSAL_EXECUTED; GATE_REVIEW_REQUIRED",
+  "status": "G2_C_ARTIFACTS_BUILT; G2_D_ENVIRONMENT_COMPLETION_EXECUTED; GATE_REVIEW_REQUIRED",
   "training_graph": {
     "components": {
       "components": 34288,

@@ -1,72 +1,89 @@
-# Current Supervisor Briefing
+# Ten-Minute Progress Briefing for the Supervisor
 
-> **Project:** *Development of a Graph Sampling Method for Large-Scale Recommender Systems Using Graph Neural Networks (GNNs)*  
-> **Status:** `CUMULATIVE BRIEFING — RESEARCH FOUNDATION AND DATA-PROTOCOL GATE`  
-> **Last updated:** 2026-08-30
-> **Use:** This is a current meeting brief, not a weekly thesis deliverable. Dated history is preserved in the continuity records.
+> **Thesis:** *Development of a Graph Sampling Method for Large-Scale Recommender Systems Using Graph Neural Networks (GNNs)*
+> **Updated:** 2026-09-03
+> **Status:** G1, E0-MIN, and Dataset Gate G2 pass. The project may begin G3 baseline/evaluator work. No model or Recall/NDCG result exists.
 
-## 1. Thesis identity
+## 1. Thesis framing — about 1 minute
 
-Phase 2 is an independent Master's thesis. Phase 1 is read-only historical context: it explored the topic and studied/reproduced GRAPES for node classification. GRAPES is retained as a scientific reference, comparator, and source of candidate mechanisms; it is not the fixed thesis method or the thesis title.
+Phase 2 is an independent Master's thesis on graph sampling for GNN recommendation. Phase 1 and GRAPES remain scientific background, a comparator, and a source of candidate mechanisms; they do not predefine the final thesis method.
 
-The final sampler remains `OPEN`. The existing GRAPES-informed reference design and its D1–D11/T01–T25 contracts are reference-design and verification candidates only. They can be adopted, changed, or rejected after literature positioning, implementation checks, ablations, and experiments.
+The objective is to develop a graph-sampling method and compare it fairly on ranking quality and computational cost. Before modeling, the project freezes a leakage-safe dataset and evaluation protocol through Dataset Gate G2.
 
-The canonical gate register currently records G0 `PASS`, G1/G2 `IN_PROGRESS`, and G3–G6 `NOT_STARTED`. Environment readiness is separate: E0-MIN is `IN_PROGRESS` and E0-FINAL is `NOT_STARTED`. G1 and G2 proceed in parallel; no baseline or sampler gate is bypassed.
+## 2. G1 research design — about 1.5 minutes
 
-## 2. Current evidence and maturity
+G1 answers what will be tested and how the method will be chosen before model results exist. The primary question is: at the same layer-wise budget and with the same Baby P4 data, LightGCN-style backbone, BPR batches, negatives, seeds, evaluator, and hardware, can task-conditioned sampling improve the exact full-catalog NDCG@20–resource trade-off over uniform and degree-aware sampling?
 
-| Area | Current status | Evidence boundary |
-|---|---|---|
-| Research framing and source governance | `RECORDED` | Thesis title, Phase 1 boundary, primary-source anchors, and claim rules are documented |
-| GRAPES-informed reference design | `REFERENCE DESIGN` | Candidate mechanisms and toy verification contracts; not the final method |
-| Code scaffold | `PARTIAL TOY EXECUTION` | Ten dependency-free CPU contract tests passed; no PyTorch/PyG recommender or end-to-end pipeline exists |
-| Raw data audit | `TEMPORARY AUDIT EXECUTED` | Exact audits completed for `All_Beauty` and `Baby_Products`; durable acquisition and final protocol are still open |
-| Recommendation experiment | `NOT STARTED` | No model training, Recall/NDCG, memory, throughput, scalability, novelty, or superiority result exists |
+The closest-work review shows that the thesis must not claim the first learned sampler for recommendation: PinSage already uses recommender-specific sampling, while DSKReG learns sampling for knowledge-graph recommendation. The narrower potential contribution is controlled evidence for a project-owned task-conditioned sampler on a plain implicit user–item graph.
 
-## 3. Dataset portfolio and current finding
+Six mechanism roles are registered: uniform, degree-aware, layer-dependent structural importance, a learned heuristic mixture, a task-conditioned exact-k policy, and optional GRAPES-informed RL/GFlowNet variants. Uniform and degree-aware are mandatory matched controls. Selection uses validation only: a learned candidate advances only if it enters the NDCG–memory–time Pareto set and improves at least one axis over both static controls at the same budget. Otherwise the valid conclusion is to select no learned method. Test results cannot be used to replace the selected method.
 
-| Role | Dataset | Current status |
-|---|---|---|
-| Development diagnostic | Amazon Reviews'23 `All_Beauty` | Not primary evidence: the raw audit found 693,929 rows and 93.22% singleton users |
-| Primary benchmark candidate | Amazon Reviews'23 `Baby_Products` | Mandatory candidate; the raw audit found 5,953,891 rows and 70.01% singleton users, but duplicate verification and the final protocol remain open |
-| Conditional scale evidence | Amazon Reviews'23 `Home_and_Kitchen` | A bounded scale-stress candidate if the thesis retains its “large-scale” claim; not yet acquired or audited by this project |
-| Optional validation | MovieLens 25M; Yelp Open Dataset | Consider only after the core Amazon evidence is complete |
+## 3. All research gates at a glance — about 1 minute
 
-The provider absolute-time split generated high user/item out-of-training-universe coverage in the raw audit. This is a data-protocol finding, not a model result. It means that the published split cannot be adopted directly as the primary strict warm-start protocol.
+The gates prevent the project from moving to an expensive or claim-producing stage before its prerequisites are defensible.
 
-## 4. Protocol before model training
+| Gate | Question it answers | Evidence required to proceed | Current status |
+|---|---|---|---|
+| G0 — Governance | Is the thesis scope, artifact structure, bilingual rule, and claim boundary clear? | Canonical plan, constraints, ownership, and evidence rules | `PASS` |
+| G1 — Research design | What exactly is being tested, against what, and how will a method be selected? | Research question, falsifiable hypotheses, closest work, candidate mechanisms, matched comparison, and a predeclared selection rule | `PASS` |
+| G2 — Dataset and protocol | Are the data, split, graph, evaluation population, negatives, and candidates valid and leakage-safe? | Provenance, semantics, temporal training-only graph, OOV ledger, exact candidates, and bounded feasibility | `PASS` |
+| G3 — Shared baseline path | Can every later method use the same trustworthy training, evaluation, and resource-measurement path? | Deterministic evaluator, sanity checks, MostPop/BPR/LightGCN, uniform and degree-aware controls, and resource logging | `NOT STARTED` — next gate |
+| G4 — Proposed-sampler readiness | Is the selected candidate correctly implemented and stable enough for final experiments? | Unit/integration tests, valid exact-k samples, finite losses, diagnostics, and controlled development runs | `NOT STARTED` |
+| G5 — Final evidence | Does the method actually improve the declared quality–resource trade-off? | Frozen experiment matrix, paired seeds, uncertainty, ablations, resource traces, failures, limitations, and conditional Home scale stress | `NOT STARTED` |
+| G6 — Reproducibility and submission | Can a representative result be regenerated and submitted with complete traceability? | Clean rerun, manifests/configurations, regenerated tables/figures, thesis, slides, and runnable source | `NOT STARTED` |
 
-The next required decisions are:
+G2 itself has four sub-gates: G2-A verifies exact source bytes/schema; G2-B fixes positive, anomaly, duplicate, and negative semantics; G2-C freezes the training-only temporal graph and warm/OOV evaluation cohort; G2-D checks bounded execution without comparing models.
 
-1. Preserve data provenance: official URL, usage/access note, persistent artifact, checksum, schema, and manifest.
-2. Freeze interaction semantics before training: duplicate treatment, the `0.0` Baby rating, one primary P4/P5/all-observed policy, and a targeted sensitivity policy if justified.
-3. Define the strict temporal warm-start task: training-only graph, training-only filtering/statistics, explicit validation/test retention, and recorded OOV exclusions.
-4. Define training negatives and full-catalog evaluation candidates without silently using future interactions.
-5. Determine whether the retained `Baby_Products` graph passes primary-feasibility Gate G2-D before implementing the final sampler.
+Two environment prerequisites run beside the gates. `E0-MIN` records a rerunnable development/bounded environment and is now `PASS`. `E0-FINAL` locks the final GPU, CUDA/software, and profiling procedure before G5 resource claims and is `NOT STARTED`.
 
-The intended comparison protocol uses matched data, backbone, budget, optimizer, seeds, and negative rules across a non-GNN ranking reference, GNN backbone, simple sampling baselines, the GRAPES-informed reference, and the project-developed sampler. Exact full-catalog Recall/NDCG and resource measures are planned only; feasibility must be demonstrated first.
+The dependency is: G0 governs everything; G1 and G2 define the study; G3 creates the common baseline path; G4 validates the selected sampler; G5 produces final evidence; and G6 proves reproducibility. A failed gate triggers correction, a narrower claim, or a recorded negative result—not permission to skip the control.
 
-## 5. Current risks and requests for guidance
+## 4. Dataset roles — about 0.5 minute
 
-1. Confirm whether the proposed evidence boundary—primary `Baby_Products`, bounded conditional scale test, and optional external validation—is suitable for the thesis requirements.
-2. Confirm the available final GPU class/access window and the institution's report/deck template requirements.
-3. Confirm whether the project should prioritize strict warm-start evaluation only, with cold start left outside the thesis unless a method explicitly supports it.
-4. Confirm whether the anticipated evidence package—quality, resource cost, ablations, seed variation, and failure analysis—is sufficient before final experiments begin.
+- `Baby_Products`: primary dataset—large enough to stress graph construction but bounded enough for repeated controlled runs.
+- `All_Beauty`: development diagnostic—same schema, but 93.22% raw singleton users and extremely narrow warm retention.
+- `Home_and_Kitchen`: conditional scale stress—66,623,880 rows, about 11.19 times Baby; full execution waits for G5-S if the thesis retains a large-scale claim.
 
-## 6. Short oral update
+Roles are assigned from semantic fit, retained structure, warm coverage, reproducibility/compute, and intended claim—not later model scores.
 
-> The thesis is now framed as an independent method-development study for graph sampling in large-scale GNN recommendation. Phase 1 and GRAPES remain scientific context and comparison material, but they do not define the final method. We have completed temporary raw audits of two Amazon categories and found a high-sparsity and high-OOV protocol risk. The next work is therefore to freeze a leakage-safe data protocol and test whether the primary candidate remains feasible after filtering. No recommendation model has been trained, and no accuracy, efficiency, scalability, novelty, or comparative claim is being made.
+## 5. Completed audit — about 1.5 minutes
 
-## 7. Supporting records
+The project created self-contained Colab auditing with persistent checksummed JSON manifests. All Beauty has 693,929 events and zero duplicate pairs. Baby has 5,953,891 raw rows, one quarantined rating `0.0`, and zero duplicate pairs. P4 (`rating >= 4`) was selected because it encodes plausible affinity while retaining more valid positives than P5; all-observed would treat low ratings as positive. Home provenance, schema, checksum, and exact row count are recorded.
 
-- [`PROJECT_CONTEXT_AND_RESEARCH_RULES_en.md`](../PROJECT_CONTEXT_AND_RESEARCH_RULES_en.md)
+The audit establishes data identity, quality, sparsity, long-tail structure, and cohort coverage. It does not establish recommendation quality, sampler superiority, or scalability.
+
+## 6. Completed Baby temporal graph — about 1.5 minutes
+
+The full P4 path produced 3,868,654 training edges, 2,318,308 users, and 162,125 items. User degrees are highly long-tailed (p50 1, p90 3, p99 9; 71.76% singleton); item degrees have p50 3, p90 32, and p99 397. The largest component contains 96.50% of nodes.
+
+Validation retains 81,871/373,776 = 21.90% warm targets. Test retains 40,587/413,413 = 9.82%. Every exclusion reconciles as unseen user, unseen item, or both. The narrow cohort is disclosed explicitly and still contains a substantial absolute test set, so the cutoffs and G2-C protocol are accepted.
+
+## 7. Feasibility and claim boundary — about 1 minute
+
+The amended Drive manifest was read back on 2026-09-03. All five artifact byte sizes and SHA-256 values match. The bounded evaluator traversed 100 targets over 162,125 items: 16,212,500 comparisons and 16,209,544 eligible candidates. The original checks and all four replay invariants pass.
+
+The recorded environment is CPython 3.13.15 on Linux 6.6.122, Intel Xeon with 2 logical CPUs, 12,975.53 MiB RAM, no GPU, Google Colab 1.0.0, and ipykernel 6.17.1. The original traversal took 1.667 seconds and reported 158.24 MiB peak process RSS; the count-only replay took 0.00387 seconds. These timings are not interchangeable. They establish bounded CPU pipeline/evaluator feasibility only—not model runtime, GPU profiling, or scalability. G2-D and E0-MIN therefore pass, closing Dataset Gate G2.
+
+## 8. What exists and what does not — about 1 minute
+
+Completed: bilingual governance; G1 research question, falsifiable hypotheses, closest-work boundary, candidate mechanism family, matched-comparison design, and validation-only Pareto selection/no-selection rule; portfolio audit; P4 semantics; frozen Baby graph and candidates; and 13/13 local pure-Python tests.
+
+Not completed: final sampler selection, PyTorch/PyG recommender, matched baselines, Recall/NDCG results, final GPU profiling, scalability, or novelty claims.
+
+## 9. Next work and supervisor questions — about 0.5 minute
+
+Next: begin G3 shared evaluator and MostPop/BPR/LightGCN plus uniform/degree-aware controls. After G3 passes, the validation-only G1 rule will choose one candidate—or explicitly choose no learned method—for G4.
+
+Questions: Is the 40,587-target warm-start test cohort appropriate? Is the Baby-primary/All-Beauty-diagnostic/Home-scale boundary suitable? What final GPU, thesis template, and defense requirements apply?
+
+## Short fallback script
+
+> I first froze both the research design and the data task before training. G1 defines a matched test of task-conditioned sampling against uniform and degree-aware controls and permits the conclusion that no learned method should be selected. For Baby P4, the temporal training graph has 3.87 million edges, 2.32 million users, and 162 thousand items; the warm-start test cohort has 40,587 targets. The new manifest verifies every artifact and records a reproducible bounded CPU replay, so G2 and E0-MIN now pass. Next is G3 shared evaluator and baseline implementation. No Recall, NDCG, model comparison, GPU profiling, or scalability result exists yet.
+
+## Supporting records
+
 - [`DATASET_PORTFOLIO_AND_ANALYSIS_PROTOCOL_en.md`](../00_project/DATASET_PORTFOLIO_AND_ANALYSIS_PROTOCOL_en.md)
-- [`DATASET_AUDIT_en.md`](../06_code/docs/DATASET_AUDIT_en.md)
-- [`DATASET_AUDIT_RESULTS_en.md`](../06_code/docs/DATASET_AUDIT_RESULTS_en.md)
+- [`G1_RESEARCH_DESIGN_en.md`](../00_project/G1_RESEARCH_DESIGN_en.md)
 - [`THESIS_REPORT_en.md`](../04_thesis/THESIS_REPORT_en.md)
-
-## 8. Sources
-
-- [Amazon Reviews'23 documentation](https://amazon-reviews-2023.github.io/main.html) and [5-core processing statistics](https://amazon-reviews-2023.github.io/data_processing/5core.html)
-- [Recommender-system leakage study](https://arxiv.org/abs/2010.11060)
-- [Sampled ranking-metric study](https://arxiv.org/abs/1912.02263)
+- [`baby_p4_g2c_manifest.json`](../06_code/results/baby_p4_g2c_manifest.json)
+- [`G2C_TEMPORAL_GRAPH_en.md`](../06_code/docs/G2C_TEMPORAL_GRAPH_en.md)

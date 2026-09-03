@@ -1,10 +1,10 @@
 # Thesis Graph-Sampling Code Scaffold
 
-> **Status:** `DATASET GATE — PORTFOLIO AUDIT COMPLETE; BABY G2-C/G2-D IMPLEMENTED, FULL RUN OPEN`
+> **Status:** `DATASET GATE G2 PASS — BABY G2-C/G2-D EXECUTED AND REVIEWED`
 > **Purpose:** provide the first executable home for Phase 2 reference contracts, dataset controls, and the future project-developed graph sampler.  
-> **Not yet provided:** reviewed full Baby G2-C artifacts/cutoff freeze, PyTorch/PyG implementation, locked final environment, benchmark runner, or recommendation-quality result.
+> **Not yet provided:** PyTorch/PyG implementation, locked final profiling environment, benchmark runner, or recommendation-quality result.
 
-The package is intentionally dependency-free at this early stage so the small contract tests can run on the local machine and in a clean Colab Python runtime. This is not the final model implementation. Under the canonical gate register, E0-MIN and G2 must pass before G3 execution; sampler implementation additionally waits for G1 and G3. E0-FINAL is required later for final resource evidence.
+The package is intentionally dependency-free at this early stage so the small contract tests can run on the local machine and in a clean Colab Python runtime. This is not the final model implementation. E0-MIN, G1, and G2 now pass, so G3 shared evaluator/baseline execution may begin. Sampler implementation still waits for G3. E0-FINAL is required later for final resource evidence.
 
 ## Current scope
 
@@ -27,12 +27,12 @@ The scaffold currently encodes GRAPES-informed reference contracts from `02_prot
 |---|---|
 | Semantic contracts | `SCAFFOLDED` |
 | Toy correctness tests | `IMPLEMENTED AND EXECUTED: 13/13 PASS ON CPU` |
-| Amazon acquisition/preprocessing | `G2-C/G2-D NOTEBOOK IMPLEMENTED AND TOY-EXECUTED; FULL BABY RUN OPEN` |
+| Amazon acquisition/preprocessing | `FULL BABY G2-C/G2-D EXECUTED, READ BACK, AND PASSED` |
 | Amazon dataset audit | `PORTFOLIO AUDIT EXECUTED; BABY G2-A/G2-B PASS` |
 | PyTorch/PyG recommender | `NOT STARTED` |
 | GRAPES-informed learned reference variants | `NOT STARTED` |
 | Colab launcher | `THIN SKELETON` |
-| Environment lock | `OPEN` |
+| Environment lock | `E0-MIN PASS; E0-FINAL OPEN` |
 | Recommendation metrics and resource results | `NOT STARTED` |
 
 ## Layout
@@ -69,16 +69,16 @@ From the `06_code` directory:
 python -m unittest discover -s tests -v
 ```
 
-The command currently runs 13 pure-Python tests: ten reference-contract tests, two audit tests, and one end-to-end toy G2-C/G2-D notebook test. The result must not be reported as a validated PyTorch/PyG implementation, a full Baby preprocessing execution, or an end-to-end model reproduction.
+The command currently runs 13 pure-Python tests: ten reference-contract tests, two audit tests, and one end-to-end toy G2-C/G2-D notebook test. Full Baby preprocessing has separately executed and is mirrored in `results/baby_p4_g2c_manifest.json`; neither source is a validated PyTorch/PyG model or recommender result.
 
 ## Planned next implementation steps
 
-1. Run all cells in `02_baby_p4_temporal_graph_vn.ipynb` or `_en.ipynb` on Drive and read back `baby_p4_g2c_manifest.json` plus its five compressed artifacts.
-2. Verify reconciliation, candidate invariants, artifact hashes, graph/component/OOV statistics, and bounded resource measurements; then accept or revise `t1`/`t2` and decide G2-C/G2-D.
-3. Confirm the rerunnable E0-MIN Python/environment record before G3; retain a separate final PyTorch/PyG/CUDA lock for profiling.
-4. Use the reviewed frozen artifacts as the shared data interface; do not reconstruct IDs or graph statistics from validation/test data.
-5. After G2 and E0-MIN pass, implement the shared exact evaluator and simplest baselines under G3.
-6. Add matched sampling controls and the GRAPES-informed reference only under the canonical gate dependencies; the project-developed sampler still waits for G1–G3.
+1. Implement the G3 shared exact evaluator and simplest sanity baselines.
+2. Add the full-graph LightGCN reference and matched uniform/degree-aware controls.
+3. Use the reviewed frozen artifacts as the shared data interface; do not reconstruct IDs or graph statistics from validation/test data.
+4. Record the model environment separately from the completed bounded CPU/Colab E0-MIN record.
+5. Freeze the final PyTorch/PyG/CUDA profiling environment after the target GPU is confirmed.
+6. Apply the G1 validation-only method-selection rule only after G3 passes.
 
 ## Source governance
 

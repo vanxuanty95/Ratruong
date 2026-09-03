@@ -2,8 +2,8 @@
 
 > Canonical English continuity file for the Master's thesis project. Read this file and its synchronized Vietnamese counterpart at the beginning of every new session. Update both whenever a research decision, verified result, open question, or working rule changes.
 
-**Last updated:** 2026-08-30
-**Revision:** 21 — Gate-driven research structure reset
+**Last updated:** 2026-09-03
+**Revision:** 23 — G2-D environment completion verified; G2 passed
 **User-facing discussion:** Vietnamese by default  
 **Analytical working language:** English  
 **Persistent artifact language:** Every language-bearing output must have a synchronized English version and Vietnamese version. English filenames end in `_en` and Vietnamese filenames end in `_vn`, immediately before the file extension.
@@ -12,6 +12,7 @@
 
 - **Phase 2 research plan:** [`00_project/PHASE2_RESEARCH_PLAN_en.md`](./00_project/PHASE2_RESEARCH_PLAN_en.md) and its synchronized Vietnamese counterpart. This is the single source of truth for the 12-week sequence, gates, and dependencies.
 - **Dataset portfolio and protocol candidates:** [`00_project/DATASET_PORTFOLIO_AND_ANALYSIS_PROTOCOL_en.md`](./00_project/DATASET_PORTFOLIO_AND_ANALYSIS_PROTOCOL_en.md).
+- **G1 research-design decision:** [`00_project/G1_RESEARCH_DESIGN_en.md`](./00_project/G1_RESEARCH_DESIGN_en.md).
 - **Cumulative thesis report:** [`04_thesis/THESIS_REPORT_en.md`](./04_thesis/THESIS_REPORT_en.md).
 - **Cumulative defense deck:** [`05_slides/THESIS_PRESENTATION_en.pptx`](./05_slides/THESIS_PRESENTATION_en.pptx).
 - **Runnable source and Colab guidance:** [`06_code/README_en.md`](./06_code/README_en.md).
@@ -265,7 +266,7 @@ Unless a later decision explicitly changes it, use this order:
 - The exact Phase 1 code commit is not recoverable from the current artifacts; its unversioned local snapshot is preserved only by a recorded content-manifest fingerprint and is not the Phase 2 canonical source.
 - Bilingual constraint, source-version, literature-matrix, and draft recommendation-specification artifacts now exist under `00_project`, `01_literature`, and `02_protocol`.
 - The recommendation specification marks D1–D11 as `REFERENCE-SPECIFIED` for the GRAPES-informed reference design. These decisions do not select or close the thesis method.
-- Canonical G1 is `IN_PROGRESS` for closest-work positioning, research-design rationale, matched comparison, and a predeclared method-selection rule. Environment execution is tracked separately as E0-MIN/E0-FINAL.
+- Canonical G1 is `PASS` as of 2026-09-03; the frozen rationale, closest-work boundary, matched comparison, and predeclared selection/no-selection rule are in [`G1_RESEARCH_DESIGN_en.md`](./00_project/G1_RESEARCH_DESIGN_en.md). Environment execution remains separate as E0-MIN/E0-FINAL.
 - The current local machine is an Apple M4 Mac mini with 16 GB unified memory and no NVIDIA CUDA device. It is suitable for documentation and toy correctness tests after an environment is created, but it is not treated as the final benchmark platform.
 - User-supplied execution constraints are now recorded: 12 weeks, Python implementation, Amazon Reviews data sourced by the project, borrowable GPU capacity, Google Colab availability, and high expected thesis quality.
 - The active data proposal is Amazon-only: `All_Beauty` 0-core validates the pipeline and `Baby_Products` 0-core is the proposed primary thesis category. MovieLens is retired from the active plan.
@@ -662,3 +663,47 @@ Files created or changed in Do An:
 - **Correction:** Removed wording that treated full Home execution as an unresolved G2 prerequisite. G2 remains open for the full Baby G2-C/G2-D execution and review.
 - **Agents consulted:** None; this records and clarifies the already governed dataset roles and gate dependencies.
 - **Files changed:** paired dataset portfolio protocols, paired thesis reports, and both continuity files.
+
+### Full Baby G2-C artifact readback and gate review — 2026-09-02
+
+- **Decision or result:** Read the completed Drive manifest and listed all five generated artifacts. Accepted the Baby P4 temporal cutoffs, strict half-open tie rule, minimum degree 1, training-only mappings, explicit warm-start/OOV cohort, and full training-item candidate rule. Baby G2-C is now `PASS`.
+- **Evidence/source:** Drive manifest ID `1sOUhOCFugfATnDrzwnULcaaakRLPCyHu`, created 2026-09-02T15:24:53Z; local mirror `06_code/results/baby_p4_g2c_manifest.json`; implementation SHA-256 `18dd46ad142491891ce6d5b1c4add4a8e6e5953a22c46bd429b3732798117998`; source SHA-256 `e2a8d0498afed767ee2615db7fac549559d82490b1a73c7241b84b5e9e8c279e`. Drive byte sizes match the manifest for all five artifacts.
+- **Key findings:** 3,868,654 training edges, 2,318,308 users, 162,125 items, density `1.0293e-05`; 71.76% singleton users and 33.35% singleton items; 34,288 components with 96.50% of nodes in the largest component. Validation retains 81,871/373,776 = 21.90% warm targets; test retains 40,587/413,413 = 9.82%; all exclusion ledgers reconcile.
+- **Bounded G2-D evidence:** 100 targets, 162,125 catalog items, 16,212,500 comparisons, 16,209,544 eligible candidates, both registered invariants true, 1.098 seconds wall time, and 158.24 MiB process peak RSS. This is traversal feasibility only.
+- **Arithmetic/invariant review:** Train + validation + test equals all 4,655,843 P4 events; every warm/excluded and reason ledger reconciles; artifact row counts match graph/partition counts; component nodes equal users plus items; average prior-history removals are 29.56 per tested target.
+- **Adjudication:** Low 9.82% test retention narrows the estimand to explicitly warm-start pure-ID targets but does not invalidate the task because exclusions are transparent and 40,587 retained targets remain. G2-D does not yet pass because exact Python/platform/CPU/RAM/Colab runtime metadata are absent, so E0-MIN remains incomplete. Capture that fingerprint without rebuilding the frozen G2-C artifacts.
+- **Agents consulted:** None. The review applied the pre-registered arithmetic, leakage, cohort, candidate, and claim-boundary rules to exact executed evidence.
+- **Claims excluded:** No recommender training, NDCG/Recall, sampler comparison, final profiling, or scalability claim.
+- **Files changed:** local G2-C manifest mirror; paired canonical plans, dataset protocols, thesis reports, code READMEs, G2-C guides, traceability files, and both continuity files.
+
+### Environment-only G2-D completion cell and ten-minute supervisor briefing — 2026-09-02
+
+- **Decision or result:** Added a standalone final cell to both Baby G2-C/G2-D notebooks. The cell mounts Drive if needed, reads the accepted manifest, verifies byte size and SHA-256 for all five artifacts, captures Python/SQLite/platform/CPU/RAM/GPU/Colab/package metadata, replays the saved 100-target chunk-count traversal, checks it against the original counts, and atomically appends `g2d_environment_completion` to the manifest. It does not call the G2-C graph builder. `FORCE_REBUILD_G2C = False` now also makes a full-notebook rerun reuse the frozen manifest instead of rebuilding unless explicitly overridden.
+- **Drive synchronization:** Updated the existing English notebook ID `1rWEcvnXKlnuXpIUvP1WQwdum-yhaMwH4` and Vietnamese notebook ID `1oOfNrqsbITuMjFVysTBK-TbrB8-enqFb` in place; no duplicate Drive files were created.
+- **Supervisor communication:** Replaced the stale current briefing with a synchronized ten-minute EN/VN briefing organized by time: thesis framing, G2, dataset roles, audit, full Baby graph findings, feasibility/claim boundary, completed versus absent evidence, and next steps/questions. A short fallback script is included.
+- **Verification:** Both notebooks parse as valid JSON and every code cell compiles. The new completion cell preserves the core implementation SHA rather than claiming that it regenerated the frozen artifacts.
+- **Agents consulted:** None; this was scoped implementation and evidence communication using already reviewed findings.
+- **Next action:** In the Vietnamese or English notebook, run only the final `G2-D environment completion` cell. If using a fresh runtime, the cell mounts Drive itself. Then read back the amended manifest and decide E0-MIN/G2-D.
+- **Files changed:** paired Baby notebooks, paired supervisor briefings, and both continuity files.
+
+### G1 research-design rationale completed — 2026-09-03
+
+- **Decision or result:** Closed canonical G1 as `PASS`. The primary question isolates the sampler intervention on the frozen Baby P4 warm-start task at matched layer-wise budgets. Falsifiable hypotheses, a representative closest-work map, candidate mechanisms M0–M5, matched-comparison controls, metric interpretations, and a validation-only Pareto selection/no-selection rule are frozen before model results.
+- **Closest-work boundary:** GraphSAGE, FastGCN, AS-GCN, LADIES, Cluster-GCN, GraphSAINT, PinSage, DSKReG, data-driven GraphSAGE sampling, SubMix, and GRAPES were checked from primary papers. DSKReG prevents a broad “first learned sampler for recommendation” claim. The defensible conditional contribution is narrower: a project-owned task-conditioned sampler and controlled evidence for plain implicit bipartite recommendation under exact full-catalog ranking and matched resource measurement.
+- **Method governance:** Uniform and degree-aware sampling are mandatory matched controls. Full-graph LightGCN is an unmatched backbone reference. G1 does not select or implement the final sampler; selection waits for G2, E0-MIN, and G3. Development validation only may advance a candidate; test results cannot trigger method replacement. If no learned candidate enters the matched-budget Pareto set and improves at least one axis over both static controls, the rule selects no learned method and records a negative finding.
+- **Evidence/source:** Paired G1 decision record; expanded paired literature matrix L-009–L-016; primary-paper URLs recorded in both. No model result, performance improvement, or novelty priority is claimed.
+- **Agents consulted:** No new agents. The main review triangulated independent primary publications; supervisor/external review remains separate from gate evidence.
+- **Files created or changed:** paired G1 decision records, paired canonical plans, paired literature matrices, paired thesis reports, paired supervisor briefings, and both continuity files.
+- **Next action:** The user will complete G2-D later. When G2/E0-MIN close, implement G3 shared evaluator, sanity baselines, full-graph LightGCN reference, and matched uniform/degree-aware controls; only then apply the frozen G1 rule.
+
+### Amended Baby P4 manifest readback; G2 and E0-MIN closed — 2026-09-03
+
+- **Decision or result:** Retrieved the updated `baby_p4_g2c_manifest.json` from the existing Drive file ID `1sOUhOCFugfATnDrzwnULcaaakRLPCyHu`, modified at 2026-09-02T23:53:08.039Z. The new environment-completion evidence satisfies G2-D and E0-MIN, so Baby G2-A/G2-B/G2-C/G2-D and Dataset Gate G2 now `PASS`.
+- **Artifact continuity:** All five artifact byte sizes and SHA-256 values match the accepted manifest: item/user mappings, training edges, validation targets, and test targets. Graph counts, partitions, cutoffs, and hashes are unchanged. The manifest creation timestamp and bounded traversal time changed because the notebook path was rerun; the evidence does not justify reconstructing or changing the accepted graph.
+- **Environment evidence:** CPython 3.13.15, Linux 6.6.122 x86_64 with glibc 2.35, Intel Xeon 2.20 GHz, 2 logical CPUs, 12,975.53 MiB RAM, no GPU, Google Colab 1.0.0, ipykernel 6.17.1, and SQLite 3.37.2. Colab release tag and completion revision are retained in the manifest.
+- **Bounded replay:** 100 targets, 162,125 catalog items, 16,212,500 comparisons, and 16,209,544 eligible candidates. The four replay checks—target count, comparison count, eligible count, and target-not-in-prior-history—match the original evidence. The original traversal recorded 1.667 seconds and 158.24 MiB process peak RSS; the separate count-only replay recorded 0.00387 seconds. These timings must not be compared as equivalent workloads.
+- **Claim boundary:** This closes a reproducible bounded CPU data/evaluator path only. It provides no Recall/NDCG, model comparison, GPU profile, or scalability evidence; E0-FINAL remains open.
+- **Supervisor communication:** The bilingual ten-minute briefing now includes a dedicated G1 explanation, the completed G2-D decision, and a compact G0–G6 map with purpose, exit evidence, dependency, and current status. It explains the narrow novelty boundary, hypotheses, matched controls, metrics, Pareto selection/no-selection rule, and next G3 work.
+- **Agents consulted:** None; this was exact Drive readback, invariant review, and synchronized evidence propagation.
+- **Files changed:** local manifest mirror; paired plans, dataset protocols, thesis reports, supervisor briefings, code READMEs, G2-C guides, traceability records, and both continuity files.
+- **Next action:** Begin G3 with the shared exact evaluator, MostPop/BPR sanity baselines, full-graph LightGCN reference, and matched uniform/degree-aware sampling controls.

@@ -128,4 +128,4 @@ Khi paper và code không khớp, ghi discrepancy, thiết kế minimal falsific
 - Official code reference: `PINNED`.
 - Exact Phase 1 executed commit: `UNKNOWN` và không thể khôi phục từ artifact hiện tại.
 - Phase 2 environment: `OPEN`.
-- G1 chuẩn vẫn `IN_PROGRESS` cho closest-work positioning, rationale và quy tắc chọn phương pháp đăng ký trước; xem [kế hoạch chuẩn](../00_project/PHASE2_RESEARCH_PLAN_vn.md). Environment readiness được theo dõi riêng bằng E0.
+- G1 chuẩn đã `PASS` ngày 2026-09-03; xem [biên bản thiết kế nghiên cứu G1](../00_project/G1_RESEARCH_DESIGN_vn.md) và [kế hoạch chuẩn](../00_project/PHASE2_RESEARCH_PLAN_vn.md). Environment readiness được theo dõi riêng bằng E0.

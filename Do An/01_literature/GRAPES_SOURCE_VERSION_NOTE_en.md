@@ -128,4 +128,4 @@ When paper and code disagree, record the discrepancy, design a minimal falsifica
 - Official code reference: `PINNED`.
 - Exact Phase 1 executed commit: `UNKNOWN` and not recoverable from current artifacts.
 - Phase 2 environment: `OPEN`.
-- Canonical G1 remains `IN_PROGRESS` for closest-work positioning, rationale, and the predeclared method-selection rule; see the [canonical plan](../00_project/PHASE2_RESEARCH_PLAN_en.md). Environment readiness is tracked separately as E0.
+- Canonical G1 is `PASS` as of 2026-09-03; see the frozen [G1 research-design record](../00_project/G1_RESEARCH_DESIGN_en.md) and [canonical plan](../00_project/PHASE2_RESEARCH_PLAN_en.md). Environment readiness is tracked separately as E0.

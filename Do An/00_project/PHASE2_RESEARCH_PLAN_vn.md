@@ -2,7 +2,7 @@
 
 > **Trạng thái:** Đang hiệu lực; đây là nguồn kế hoạch duy nhất của Phase 2.  
 > **Thời lượng dự án:** 12 tuần.  
-> **Cập nhật lần cuối:** 2026-08-30.
+> **Cập nhật lần cuối:** 2026-09-03.
 > **Cặp ngôn ngữ:** Bản tiếng Anh: [`PHASE2_RESEARCH_PLAN_en.md`](./PHASE2_RESEARCH_PLAN_en.md).
 
 ## 1. Mục đích và cách quản trị
@@ -27,9 +27,9 @@ Khi kế hoạch thay đổi, phải cập nhật cả hai bản ngôn ngữ và
 | Hạng mục | Trạng thái hiện tại | Ranh giới |
 |---|---|---|
 | Định hướng luận văn và các deliverable đang phát triển | Đã thiết lập | Chưa claim phương pháp cuối cùng hoặc kết quả thực nghiệm. |
-| Source scaffold và toy test | 13 pure-Python test đã pass local; path Baby G2-C/G2-D self-contained đã implement và toy-execute | Đây không phải full Baby execution, recommender PyTorch/PyG hoặc benchmark. |
-| Raw-data audit Amazon | Đã ghi preliminary raw audit | Persistent provenance và Dataset Gate G2 vẫn mở. |
-| Danh mục dataset | `Baby_Products` là primary candidate; `All_Beauty` là diagnostic; `Home_and_Kitchen` là scale stress có điều kiện | Chưa dataset nào được chốt. |
+| Source scaffold và toy test | 13 pure-Python test đã pass local; path Baby G2-C/G2-D self-contained đã implement, full-data execute và readback | Đây không phải recommender PyTorch/PyG hoặc benchmark. |
+| Amazon data và protocol | Baby G2-A đến G2-D pass; Dataset Gate G2 đã đóng | Điều này khóa primary pre-model task, không khóa sampler hoặc kết quả performance. |
+| Danh mục dataset | `Baby_Products` là primary; `All_Beauty` là diagnostic; `Home_and_Kitchen` là scale stress có điều kiện | Vai trò primary đã khóa; full Home execution vẫn thuộc conditional G5-S. |
 | Environment và compute | Có Python và Google Colab | Chưa khóa cấu hình environment/GPU cuối. |
 
 ## 4. Registry gate chuẩn và dependency
@@ -42,7 +42,7 @@ Trạng thái gate và maturity của bằng chứng là hai trục riêng. Tr�
 
 | ID | Trạng thái hiện tại | Tiêu chí thoát | Việc bị chặn |
 |---|---|---|---|
-| E0-MIN — thực thi development | `IN_PROGRESS` | Environment local/Colab được ghi version chính xác, có thể chạy lại data-audit và bounded test path | Phần thực thi G2-D và việc execute G3/G4 |
+| E0-MIN — thực thi development | `PASS` | Environment local/Colab được ghi version chính xác, có thể chạy lại data-audit và bounded test path | Phần thực thi G2-D và việc execute G3/G4 |
 | E0-FINAL — thực thi profiling cuối | `NOT_STARTED` | GPU cuối, software/CUDA lock, profiling procedure và nơi lưu output lâu dài đã được xác nhận và smoke-test | Resource claim ở G5 và representative rerun G6 |
 
 E0 không chặn literature work hoặc phần không cần thực thi của G2-A đến G2-C. Hai mức này ngăn việc chưa xác nhận GPU mượn cuối cùng làm chặn governance, literature review hoặc thiết kế protocol.
@@ -68,8 +68,8 @@ G2-D là ranh giới feasibility, không phải kết quả baseline. Có thể 
 | ID | Trạng thái | Prerequisite | Bằng chứng/khoảng trống hiện tại | Ngày quyết định | Lần review tiếp |
 |---|---|---|---|---|---|
 | G0 | `PASS` | Không | Scope, quản trị song ngữ, ranh giới bằng chứng và kế hoạch này đã được ghi. Mở lại nếu scope/title/deliverable rule thay đổi. | 2026-08-30 | Khi governance thay đổi |
-| G1 | `IN_PROGRESS` | Không; chạy song song với G2 | Có source anchor sơ bộ và GRAPES-informed reference; closest-work positioning và quy tắc chọn đăng ký trước chưa hoàn tất. | — | Sau targeted closest-work review |
-| G2 | `IN_PROGRESS` | Chỉ phần thực thi G2-D cần E0-MIN | Baby G2-A/G2-B `PASS`; full artifact G2-C đã execute và review ngày 2026-09-02. Candidate `t1`/`t2`, strict tie rule, training-only mapping, warm-start/OOV ledger và exact-candidate rule được chấp nhận nên G2-C `PASS`. G2-D traversal 100 target đã execute với hai invariant đúng, nhưng manifest thiếu exact Python/platform/hardware fingerprint; G2-D và E0-MIN vẫn trong corrective completion loop. Full scale Home vẫn là conditional G5-S. | 2026-09-02 cho G2-C | Sau khi capture environment fingerprint và readback bounded G2-D |
+| G1 | `PASS` | Không; chạy song song với G2 | RQ/estimand chính, giả thuyết bác bỏ được, bản đồ closest work đại diện, cơ chế ứng viên, matched comparison và quy tắc Pareto chỉ dùng validation để chọn/không chọn đã được khóa trong [biên bản G1](./G1_RESEARCH_DESIGN_vn.md). Điều này chưa chọn sampler cuối. | 2026-09-03 | Mở lại nếu RQ, biến can thiệp, matched control hoặc selection rule thay đổi |
+| G2 | `PASS` | Chỉ phần thực thi G2-D cần E0-MIN | Baby G2-A/G2-B/G2-C/G2-D đều pass. Drive manifest đã bổ sung xác minh hash/size của năm artifact, ghi exact CPU/Colab environment và replay bounded traversal 100 target với mọi invariant đã đăng ký đều đúng. Full scale Home vẫn là conditional G5-S. | 2026-09-03 | Chỉ mở lại nếu data byte, semantics, split, graph, cohort, candidate hoặc bounded-path contract thay đổi |
 | G3 | `NOT_STARTED` | G2 `PASS`; E0-MIN `PASS` | Chưa có baseline/evaluator/resource path end-to-end deterministic. | — | Sau khi prerequisite pass |
 | G4 | `NOT_STARTED` | G1 `PASS`; G2 `PASS`; G3 `PASS` | Chưa chọn hoặc implement sampler cuối. Toy test của reference design không thỏa gate này. | — | Sau khi prerequisite pass |
 | G5 | `NOT_STARTED` | G4 `PASS`; đã freeze experiment matrix/configuration/seed; resource claim cần E0-FINAL | Chưa có matched final experiment evidence. | — | Sau G4 readiness review |
@@ -88,7 +88,7 @@ G2-D là ranh giới feasibility, không phải kết quả baseline. Có thể 
 |---|---|---|
 | 1 | Hợp nhất scope, evidence record và điểm xuất phát của dataset audit; lập kế hoạch chính thức này. | Record G0; trạng thái và rủi ro đang mở được nêu rõ. |
 | 2 | Thực hiện Amazon provenance/audit có thể lưu lâu dài trên Colab; pre-register interaction semantics, cách xử lý duplicate, temporal split ứng viên, xử lý warm-start/OOV và negative eligibility. | Gói bằng chứng G2 sẵn sàng để review; chưa huấn luyện mô hình. |
-| 3 | Xây data pipeline chống leakage, training-only graph statistic, bounded evaluator feasibility path và simple non-GNN control; tiếp tục closest-work review G1 song song. | Quyết định G2 hoặc corrective action đã ghi; evidence package G1 sẵn sàng review. |
+| 3 | Đóng G1 và G2 từ evidence đã review; bắt đầu shared exact evaluator và simple non-GNN control. | Biên bản quyết định G1/G2; initial implementation path G3. |
 | 4 | Thiết lập GNN recommender baseline dùng chung, configuration xác định, logging và đường đo resource. | Baseline path G3 vượt sanity check cần thiết. |
 | 5 | Implement và kiểm thử các sampling control có giới hạn (ví dụ uniform và degree-aware) trong cùng task và budget. | So sánh sampling control tương ứng có thể chạy. |
 | 6 | Chỉ sau khi G1 và G3 pass, implement cơ chế lấy mẫu được chọn, không claim thành công. | Review mức sẵn sàng G4. |
@@ -118,6 +118,7 @@ Mọi artifact lâu dài có nội dung ngôn ngữ phải đồng bộ cặp `_
 
 - [Project constraints](./PHASE2_CONSTRAINTS_vn.md): constraint vận hành do người dùng cung cấp và compute assumption.
 - [Danh mục dataset và protocol phân tích](./DATASET_PORTFOLIO_AND_ANALYSIS_PROTOCOL_vn.md): vai trò dataset và các protocol candidate chi tiết.
+- [Quyết định thiết kế nghiên cứu G1](./G1_RESEARCH_DESIGN_vn.md): RQ, ranh giới closest work, họ ứng viên, matched comparison và quy tắc chọn phương pháp đã khóa.
 - [Continuity rules song ngữ](../PROJECT_CONTEXT_AND_RESEARCH_RULES_vn.md): quy tắc làm việc và log thay đổi theo ngày; file này chỉ được liên kết ở đó, không bị sao chép.
 - [Thesis report](../04_thesis/THESIS_REPORT_vn.md): narrative học thuật tích lũy.
 - [GRAPES-informed reference specification](../02_protocol/GRAPES_RECOMMENDATION_SPEC_vn.md): reference design, không phải phương pháp luận văn chính thức.

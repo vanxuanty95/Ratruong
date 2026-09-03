@@ -13,10 +13,10 @@ Bảng này ánh xạ các quyết định của reference design và các toy t
 | D9: transient positive-edge masking | `src/grapes_rec/data_protocol.py` | T23 | `TOY TEST EXECUTED` |
 | D11: full Bernoulli likelihood cho small/empty case | `src/grapes_rec/sampling.py` | T09 và edge case còn mở | `PARTIAL TOY TEST` |
 | Dataset Gate G2-A/G2-B: provenance và protocol audit | `scripts/analyze_amazon_dataset.py`; `notebooks/01_amazon_dataset_audit_vn.ipynb` | Portfolio audit đã execute và mirror | `EXECUTED; BABY G2-A/G2-B PASS` |
-| Dataset Gate G2-C/G2-D: training-only temporal graph và bounded traversal | `notebooks/02_baby_p4_temporal_graph_vn.ipynb` | `tests/test_g2c_notebook.py`: toy mapping/OOV/candidate traversal | `IMPLEMENTED; TOY EXECUTED / FULL BABY OPEN` |
+| Dataset Gate G2-C/G2-D: training-only temporal graph và bounded traversal | `notebooks/02_baby_p4_temporal_graph_vn.ipynb`; `results/baby_p4_g2c_manifest.json` | Toy contract cùng full manifest arithmetic/hash/environment/replay readback | `G2-C PASS; G2-D PASS; G2 PASS` |
 | T01–T03: target và graph ID | `src/grapes_rec/contracts.py` | T01–T03 | `TOY TEST EXECUTED` |
 | T05–T08: candidate và exact-k semantic | `src/grapes_rec/sampling.py` | T05–T08 | `TOY TEST EXECUTED` |
 
 ## Cố ý chưa có
 
-Project hiện có persistent portfolio-audit evidence và path dựng G2-C/G2-D đã toy-execute. Vẫn chưa có full Baby temporal artifact được review, cutoff decision đã freeze, model-training negative sample, PyTorch/PyG message passing, GRAPES policy training, checkpointed experiment, scored full-catalog evaluation hoặc recommendation result nào.
+Project hiện có full Baby temporal artifact đã review, G2-C decision đã freeze và bounded G2-D environment/replay record hoàn chỉnh. Vẫn chưa có model-training negative draw, PyTorch/PyG message passing, sampler policy training, checkpointed experiment, scored full-catalog evaluation hoặc recommendation result nào.

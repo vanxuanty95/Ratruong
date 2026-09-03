@@ -1,6 +1,6 @@
 # Dataset Audit and Acceptance Protocol
 
-> **Status:** `PERSISTENT RAW AUDIT EXECUTED — DATASET GATE G2 OPEN`
+> **Status:** `PERSISTENT RAW AUDIT EXECUTED — DATASET GATE G2 PASS`
 > **Recorded:** 2026-09-02
 > **Scope:** Independent Master's thesis on graph sampling for large-scale GNN recommendation.  
 > **Boundary:** This protocol governs data evidence; it does not select or validate the final sampling method.
@@ -108,4 +108,4 @@ The temporal/training-only controls are motivated by [Ji et al., *A Critical Stu
 
 ## 8. Next action
 
-Complete the remaining G2-A manifest fields; then execute the pre-registered G2-B/G2-C analysis for `Baby_Products`: quarantine the `0.0` row, compare P4/P5/all-observed without model results, audit timestamp ties, construct the training-only temporal graph, and report warm-start/OOV attrition and exact candidates. Only then run the bounded G2-D feasibility path. Do not train a final sampler or claim a benchmark at G2.
+The subsequent Baby P4 temporal graph and bounded environment replay completed these steps; G2-A through G2-D now pass. Proceed to the shared G3 evaluator/baselines without treating any G2 measurement as a model benchmark.

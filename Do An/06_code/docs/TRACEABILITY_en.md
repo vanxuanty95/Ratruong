@@ -13,10 +13,10 @@ This table maps reference-design decisions and the first executable toy tests. T
 | D9: transient positive-edge masking | `src/grapes_rec/data_protocol.py` | T23 | `TOY TEST EXECUTED` |
 | D11: full Bernoulli likelihood for small/empty cases | `src/grapes_rec/sampling.py` | T09 and edge cases pending | `PARTIAL TOY TEST` |
 | Dataset Gate G2-A/G2-B: provenance and protocol audit | `scripts/analyze_amazon_dataset.py`; `notebooks/01_amazon_dataset_audit_en.ipynb` | Portfolio audit executed and mirrored | `EXECUTED; BABY G2-A/G2-B PASS` |
-| Dataset Gate G2-C/G2-D: training-only temporal graph and bounded traversal | `notebooks/02_baby_p4_temporal_graph_en.ipynb` | `tests/test_g2c_notebook.py`: toy mapping/OOV/candidate traversal | `IMPLEMENTED; TOY EXECUTED / FULL BABY OPEN` |
+| Dataset Gate G2-C/G2-D: training-only temporal graph and bounded traversal | `notebooks/02_baby_p4_temporal_graph_en.ipynb`; `results/baby_p4_g2c_manifest.json` | Toy contract plus full manifest arithmetic/hash/environment/replay readback | `G2-C PASS; G2-D PASS; G2 PASS` |
 | T01–T03: target and graph IDs | `src/grapes_rec/contracts.py` | T01–T03 | `TOY TEST EXECUTED` |
 | T05–T08: candidate and exact-k semantics | `src/grapes_rec/sampling.py` | T05–T08 | `TOY TEST EXECUTED` |
 
 ## Intentionally absent
 
-The project includes persistent portfolio-audit evidence and a toy-executed G2-C/G2-D construction path. It does not yet include the reviewed full Baby temporal artifacts, a frozen cutoff decision, model-training negative samples, PyTorch/PyG message passing, GRAPES policy training, checkpointed experiments, scored full-catalog evaluation, or any recommendation result.
+The project includes reviewed full Baby temporal artifacts, frozen G2-C decisions, and a complete bounded G2-D environment/replay record. It does not yet include model-training negative draws, PyTorch/PyG message passing, sampler policy training, checkpointed experiments, scored full-catalog evaluation, or any recommendation result.

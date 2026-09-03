@@ -1,11 +1,11 @@
 # Baby P4 temporal graph: G2-C/G2-D execution guide
 
-The paired self-contained notebooks `02_baby_p4_temporal_graph_en.ipynb` and `_vn.ipynb` implement the next Dataset Gate step. The implementation and its toy fixture have executed; the full `Baby_Products` run and gate review remain open.
+The paired self-contained notebooks `02_baby_p4_temporal_graph_en.ipynb` and `_vn.ipynb` implement the G2-C/G2-D path. The full Baby run and environment completion executed on 2026-09-02 UTC and are mirrored in `results/baby_p4_g2c_manifest.json`. G2-C, G2-D, E0-MIN, and Dataset Gate G2 passed review on 2026-09-03.
 
 ## What the notebook does and why
 
 1. It reads the checksummed Baby 0-core file, quarantines rating `0.0`, keeps P4 positives (`4 <= rating <= 5`), and resolves repeated user-item pairs by earliest timestamp then stable source order. This preserves the interaction meaning selected in G2-B.
-2. It applies the candidate global cutoffs with strict intervals: training `< t1`, validation `[t1,t2)`, and test `>= t2`. The cutoffs remain candidates until the generated evidence is reviewed.
+2. It applies global cutoffs with strict intervals: training `< t1`, validation `[t1,t2)`, and test `>= t2`. After the 2026-09-02 readback, these cutoffs are frozen for the Baby primary task.
 3. It applies any degree filter only to training positives and creates lexicographic user/item mappings only from that filtered training graph. This prevents future validation/test activity from defining the graph or ID universe.
 4. It projects later targets into the frozen mappings. Every target is classified as warm retained, unseen-user only, unseen-item only, or both unseen; the ledger must reconcile exactly.
 5. For each retained target, it defines the candidate set as the complete frozen training-item universe minus that user's mapped P4 positives with timestamps strictly earlier than the target. Same-timestamp events are not prior history, and the target must remain present.
@@ -22,4 +22,4 @@ The paired self-contained notebooks `02_baby_p4_temporal_graph_en.ipynb` and `_v
 
 ## Run and decision boundary
 
-Open the Vietnamese or English Drive notebook and use **Run all**. Expected output is `MyDrive/Phase2_Amazon_Audit/g2c_baby_p4/baby_p4_g2c_manifest.json` plus five compressed artifacts. A successful run moves the evidence to review; G2-C/G2-D pass only after the manifest is read back, arithmetic and invariants are checked, candidate cutoffs are accepted or revised, and the environment record is judged adequate. No model comparison or headline metric may be inferred from this notebook.
+The full output is stored at `MyDrive/Phase2_Amazon_Audit/g2c_baby_p4/baby_p4_g2c_manifest.json` plus five compressed artifacts. Manifest arithmetic, hashes, environment metadata, and replay invariants were reviewed; G2-C and G2-D pass. No model comparison or headline metric may be inferred from this notebook.
