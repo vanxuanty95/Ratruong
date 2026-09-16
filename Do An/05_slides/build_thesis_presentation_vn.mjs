@@ -5,8 +5,8 @@ import { Presentation, PresentationFile } from "@oai/artifact-tool";
 
 const SKILL_DIR = "/Users/tyvan/.codex/plugins/cache/openai-primary-runtime/presentations/26.904.11930/skills/presentations";
 const workspaceDir = "/Users/tyvan/Documents/Master/Ratruong";
-const TMP_DIR = path.join(workspaceDir, "Do An/05_slides/.build-thesis-presentation-21");
-const FINAL_PPTX = path.join(workspaceDir, "Do An/05_slides/final-output/THESIS_PRESENTATION_vn_21.pptx");
+const TMP_DIR = path.join(workspaceDir, "Do An/05_slides/.build-thesis-presentation-sequenced");
+const FINAL_PPTX = path.join(workspaceDir, "Do An/05_slides/final-output/THESIS_PRESENTATION_vn_sequenced.pptx");
 const RUNTIME_PYTHON = "/Users/tyvan/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3";
 
 const { applyPresentationChartFont, finalizePresentation, makeNativeBulletParagraphs } = await import(
@@ -33,6 +33,28 @@ const C = {
   red: "#D65555",
   purple: "#7157D9",
   white: "#FFFFFF",
+};
+const TERM_LINE_BY_SLIDE = {
+  2: "Hiểu nhanh: đây là bản đồ câu chuyện; kết quả chỉ xuất hiện sau phần thiết kế và đánh giá.",
+  3: "Hiểu nhanh: pure-ID chỉ dùng ID và interaction, không có mô tả sản phẩm.",
+  4: "Hiểu nhanh: node là user hoặc item; edge là interaction; propagation là truyền embedding qua edge.",
+  5: "Hiểu nhanh: benchmark là bộ dữ liệu chuẩn; Graph-CF là collaborative filtering trên graph.",
+  6: "Hiểu nhanh: warm-start giữ user và item đã xuất hiện trong train; retention là tỷ lệ còn lại.",
+  7: "Hiểu nhanh: 0-core nghĩa là chưa lọc node ít tương tác; parent_asin là mã item.",
+  8: "Hiểu nhanh: temporal split tách theo thời gian; leakage là dùng thông tin tương lai khi train.",
+  9: "Hiểu nhanh: P4 xem rating 4 hoặc 5 là positive interaction cho implicit ranking.",
+  10: "Hiểu nhanh: degree là số cạnh của node; density là phần cạnh thật trên mọi cặp user-item có thể.",
+  11: "Hiểu nhanh: Gini cao nghĩa là interaction dồn vào ít item; head/body/tail dựa trên training degree.",
+  12: "Hiểu nhanh: OOV là user hoặc item chưa có mapping train; exact catalog xếp trên toàn bộ item hợp lệ.",
+  13: "Hiểu nhanh: NDCG thưởng target đứng sớm; Recall chỉ hỏi target có vào top-20 hay không.",
+  14: "Hiểu nhanh: coverage đo độ rộng catalog; exposure đo phân bổ slot; semantic diversity cần metadata.",
+  15: "Hiểu nhanh: sanity gate kiểm tra pipeline bằng baseline trước khi so sánh sampler.",
+  16: "Hiểu nhanh: MostPop chọn item phổ biến; BPR-MF là matrix factorization; Full dùng LightGCN không sampling.",
+  17: "Hiểu nhanh: M là method label; BPR là loss xếp positive cao hơn negative; budget là số mẫu tối đa mỗi layer.",
+  18: "Hiểu nhanh: Gumbel tạo nhiễu ngẫu nhiên khi chọn; hub là node degree cao; frontier là node ở layer trước.",
+  19: "Hiểu nhanh: seed là trạng thái ngẫu nhiên ban đầu; paired giữ cùng seed và negative draw giữa các method.",
+  20: "Hiểu nhanh: mean là trung bình seed; SD là độ dao động mẫu; ba seed chưa đủ để kết luận significance.",
+  21: "Hiểu nhanh: validation dùng để chọn quyết định; test chưa đọc nên không dùng để kết luận.",
 };
 
 const presentation = Presentation.create({ slideSize: { width: W, height: H } });
@@ -81,6 +103,8 @@ function addHeader(slide, section, title, page, source) {
   addRule(slide, 54, 661, 1172, 1.5, C.grid);
   addText(slide, source, 54, 670, 1050, 16, { fontSize: 10, color: C.lightMuted });
   const actualPage = presentation.slides.items.length;
+  const termLine = TERM_LINE_BY_SLIDE[actualPage];
+  if (termLine) addText(slide, termLine, 54, 646, 1120, 12, { fontSize: 9, color: C.lightMuted, italic: true });
   addText(slide, String(actualPage).padStart(2, "0"), 1175, 669, 50, 16, {
     fontSize: 10,
     color: C.lightMuted,
@@ -149,25 +173,23 @@ function notes(slide, lines) {
     fontSize: 44,
     bold: true,
   });
-  addText(slide, "Amazon Reviews’23 Baby_Products, temporal warm-start, pure-ID", 54, 266, 880, 30, {
+  addText(slide, "Amazon Reviews’23 Baby_Products | temporal warm-start | pure-ID", 54, 266, 880, 30, {
     fontSize: 20,
     color: C.muted,
   });
-  addRect(slide, 54, 340, 715, 52, C.paleBlue);
-  addText(slide, "KẾT LUẬN HIỆN TẠI", 70, 351, 190, 20, { fontSize: 12, bold: true, color: C.blue });
-  addText(slide, "M2 không tạo trade-off tốt hơn M1", 260, 348, 485, 27, {
-    fontSize: 21,
-    bold: true,
-  });
-  addText(slide, "3/3 validation seed: M2 thấp hơn M1 về NDCG@20 và Recall@20", 54, 432, 930, 34, {
-    fontSize: 22,
-    bold: true,
-  });
-  addText(slide, "Negative result có kiểm soát — không phải thất bại cần che giấu", 54, 477, 850, 28, {
-    fontSize: 18,
-    color: C.green,
-    bold: true,
-  });
+  addText(slide, "Mục tiêu buổi trình bày", 54, 350, 340, 22, { fontSize: 14, bold: true, color: C.blue });
+  addText(slide, "Giải thích dữ liệu, cách đo và cách lấy mẫu trước khi đọc kết quả.", 54, 384, 900, 38, { fontSize: 26, bold: true });
+  const coverBlocks = [
+    ["Dữ liệu", "Rating theo thời gian trên user-item graph"],
+    ["Câu hỏi", "Sampler thay đổi context có ích cho ranking không?"],
+    ["Bằng chứng", "Validation đã khóa; test target chưa đọc"],
+  ];
+  for (let i = 0; i < coverBlocks.length; i += 1) {
+    const x = 54 + i * 386;
+    addText(slide, coverBlocks[i][0].toUpperCase(), x, 472, 315, 18, { fontSize: 12, bold: true, color: [C.blue, C.green, C.orange][i] });
+    addText(slide, coverBlocks[i][1], x, 502, 330, 52, { fontSize: 17, bold: true });
+    if (i < 2) addRule(slide, x + 350, 465, 1, 98, C.grid);
+  }
   addText(slide, "16/09/2026", 54, 592, 200, 22, { fontSize: 14, color: C.muted });
   addRule(slide, 54, 661, 1172, 1.5, C.grid);
   addText(slide, "Nguồn: Amazon Reviews’23 + artifact dự án đã audit", 54, 670, 1020, 16, {
@@ -178,16 +200,42 @@ function notes(slide, lines) {
   notes(slide, [
     "Mục tiêu trình bày: tổng hợp toàn bộ chuỗi bằng chứng từ dữ liệu đến quyết định nghiên cứu.",
     "Nguồn chính: https://amazon-reviews-2023.github.io/",
-    "Nguồn kết quả: Do An/06_code/results/data_story/data_story_summary.json",
-    "Nguồn paired: Do An/06_code/results/paired_sampling_validation/paired_sampling_validation_summary.json",
+    "Slide mở đầu chỉ giới thiệu phạm vi và lộ trình trình bày, không nêu kết quả.",
   ]);
 }
 
-// 02 — executive synthesis
-// 02 — research question and boundary
+// 02 — research roadmap
 {
   const slide = presentation.slides.add();
-  addHeader(slide, "00 / CÂU HỎI", "Câu hỏi nghiên cứu và phạm vi kết luận", 2, "Nguồn: PHASE2_RESEARCH_PLAN_vn.md; BPR; LightGCN");
+  addHeader(slide, "00 / BẢN ĐỒ", "Mạch trình bày đi từ dữ liệu đến câu trả lời", 2, "Nguồn: research plan; data story; validation protocol");
+  const xs = [54, 447, 840];
+  const widths = [330, 330, 386];
+  const headings = ["DỮ LIỆU", "CẤU TRÚC", "THỰC NGHIỆM"];
+  const colors = [C.blue, C.green, C.orange];
+  const bodies = [
+    ["Nguồn chính thức", "Schema và P4", "Temporal split", "Population được đánh giá"],
+    ["Sparsity và singleton", "Long tail", "Head, body, tail", "Warm-start retention"],
+    ["Metric và baseline", "LightGCN + BPR", "M0, M1, M2", "Paired validation"],
+  ];
+  for (let i = 0; i < 3; i += 1) {
+    addText(slide, headings[i], xs[i], 159, widths[i], 24, { fontSize: 14, bold: true, color: colors[i] });
+    addText(slide, bodies[i].join("\n"), xs[i], 201, widths[i], 174, { fontSize: 22, bold: i === 2 });
+    if (i < 2) addRule(slide, xs[i] + widths[i] + 31, 150, 2, 280, C.grid);
+  }
+  addRect(slide, 54, 458, 1172, 95, C.light);
+  addText(slide, "CÁCH ĐỌC DECK", 72, 475, 180, 20, { fontSize: 12, bold: true, color: C.green });
+  addText(slide, "Mỗi phần trả lời một câu: dữ liệu có đáng tin không, metric đo gì, sampler thay đổi gì, rồi kết quả nói được gì.", 72, 505, 1125, 29, { fontSize: 21, bold: true });
+  addBlackStrip(slide, "Kết quả và kết luận chỉ xuất hiện sau khi đã có ngữ cảnh để đọc chúng");
+  notes(slide, [
+    "Slide này chỉ dẫn đường, không công bố kết quả.",
+    "Các phần sau theo thứ tự: dữ liệu, metric, thiết kế, baseline, sampler, result, conclusion.",
+  ]);
+}
+
+// 03 — research question and boundary
+{
+  const slide = presentation.slides.add();
+  addHeader(slide, "00 / CÂU HỎI", "Câu hỏi nghiên cứu và phạm vi", 2, "Nguồn: PHASE2_RESEARCH_PLAN_vn.md; BPR; LightGCN");
   addText(slide, "CÂU HỎI", 54, 148, 200, 20, { fontSize: 12, bold: true, color: C.blue });
   addText(slide, "Khi giữ nguyên mô hình, dữ liệu, budget và evaluator, cách lấy context nào tạo ranking tốt hơn với chi phí chấp nhận được?", 54, 181, 1080, 70, {
     fontSize: 28, bold: true,
@@ -302,38 +350,6 @@ function notes(slide, lines) {
     "All_Beauty P4 validation warm retention: 3.982%. Baby validation warm retention: 21.9038%.",
     "Amazon Reviews’23: https://amazon-reviews-2023.github.io/main.html",
     "Project evidence: Do An/06_code/results/data_story/data_story_summary.json and audit artifacts.",
-  ]);
-}
-
-// 05 — executive synthesis
-{
-  const slide = presentation.slides.add();
-  addHeader(slide, "00 / TỔNG HỢP", "Câu chuyện nghiên cứu trong một phút", 2, "Nguồn: data story + baseline summaries + paired aggregate");
-  const xs = [54, 447, 840];
-  const widths = [330, 330, 386];
-  const headings = ["DỮ LIỆU", "CAN THIỆP", "KẾT QUẢ"];
-  const colors = [C.blue, C.green, C.orange];
-  const bodies = [
-    ["5,95M raw review", "4,66M positive P4", "3,87M training edge", "2,32M user / 162k item"],
-    ["Giữ cố định graph, split,", "LightGCN, BPR, budget,", "seed, evaluator, hardware;", "chỉ thay sampler M0–M2"],
-    ["M2 < M1 ở 3/3 seed", "NDCG −2,47% theo mean", "Recall −2,77% theo mean", "tail hit = 0 cho mọi method"],
-  ];
-  for (let i = 0; i < 3; i += 1) {
-    addText(slide, headings[i], xs[i], 159, widths[i], 24, { fontSize: 14, bold: true, color: colors[i] });
-    addText(slide, bodies[i].join("\n"), xs[i], 201, widths[i], 174, { fontSize: 22, bold: i === 2 });
-    if (i < 2) addRule(slide, xs[i] + widths[i] + 31, 150, 2, 280, C.grid);
-  }
-  addRect(slide, 54, 458, 1172, 95, C.light);
-  addText(slide, "QUYẾT ĐỊNH", 72, 475, 150, 20, { fontSize: 12, bold: true, color: C.green });
-  addText(slide, "Giữ M2 như negative result. Chưa đọc test target và không mở thêm sampler sau khi đã thấy validation.", 72, 505, 1125, 29, {
-    fontSize: 21,
-    bold: true,
-  });
-  addBlackStrip(slide, "Đóng góp nằm ở chuỗi đối chứng và failure analysis — không nằm ở việc ‘phải thắng’");
-  notes(slide, [
-    "Các con số dữ liệu lấy từ data_story_summary.json.",
-    "Các con số paired lấy từ paired_sampling_validation_summary.json; M2−M1 mean: NDCG −2.473%, Recall −2.768%.",
-    "Không diễn giải ba seed như kiểm định ý nghĩa thống kê hoặc chứng minh phổ quát.",
   ]);
 }
 
@@ -1004,8 +1020,8 @@ await (await PresentationFile.exportPptx(presentation)).save(candidatePath);
 
 const requirements = {
   explicitTotalSlideCount: 21,
-  requiredNativeTableOwnerSlides: [4, 5, 7, 15, 18, 21],
-  requiredNativeChartOwnerSlides: [5, 9, 10, 11, 12, 16, 19, 20],
+  requiredNativeTableOwnerSlides: [5, 6, 7, 15, 18, 21],
+  requiredNativeChartOwnerSlides: [6, 9, 10, 11, 12, 16, 19, 20],
   materializeLiteralChartWorkbooks: true,
 };
 const fontPolicy = { basis: "design", families: [FONT] };
