@@ -61,7 +61,7 @@ The full table (including the validation partition) and its interpretation bound
 | Item singletons | 47,947 (42.59%) | 68,888 (31.65%) |
 | Binary-edge density | 9.7545e-06 | 8.0783e-06 |
 
-The initial profile is highly sparse and user-singleton dominated. `Baby_Products` has substantially more interaction mass and item degree, but it is still sparse at the user level. This supports its role as a stress-test candidate, not an automatic claim of suitability.
+The initial profile is highly sparse and user-singleton dominated. `Baby_Products` has substantially more interaction mass and item degree, but it is still sparse at the user level. The later portfolio decision selected Baby for the controlled benchmark; this audit alone did not establish suitability.
 
 ## 4. Rating distribution
 
@@ -115,11 +115,11 @@ This diagnostic does not freeze the negative policy. Negative validity must be c
 ## 7. Conclusions and open decisions
 
 1. `All_Beauty` is suitable for pipeline and schema validation, but its singleton rate and candidate temporal OOV make it unsuitable as primary recommendation evidence under the current warm-start design.
-2. `Baby_Products` is the primary benchmark candidate; its exact duplicate-pair audit is closed (`VERIFIED 0`) and P4 (`rating >= 4`) is the selected primary interaction policy. Warm-start OOV remains high and must be reconciled in G2-C.
+2. `Baby_Products` is the selected primary benchmark. Its exact duplicate-pair audit is closed (`VERIFIED 0`), P4 (`rating >= 4`) is the primary interaction policy, and the later training-only warm-start protocol reconciled the audit diagnostic.
 3. The official absolute split cannot be adopted as the primary warm-start split without a documented protocol revision.
 4. P4, quarantine of the single `rating = 0.0` row, the deterministic duplicate fallback, and the negative rule are recorded decisions. Subsequent full temporal-graph and bounded-environment evidence closed Baby G2-A through G2-D on 2026-09-03; see the G2-C/G2-D execution guide and manifest.
 5. `Home_and_Kitchen` provenance is executed: 1,420,416,432 compressed bytes, 66,623,880 rows, valid four-column schema, and SHA-256 `9be4e2dc8b3dc513c02521644b2ae55f722b2941767e539dcfe518f6bdd4f70b`. Full protocol and scale stress remain unexecuted.
-6. No model was trained and no recommendation-quality, memory, runtime, or scalability claim follows from this audit.
+6. This audit does not itself establish model quality, runtime, memory, or scalability. Those claims, where qualified, come from the separate M0/M1/M2 validation artifacts.
 
 ## 8. Evidence sources
 

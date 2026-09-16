@@ -1,6 +1,8 @@
 # GRAPES-Informed Reference-Design Traceability
 
-This table maps reference-design decisions and the first executable toy tests. The decisions and tests are verification candidates, not a lock on the final thesis method. A test listed here is not evidence that the future PyTorch/PyG implementation is correct; it is an initial contract boundary for a possible implementation.
+> **Current status, 2026-09-16:** this is a historical traceability record for the GRAPES-informed reference design. The completed empirical work is the fixed M0/M1/M2 comparison described in [`../../04_thesis/THESIS_REPORT_en.md`](../../04_thesis/THESIS_REPORT_en.md). No RL, GFlowNet, or learned sampler policy was implemented or evaluated.
+
+This table maps reference-design decisions and the first executable toy tests. The decisions and tests are verification candidates, not a lock on the final thesis method. A test listed here is not evidence that a PyTorch/PyG implementation is correct; it is an initial contract boundary for a possible implementation.
 
 | Decision / contract | Module | Initial test coverage | Maturity |
 |---|---|---|---|
@@ -19,4 +21,4 @@ This table maps reference-design decisions and the first executable toy tests. T
 
 ## Intentionally absent
 
-The project includes reviewed full Baby temporal artifacts, frozen G2-C decisions, and a complete bounded G2-D environment/replay record. It does not yet include model-training negative draws, PyTorch/PyG message passing, sampler policy training, checkpointed experiments, scored full-catalog evaluation, or any recommendation result.
+The project includes reviewed Baby temporal artifacts and a complete bounded G2-D environment/replay record. It subsequently completed fixed-budget BPR/LightGCN baseline checks and the paired M0/M1/M2 validation with exact full-catalog validation ranking. This traceability table itself does not provide evidence for an RL, GFlowNet, or learned-policy implementation.

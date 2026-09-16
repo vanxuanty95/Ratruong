@@ -4,6 +4,8 @@
 > **Recorded:** 2026-08-26  
 > **Role:** candidate mechanisms and verification ideas informed by GRAPES; not the final thesis method.
 
+> **Current note, 2026-09-16:** the completed empirical work compares the fixed heuristics M0, M1, and M2. It did not implement, pair, or evaluate an RL, GFlowNet, or learned sampler policy. Read the current method and result account in [`../04_thesis/THESIS_REPORT_en.md`](../04_thesis/THESIS_REPORT_en.md).
+
 ## 1. Purpose and source governance
 
 This document records a candidate technical reference design. It may guide an initial baseline or ablation path, but the final thesis method must be defined and validated from the thesis research problem, literature gap, data constraints, and controlled experiments. Historical `FROZEN`, `RETAINED`, and `REPLACED` labels below are not binding on the final method unless explicitly re-adopted with rationale and verification.

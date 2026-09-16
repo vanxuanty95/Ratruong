@@ -10,7 +10,7 @@
 | Role | Dataset | Status |
 |---|---|---|
 | Development diagnostic | Amazon Reviews'23 `All_Beauty`, pure-ID 0-core | Retained for preprocessing and sampler diagnostics only; not primary evidence |
-| Primary benchmark candidate | Amazon Reviews'23 `Baby_Products`, pure-ID 0-core | Must pass G2-A through G2-D before it is frozen |
+| Primary benchmark | Amazon Reviews'23 `Baby_Products`, pure-ID 0-core | G2-A through G2-D completed; controlled M0/M1/M2 validation used this graph |
 | Conditional scale stress | Amazon Reviews'23 `Home_and_Kitchen` | One bounded stress configuration is required only if the thesis retains a large-scale claim |
 | Optional validation | MovieLens 25M and Yelp Open Dataset | May be added only after the Amazon core is complete |
 
@@ -25,7 +25,7 @@ The project re-executed the exact streaming raw audit on official Amazon rating-
 | `All_Beauty` | 693,929 valid rows; 631,986 users; 112,565 items; zero exact duplicate user–item rows; 93.22% singleton users; 448 rows participating in timestamp ties | Complete G2-A metadata and derived strict protocol |
 | `Baby_Products` | 5,953,891 valid parsed rows; 3,386,206 users; 217,654 items; zero exact duplicate user–item rows; 70.01% singleton users; one rating `0.0` | Exact timestamp-tie audit, complete G2-A metadata, and derived strict protocol |
 
-The persistent hashes are `54b894e68ad965aa73cdb80d8695c1ed37679c46f38b6f97b21ab0fb585aab24` for `All_Beauty` and `e2a8d0498afed767ee2615db7fac549559d82490b1a73c7241b84b5e9e8c279e` for `Baby_Products`. The raw schema was verified as `user_id`, `parent_asin`, `rating`, `timestamp`. The earlier [`DATASET_AUDIT_RESULTS_en.md`](./DATASET_AUDIT_RESULTS_en.md) must be synchronized before it is treated as the current numerical record. Persistent raw evidence exists, but the final transformed benchmark does not.
+The persistent hashes are `54b894e68ad965aa73cdb80d8695c1ed37679c46f38b6f97b21ab0fb585aab24` for `All_Beauty` and `e2a8d0498afed767ee2615db7fac549559d82490b1a73c7241b84b5e9e8c279e` for `Baby_Products`. The raw schema was verified as `user_id`, `parent_asin`, `rating`, `timestamp`. [`DATASET_AUDIT_RESULTS_en.md`](./DATASET_AUDIT_RESULTS_en.md) retains the exact raw-audit record; the later transformed benchmark and model results live in the portfolio, thesis report, and result artifacts.
 
 The provider absolute split was audited only as a diagnostic. Its high OOV coverage means it cannot be silently adopted as the primary strict temporal warm-start task.
 
@@ -96,11 +96,11 @@ The corrected rerun completed all three governed jobs and wrote the portfolio in
 
 ## 6. What this protocol does not establish
 
-- It does not freeze `Baby_Products` as the final benchmark.
+- The raw audit alone does not justify the portfolio decision to select `Baby_Products`.
 - It does not establish that all Amazon ratings are implicit positives.
 - It does not establish a cold-start capability for a pure-ID model.
 - It does not establish model quality, efficiency, scalability, novelty, or superiority.
-- It does not select GRAPES, LightGCN, BPR, RL, or GFlowNet as the final thesis method.
+- It does not establish an RL, GFlowNet, or learned-sampler method. The completed M0/M1/M2 comparison uses fixed heuristics.
 
 ## 7. Scientific anchors
 

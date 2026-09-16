@@ -1,130 +1,67 @@
-# Phase 2 Canonical Research Plan
+# Research plan and actual timeline
 
-> **Status:** Active, single source of truth for the Phase 2 research plan.  
-> **Project duration:** 12 weeks.  
-> **Last updated:** 2026-09-03.
-> **Language pair:** Vietnamese counterpart: [`PHASE2_RESEARCH_PLAN_vn.md`](./PHASE2_RESEARCH_PLAN_vn.md).
+> Status: paired validation is complete and the sampler-design branch ends at M2.
 
-## 1. Purpose and governance
+## Research question
 
-This file is the only canonical plan for Phase 2. It defines the research sequence, decision gates, dependencies, and the 12-week schedule. Other project records must link here rather than reproduce the plan.
+At the same data, LightGCN backbone, sampling budget, optimization steps, seeds, evaluator, and GPU, can a frontier-conditioned sampler provide a better exact full-catalog NDCG@20 versus computation-cost trade-off than uniform and degree-aware sampling?
 
-It is not a weekly thesis report. The thesis report, defense slides, and Colab/Python source are cumulative deliverables; they are updated in place when verified evidence changes their content.
+## Timeline
 
-When this plan changes, update both language versions and add a concise pointer/change record to the bilingual continuity rules. Do not raise a scientific maturity label without evidence.
-
-## 2. Thesis scope and fixed boundaries
-
-- **Working thesis title:** *Development of a Graph Sampling Method for Large-Scale Recommender Systems Using Graph Neural Networks (GNNs).* 
-- **Phase relationship:** Phase 2 is an independent Master's thesis. Phase 1 is read-only historical topic exploration and a GRAPES study.
-- **Research objective:** Develop and evaluate a graph-sampling method for GNN recommender systems under controlled ranking-quality and computational-cost evaluation.
-- **GRAPES role:** Scientific foundation, comparator, and source of candidate mechanisms only; it is not the preselected final method.
-- **Open items:** The final sampler, final model configuration, interaction semantics, dataset/protocol closure, and all effectiveness/scalability results remain open.
-- **Out of scope:** A claim that the thesis merely transfers GRAPES to recommendation, a claim of superiority before results, and any hidden use of validation/test information in the training graph.
-
-## 3. Current verified starting position
-
-| Area | Current status | Boundary |
-|---|---|---|
-| Thesis framing and living deliverables | Established | No final method or empirical result is claimed. |
-| Source scaffold and toy tests | 13 pure-Python tests passed locally; the self-contained Baby G2-C/G2-D path is implemented, full-data executed, and read back | This is not a PyTorch/PyG recommender implementation or benchmark. |
-| Amazon data and protocol | Baby G2-A through G2-D pass; Dataset Gate G2 is closed | This freezes the primary pre-model task, not a sampler or performance result. |
-| Dataset portfolio | `Baby_Products` primary; `All_Beauty` diagnostic; `Home_and_Kitchen` conditional scale stress | Primary role is frozen; full Home execution remains conditional G5-S. |
-| Environment and compute | Python and Google Colab are available | Final environment/GPU configuration is not locked. |
-
-## 4. Canonical gate register and dependencies
-
-This bilingual plan pair is the **only authoritative gate register**. Other artifacts may link to a gate or state a short snapshot, but must not redefine gate identity, status, exit criteria, or dependencies.
-
-Gate status and evidence maturity are separate. Gate status uses `NOT_STARTED`, `IN_PROGRESS`, `READY_FOR_REVIEW`, `PASS`, `CORRECTIVE_LOOP`, `STOP`, `REOPENED`, or `WAIVED`. Evidence maturity continues to use `planned -> specified -> implemented -> executed -> validated`; a gate `PASS` does not imply that every linked artifact is validated.
-
-### 4.1 Executable-environment prerequisites
-
-| ID | Current status | Exit criterion | Blocks |
+| Stage | Question | Evidence | Outcome |
 |---|---|---|---|
-| E0-MIN — development execution | `PASS` | A recorded, rerunnable local/Colab environment can execute the data-audit and bounded test path with exact versions captured | G2-D executable feasibility work and G3/G4 execution |
-| E0-FINAL — final profiling execution | `NOT_STARTED` | Final GPU class, software/CUDA lock, profiling procedure, and persistent output location are confirmed and smoke-tested | Resource claims in G5 and the representative G6 rerun |
+| Lecturer feedback, 03/09 | What are the data scale, noise, imbalance, and long-tail properties? | Exact audit and EDA | Complete |
+| Dataset selection | Why Baby Products rather than another Amazon or public benchmark? | Portfolio audit and benchmark comparison | Complete at design level |
+| Task construction | How can future targets be evaluated without leakage? | Temporal graph and warm-start ledger | Complete |
+| Sanity baselines | Do training and exact ranking behave coherently? | MostPop, BPR-MF, Full LightGCN | Complete |
+| M0 | What does neutral sampling change? | Uniform smoke run | Complete |
+| M1 | Does degree priority improve the matched control? | M1 minus M0 | Complete |
+| M2 | Does frontier relevance with a hub penalty improve M1? | M2 minus M0/M1 | No |
+| Paired validation | Does the conclusion persist across seeds? | s0, s1, s2 | M2 below M1 on all seeds |
+| Consolidation | What conclusion can be defended without exceeding evidence? | Canonical documents and deck | In progress |
 
-E0 does not block literature work or the non-executable parts of G2-A through G2-C. The two levels prevent uncertainty about the final borrowed GPU from blocking governance, literature review, or protocol design.
+## Dataset decision
 
-### 4.2 Gate definitions
+Established non-Amazon benchmarks include MovieLens 25M, Gowalla, Yelp2018, MIND, and KuaiRec. MovieLens supports metadata and semantic analysis; Gowalla and Yelp2018 are closest to LightGCN graph-CF evaluation; MIND supports content-aware news recommendation; KuaiRec supports exposure-bias research. They are considered benchmarks, not experiments completed by this project.
 
-| Gate | Decision required | Evidence needed before closure | Blocks until closed |
-|---|---|---|---|
-| G0 — Governance | Scope, bilingual artifacts, and evidence boundaries | This canonical plan and synchronized continuity pointers | None; completed for planning purposes |
-| G1 — Research-design rationale | Candidate sampling mechanisms and controlled comparison design | Primary RQ and falsifiable hypotheses; closest-work positioning; candidate mechanisms; matched-comparison design; predeclared method-selection rule | Selection and implementation of the proposed sampler |
-| G2 — Dataset and evaluation protocol | Primary dataset and leakage-safe evaluation protocol | G2-A provenance; G2-B interaction/duplicate/negative semantics; G2-C temporal, warm-start/OOV, and exact-candidate rules; G2-D retained-graph statistics and bounded feasibility evidence | Scientific baseline training and headline evaluation |
-| G3 — Shared baseline path | Data pipeline, exact evaluator, and matched baselines | Deterministic runs, sanity checks, and resource logging | Proposed-sampler experiments |
-| G4 — Proposed-sampler readiness | Implemented candidate method and diagnostics | Unit/integration tests, finite losses, valid samples, and controlled development runs | Final comparison |
-| G5 — Final evidence | Frozen experiment matrix and evidence package | Paired seeds, uncertainty analysis, resource traces, failures, and limitation analysis; G5-S bounded scale evidence if the thesis retains a large-scale claim | Results/conclusion claims |
-| G6 — Reproducibility and submission | Reproducible representative run and complete artifacts | Manifest/configuration, regenerated tables/figures, report, slides, and runnable Colab source | Submission |
+The audited Amazon portfolio contains 693,929 All Beauty rows, 5,953,891 Baby Products rows, and 66,623,880 Home and Kitchen rows. Baby is primary because it is large, sparse, and strongly long-tailed while remaining feasible for the paired M0–M2 matrix on a Tesla T4. All Beauty is a pipeline control. Home and Kitchen is an unexecuted scale reference, about 11.19 times Baby by raw rows.
 
-Failure at a gate does not authorize an unsupported conclusion or a switch to an unrelated topic. It requires diagnosis, a recorded decision, and an evidence-compatible revision of the remaining plan.
+## Data after preprocessing
 
-G2-D is a feasibility boundary, not a baseline result. It may use a bounded subset, non-GNN control, or fixed tiny baseline to test pipeline/evaluator execution and a rough resource envelope. It must record scale and hardware, must not tune models, compare samplers, report headline metrics, or generalize to the final run. The former G2-E scale-stress execution is now `G5-S`; before G5, `Home_and_Kitchen` work is limited to provenance, size, and feasibility planning.
+- One out-of-range `0.0` rating is quarantined; exact audit finds no missing IDs, invalid timestamps, or duplicate user-item rows.
+- P4 keeps ratings 4 and 5: 4,655,843 interactions, or 78.20% of raw rows.
+- Training graph: 3,868,654 edges, 2,318,308 users, 162,125 items.
+- Warm validation: 81,871 of 373,776 candidate rows, 21.90% retention.
+- Warm test: 40,587 of 413,413 candidate rows, 9.82% retention; test is unread.
 
-### 4.3 Current gate status
+The raw, P4, and training item counts are different universes: 217,654, 194,722, and 162,125 respectively. Coverage uses the training catalog.
 
-| ID | Status | Prerequisites | Active evidence / gap | Decision date | Next review |
-|---|---|---|---|---|---|
-| G0 | `PASS` | None | Scope, bilingual governance, evidence boundaries, and this plan are recorded. Reopen if scope/title/deliverable rules change. | 2026-08-30 | On governance change |
-| G1 | `PASS` | None; runs in parallel with G2 | Primary RQ/estimand, falsifiable hypotheses, representative closest-work map, candidate mechanisms, matched comparison, and a validation-only Pareto selection/no-selection rule are frozen in the [G1 decision record](./G1_RESEARCH_DESIGN_en.md). This does not select the final sampler. | 2026-09-03 | Reopen if the RQ, intervention, matched controls, or selection rule changes |
-| G2 | `PASS` | E0-MIN for executable G2-D only | Baby G2-A/G2-B/G2-C/G2-D pass. The amended Drive manifest verifies all five artifact hashes/sizes, records the exact CPU/Colab environment, and replays the bounded 100-target traversal with all registered invariants true. Home full scale remains conditional G5-S. | 2026-09-03 | Reopen only if data bytes, semantics, split, graph, cohort, candidates, or bounded-path contract changes |
-| G3 | `NOT_STARTED` | G2 `PASS`; E0-MIN `PASS` | No deterministic end-to-end baseline/evaluator/resource path exists. | — | After prerequisites pass |
-| G4 | `NOT_STARTED` | G1 `PASS`; G2 `PASS`; G3 `PASS` | Final sampler is not selected or implemented. Reference-design toy tests do not satisfy this gate. | — | After prerequisites pass |
-| G5 | `NOT_STARTED` | G4 `PASS`; experiment matrix/configuration/seeds frozen; E0-FINAL for resource claims | No matched final experiment evidence exists. | — | After G4 readiness review |
-| G6 | `NOT_STARTED` | G5 `PASS`; E0-FINAL `PASS` | No clean representative rerun or regenerated final evidence package exists. | — | After G5 decision |
+## Imbalance
 
-### 4.4 Go, corrective-loop, stop, waiver, and reopen rules
+User singleton rate is 71.76%; item singleton rate is 33.35%. User degree p50/p90/p99 is 1/3/9, while item degree is 3/32/397. Item-degree Gini is 0.8584 and the top 1% of items receive 44.09% of training interactions.
 
-- `GO` to G3 only after G2 and E0-MIN pass; `GO` to G4 only after G1, G2, and G3 pass; `GO` to final experiments only after G4 passes and the matrix is frozen.
-- Use `CORRECTIVE_LOOP` when evidence is insufficient but an in-scope repair is defined. `STOP` records an impasse and requires an explicit rescope decision; neither status authorizes a topic pivot or a positive claim.
-- Reopen G2 when interaction semantics, split, negative eligibility, or training graph changes; invalidate or reopen affected G3–G6 evidence. Reopen G3 and downstream gates when the backbone, evaluator, budget, or resource logger changes materially. Reopen G1/G4 and downstream gates when the selected method changes.
-- `WAIVED` is allowed only for optional or administrative scope with authority, rationale, expiry, and an impact statement. Provenance, leakage control, train/test separation, matched comparison, raw-result traceability, uncertainty disclosure, and representative reproducibility cannot be waived. Missing `G5-S` evidence requires narrowing the large-scale claim, not a silent waiver.
+## Methods
 
-## 5. Twelve-week research schedule
+- M0 samples eligible context nodes uniformly without replacement.
+- M1 uses `log(training_degree) + Gumbel` priority.
+- M2 uses `log(frontier_support) - 0.5 log(training_degree) + Gumbel` priority.
 
-| Week | Primary work | Exit artifact or decision |
-|---|---|---|
-| 1 | Consolidate scope, evidence records, and the dataset-audit starting point; establish this canonical plan. | G0 record; current status and open risks are explicit. |
-| 2 | Run persistent Amazon provenance/audit work in Colab; pre-register interaction semantics, duplicate treatment, candidate temporal split, warm-start/OOV treatment, and negative eligibility. | G2 evidence package is ready for review; no model training yet. |
-| 3 | Close G1 and G2 from reviewed evidence; begin the shared exact evaluator and simple non-GNN controls. | G1/G2 decision records; initial G3 implementation path. |
-| 4 | Establish the shared GNN recommender baseline, deterministic configurations, logging, and resource measurement path. | G3 baseline path passes required sanity checks. |
-| 5 | Implement and test bounded graph-sampling controls (for example, uniform and degree-aware sampling) under the same task and budget. | Matched sampling-control comparison is runnable. |
-| 6 | Only after G1 and G3 pass, implement the selected proposed sampling mechanism without claiming success. | G4 readiness review. |
-| 7 | Diagnose the proposed sampler through controlled development runs; repair only evidence-supported issues. | Candidate configuration, diagnostics, and planned ablations are frozen for development. |
-| 8 | Run development comparisons and essential ablations at fixed task/budget; update the design only with recorded justification. | Final experiment matrix, seeds, and analysis plan are frozen. |
-| 9 | Run the primary matched experiments and capture quality, resource, and failure traces. | Partial final-evidence package. |
-| 10 | Complete primary evidence and, only if G2/G3 are valid, run the bounded `Home_and_Kitchen` scale-stress configuration. | G5 evidence package or a documented negative/insufficient result. |
-| 11 | Perform uncertainty analysis, inspect failure cases, and execute a representative clean rerun from the recorded configuration. | G6 reproducibility package. |
-| 12 | Complete and reconcile the cumulative thesis report, defense slides, Colab source, appendices, and supervisor-feedback revisions. | Submission-ready bilingual artifacts and runnable source. |
+M2 tries to preserve batch-local graph relevance while reducing generic hub advantage. It is fixed and heuristic, not learned.
 
-Writing, citation management, experiment logs, and reproducibility metadata are continuous work across all weeks. If time or compute becomes constrained, reduce optional datasets and secondary ablations before weakening leakage controls, matched comparisons, uncertainty reporting, or the representative rerun.
+## Metrics
 
-## 6. Cumulative deliverable update rules
+NDCG@20 is primary because rank position matters. Recall@20 records target retrieval. Catalog Coverage@20 detects catalog collapse. Exposure and target metrics by popularity cohort distinguish visibility from correct recommendation. Training time and peak GPU memory measure cost. Semantic diversity is not measured because the current artifact has no content metadata.
 
-After every verified gate closure or measured experiment, update the affected artifacts in place:
+## Results
 
-| Deliverable | Update when |
-|---|---|
-| Thesis report | Scope, literature positioning, method rationale, protocol, results, or limitations change. |
-| Defense slides | The report has a defendable change that needs a concise visual explanation. |
-| Colab/Python source | A protocol, implementation, configuration, test, manifest, or executable result changes. |
-| Supervisor briefing | The current decision, risk, evidence boundary, or question for the supervisor changes. |
+| Method | NDCG@20 mean ± SD | Recall@20 mean ± SD | Coverage@20 mean ± SD |
+|---|---:|---:|---:|
+| M0 | 0.005706 ± 0.000073 | 0.014869 ± 0.000488 | **0.018132 ± 0.000318** |
+| M1 | **0.005866 ± 0.000249** | **0.015296 ± 0.000620** | 0.017534 ± 0.000627 |
+| M2 | 0.005721 ± 0.000179 | 0.014873 ± 0.000579 | 0.017513 ± 0.000318 |
 
-Every persistent narrative artifact must remain synchronized as `_en` and `_vn`. Technical source code remains language-neutral, with synchronized English and Vietnamese documentation.
+M2 minus M1 is negative for both quality metrics on all three seeds. M2 changes many ranks and top-20 hits, so the proposal is active, but the changes do not create stable top-20 gain. Tail hits are zero for all methods and seeds.
 
-## 7. Canonical record index
+## Decision and next boundary
 
-- [Project constraints](./PHASE2_CONSTRAINTS_en.md): user-provided operating constraints and compute assumptions.
-- [Dataset portfolio and analysis protocol](./DATASET_PORTFOLIO_AND_ANALYSIS_PROTOCOL_en.md): dataset roles and detailed protocol candidates.
-- [G1 research-design decision](./G1_RESEARCH_DESIGN_en.md): frozen RQ, closest-work boundary, candidate family, matched comparison, and method-selection rule.
-- [Bilingual continuity rules](../PROJECT_CONTEXT_AND_RESEARCH_RULES_en.md): working rules and dated change log; this document is linked there, not duplicated.
-- [Thesis report](../04_thesis/THESIS_REPORT_en.md): cumulative academic narrative.
-- [GRAPES-informed reference specification](../02_protocol/GRAPES_RECOMMENDATION_SPEC_en.md): reference design only, not the canonical thesis method.
-- [Python/Colab README](../06_code/README_en.md): executable scaffold, environment, and run instructions.
-- [Current supervisor briefing](../03_reports/REPORT_TEACHER_en.md): current discussion record for the supervisor.
-
-## 8. Superseded planning record
-
-`PHASE2_DIRECTION_REVIEW_en.md` is retained only as a brief historical redirect. Its former direct-GRAPES-adaptation plan is superseded and must not be used to guide Phase 2 work.
+Do not promote M2, open M3, or use test data to select a replacement. Preserve M2 as a controlled negative result. Any new evidence branch must be registered for one specific purpose: final test, external graph-sampling generalization, semantic diversity with metadata, or bounded Home and Kitchen scale stress.
