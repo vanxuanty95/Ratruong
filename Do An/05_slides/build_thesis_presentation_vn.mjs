@@ -6,7 +6,7 @@ import { Presentation, PresentationFile } from "@oai/artifact-tool";
 const SKILL_DIR = "/Users/tyvan/.codex/plugins/cache/openai-primary-runtime/presentations/26.904.11930/skills/presentations";
 const workspaceDir = "/Users/tyvan/Documents/Master/Ratruong";
 const TMP_DIR = path.join(workspaceDir, "Do An/05_slides/.build-thesis-presentation-sequenced");
-const FINAL_PPTX = path.join(workspaceDir, "Do An/05_slides/final-output/THESIS_PRESENTATION_vn_sequenced.pptx");
+const FINAL_PPTX = path.join(workspaceDir, "Do An/05_slides/final-output/THESIS_PRESENTATION_vn_graph_timeline.pptx");
 const RUNTIME_PYTHON = "/Users/tyvan/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3";
 
 const { applyPresentationChartFont, finalizePresentation, makeNativeBulletParagraphs } = await import(
@@ -43,18 +43,19 @@ const TERM_LINE_BY_SLIDE = {
   7: "Hiểu nhanh: 0-core nghĩa là chưa lọc node ít tương tác; parent_asin là mã item.",
   8: "Hiểu nhanh: temporal split tách theo thời gian; leakage là dùng thông tin tương lai khi train.",
   9: "Hiểu nhanh: P4 xem rating 4 hoặc 5 là positive interaction cho implicit ranking.",
-  10: "Hiểu nhanh: degree là số cạnh của node; density là phần cạnh thật trên mọi cặp user-item có thể.",
-  11: "Hiểu nhanh: Gini cao nghĩa là interaction dồn vào ít item; head/body/tail dựa trên training degree.",
-  12: "Hiểu nhanh: OOV là user hoặc item chưa có mapping train; exact catalog xếp trên toàn bộ item hợp lệ.",
-  13: "Hiểu nhanh: NDCG thưởng target đứng sớm; Recall chỉ hỏi target có vào top-20 hay không.",
-  14: "Hiểu nhanh: coverage đo độ rộng catalog; exposure đo phân bổ slot; semantic diversity cần metadata.",
-  15: "Hiểu nhanh: sanity gate kiểm tra pipeline bằng baseline trước khi so sánh sampler.",
-  16: "Hiểu nhanh: MostPop chọn item phổ biến; BPR-MF là matrix factorization; Full dùng LightGCN không sampling.",
-  17: "Hiểu nhanh: M là method label; BPR là loss xếp positive cao hơn negative; budget là số mẫu tối đa mỗi layer.",
-  18: "Hiểu nhanh: Gumbel tạo nhiễu ngẫu nhiên khi chọn; hub là node degree cao; frontier là node ở layer trước.",
-  19: "Hiểu nhanh: seed là trạng thái ngẫu nhiên ban đầu; paired giữ cùng seed và negative draw giữa các method.",
-  20: "Hiểu nhanh: mean là trung bình seed; SD là độ dao động mẫu; ba seed chưa đủ để kết luận significance.",
-  21: "Hiểu nhanh: validation dùng để chọn quyết định; test chưa đọc nên không dùng để kết luận.",
+  10: "Hiểu nhanh: graph train chỉ dùng edge trước mốc thời gian; mapping biến ID gốc thành chỉ số node; target validation đứng ngoài graph train.",
+  11: "Hiểu nhanh: degree là số cạnh của node; density là phần cạnh thật trên mọi cặp user-item có thể.",
+  12: "Hiểu nhanh: Gini cao nghĩa là interaction dồn vào ít item; head/body/tail dựa trên training degree.",
+  13: "Hiểu nhanh: OOV là user hoặc item chưa có mapping train; exact catalog xếp trên toàn bộ item hợp lệ.",
+  14: "Hiểu nhanh: NDCG thưởng target đứng sớm; Recall chỉ hỏi target có vào top-20 hay không.",
+  15: "Hiểu nhanh: coverage đo độ rộng catalog; exposure đo phân bổ slot; semantic diversity cần metadata.",
+  16: "Hiểu nhanh: sanity gate kiểm tra pipeline bằng baseline trước khi so sánh sampler.",
+  17: "Hiểu nhanh: MostPop chọn item phổ biến; BPR-MF là matrix factorization; Full dùng LightGCN không sampling.",
+  18: "Hiểu nhanh: M là method label; BPR là loss xếp positive cao hơn negative; budget là số mẫu tối đa mỗi layer.",
+  19: "Hiểu nhanh: Gumbel tạo nhiễu ngẫu nhiên khi chọn; hub là node degree cao; frontier là node ở layer trước.",
+  20: "Hiểu nhanh: seed là trạng thái ngẫu nhiên ban đầu; paired giữ cùng seed và negative draw giữa các method.",
+  21: "Hiểu nhanh: mean là trung bình seed; SD là độ dao động mẫu; ba seed chưa đủ để kết luận significance.",
+  22: "Hiểu nhanh: validation dùng để chọn quyết định; test chưa đọc nên không dùng để kết luận.",
 };
 
 const presentation = Presentation.create({ slideSize: { width: W, height: H } });
@@ -497,7 +498,44 @@ function notes(slide, lines) {
   ]);
 }
 
-// 06 — scale and sparsity
+// 06 — graph construction
+{
+  const slide = presentation.slides.add();
+  addHeader(slide, "04 / GRAPH", "Đồ thị train đã được xây trước khi chạy các mô hình", 10, "Nguồn: baby_p4_g2c_manifest.json; data_story_summary.json");
+  addText(slide, "Đây là dữ liệu đầu vào cố định cho MostPop, BPR-MF, Full LightGCN, M0, M1 và M2. Các phương pháp chỉ khác cách lấy context khi train, không tạo lại graph.", 54, 146, 1132, 50, {
+    fontSize: 20,
+    bold: true,
+  });
+  const steps = [
+    ["P4 interaction", "4.655.843 rating 4–5", C.blue],
+    ["Temporal train", "3.868.654 edge trước cutoff", C.green],
+    ["Graph artifact", "user/item mapping + train edge", C.orange],
+    ["Training & validation", "cùng graph, sampler khác nhau", C.red],
+  ];
+  const x0 = 54;
+  const boxW = 257;
+  for (let i = 0; i < steps.length; i += 1) {
+    const x = x0 + i * 293;
+    addRect(slide, x, 268, boxW, 136, C.light);
+    addRect(slide, x, 268, boxW, 9, steps[i][2]);
+    addText(slide, String(i + 1).padStart(2, "0"), x + 18, 295, 48, 26, { fontSize: 18, bold: true, color: steps[i][2] });
+    addText(slide, steps[i][0], x + 18, 329, boxW - 34, 24, { fontSize: 19, bold: true });
+    addText(slide, steps[i][1], x + 18, 362, boxW - 34, 30, { fontSize: 14, color: C.muted, bold: i === 1 });
+    if (i < steps.length - 1) addRule(slide, x + boxW, 335, 36, 2, C.grid);
+  }
+  addRect(slide, 54, 455, 1132, 103, C.paleBlue);
+  addText(slide, "GRAPH ĐÃ CÓ GÌ?", 73, 475, 245, 20, { fontSize: 13, bold: true, color: C.blue });
+  addText(slide, "2.318.308 user  |  162.125 item  |  3.868.654 edge train", 73, 505, 940, 30, { fontSize: 23, bold: true });
+  addText(slide, "Validation có 81.871 target warm-start và không được thêm edge vào graph train.", 73, 536, 980, 18, { fontSize: 14, color: C.muted });
+  addBlackStrip(slide, "Chỉ khi mở rộng sang Yelp2018 hoặc Gowalla mới cần xây một đồ thị mới, tách riêng khỏi kết quả Baby");
+  notes(slide, [
+    "Graph-construction manifest: Do An/06_code/results/baby_p4_g2c_manifest.json.",
+    "Train edges: 3,868,654; user mapping: 2,318,308; item mapping: 162,125; validation targets: 81,871.",
+    "Sampler experiments reuse this frozen temporal training graph. Validation targets are not added as training edges.",
+  ]);
+}
+
+// 07 — scale and sparsity
 {
   const slide = presentation.slides.add();
   addHeader(slide, "04 / GRAPH", "Graph lớn, nhưng lịch sử của phần lớn node rất mỏng", 6, "Nguồn: data_story_summary.json / training_graph");
@@ -1019,9 +1057,9 @@ const candidatePath = path.join(stagingDir, "candidate.pptx");
 await (await PresentationFile.exportPptx(presentation)).save(candidatePath);
 
 const requirements = {
-  explicitTotalSlideCount: 21,
-  requiredNativeTableOwnerSlides: [5, 6, 7, 15, 18, 21],
-  requiredNativeChartOwnerSlides: [6, 9, 10, 11, 12, 16, 19, 20],
+  explicitTotalSlideCount: 22,
+  requiredNativeTableOwnerSlides: [5, 6, 7, 16, 22],
+  requiredNativeChartOwnerSlides: [6, 9, 11, 12, 13, 17, 20, 21],
   materializeLiteralChartWorkbooks: true,
 };
 const fontPolicy = { basis: "design", families: [FONT] };
@@ -1044,7 +1082,7 @@ const result = await finalizePresentation({
   materializeLiteralChartWorkbooks: true,
   fontPolicy,
   verifyArtifactToolImport: true,
-  receiptPath: path.join(stagingDir, "THESIS_PRESENTATION_vn_21.pptx.validation.json"),
+  receiptPath: path.join(stagingDir, "THESIS_PRESENTATION_vn_22_graph_timeline.pptx.validation.json"),
 });
 
 console.log(JSON.stringify({ final: FINAL_PPTX, result }, null, 2));
