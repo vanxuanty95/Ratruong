@@ -1,0 +1,184 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[a4paper,margin=2.35cm]{geometry}
+\usepackage{fontspec}
+\setmainfont{Arial}
+\usepackage{polyglossia}
+\setdefaultlanguage{vietnamese}
+\usepackage{booktabs,longtable,array,tabularx}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true,linkcolor=black,urlcolor=blue,citecolor=blue,pdftitle={Graph sampling cho recommendation với LightGCN}}
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+\newcommand{\sourcepath}[1]{{\footnotesize\url{#1}}}
+\title{\textbf{Graph sampling cho recommendation với LightGCN}\\\large Báo cáo tổng hợp: dữ liệu, protocol, kết quả và giới hạn}
+\author{Dự án nghiên cứu recommendation}
+\date{16 tháng 9 năm 2026}
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Báo cáo kiểm tra ảnh hưởng của cách lấy mẫu đồ thị (graph sampling) đối với recommendation dựa trên LightGCN. Trên cùng một temporal user--item graph, cùng backbone, objective BPR, budget, seed, evaluator và phần cứng, ba chính sách lấy context được so sánh: M0 chọn đều, M1 ưu tiên node có training degree cao, M2 ưu tiên node nối với frontier hiện tại đồng thời giảm lợi thế của hub. Dữ liệu chính là Amazon Reviews'23 Baby\_Products: 5.953.891 rating raw; sau kiểm tra chất lượng, ngưỡng positive 4--5 và temporal warm-start protocol, graph train có 3.868.654 cạnh, 2.318.308 user và 162.125 item. Graph rất thưa và lệch long-tail: 71,76\% user chỉ có một interaction, item-degree Gini là 0,8584, top 1\% item giữ 44,09\% interaction. Chất lượng được đo bằng exact full-catalog NDCG@20 và Recall@20; coverage, cohort exposure/hit, thời gian và peak GPU memory được dùng để đọc trade-off. Qua ba validation seed, M2 thấp hơn M1 về NDCG@20 và Recall@20 ở cả ba seed; M2 cũng chậm hơn trong hai repeat mới. Đây là negative result có phạm vi rõ ràng: một frontier-conditioned heuristic chưa tạo ranking gain ổn định dưới protocol đã khóa, không phải kết luận về mọi sampler frontier-aware.
+\end{abstract}
+
+\section{Câu hỏi nghiên cứu và phạm vi}
+Recommendation trên graph có user và item là node, interaction là cạnh. LightGCN lan truyền embedding qua các cạnh để học collaborative signal \cite{lightgcn}. Khi đồ thị lớn, sampler tạo computation graph nhỏ hơn cho từng batch. Vì vậy sampler không chỉ ảnh hưởng thời gian hay bộ nhớ: nó quyết định những node và cạnh nào model được nhìn thấy trong propagation.
+
+\textbf{Câu hỏi nghiên cứu.} Ở cùng dataset, LightGCN backbone, layer budget, số bước huấn luyện, seed, exact evaluator và GPU, sampler có điều kiện theo frontier có tạo trade-off tốt hơn giữa NDCG@20 và chi phí tính toán so với uniform và degree-aware sampling hay không?
+
+Phạm vi là warm-start implicit top-$N$ ranking trên pure-ID bipartite graph. Báo cáo không nghiên cứu rating prediction, cold-start, content-based recommendation, online serving hay semantic recommendation. Kết quả chỉ là validation trên Baby\_Products; test target chưa được đọc để chọn method.
+
+\section{Các khái niệm cần thống nhất}
+\subsection{Context và frontier}
+Trong báo cáo này, \emph{context} là các node và edge lân cận mà model dùng trong batch/layer hiện tại để truyền thông tin. Context không phải toàn bộ dataset và cũng không phải một metric. \emph{Frontier} là tập node ở layer trước đang cần hàng xóm để tiếp tục propagation. Vì một batch chỉ thấy context được sampler chọn, thay đổi sampler có thể thay đổi signal model học được ngay cả khi backbone không đổi.
+
+\subsection{M0, M1, M2 là gì?}
+Ký hiệu M là \textbf{method label}, không phải layer GNN, không phải metric và không phải ba kiến trúc model. Ba method giữ cố định Baby P4 graph, LightGCN ba layer, BPR objective \cite{bpr}, training pairs, negative draw, batch 65.536, layer budget $[65.536,65.536,65.536]$, 5 epoch/300 optimizer step, seed, evaluator và GPU. Điều duy nhất thay đổi là quy tắc chọn hàng xóm:
+
+\begin{itemize}
+  \item \textbf{M0 -- uniform control}: chọn không hoàn lại với trọng số đều. Đây là đối chứng trung tính: context ngẫu nhiên đạt chất lượng nào?
+  \item \textbf{M1 -- degree-aware control}: $\log(\text{training degree})+\text{Gumbel}$. Node có nhiều interaction train được ưu tiên. Nó kiểm tra tín hiệu phổ biến, ổn định có giúp ranking hay không.
+  \item \textbf{M2 -- frontier-normalized heuristic}: $\log(\text{frontier support})-0,5\log(\text{training degree})+\text{Gumbel}$. Frontier support là số cạnh train nối candidate với frontier ở layer trước. M2 tìm context cục bộ liên quan hơn nhưng giảm ưu tiên hub. Đây là heuristic cố định, không có policy network, reward learning hay RL update.
+\end{itemize}
+
+\section{Vì sao chọn dữ liệu này?}
+\subsection{Các benchmark ngoài Amazon đã được cân nhắc}
+Amazon không phải lựa chọn đáng tin cậy duy nhất. MovieLens 25M có 25.000.095 rating, 162.541 user, 62.423 phim và tag; phù hợp để nghiên cứu metadata hoặc semantic diversity \cite{movielens}. Gowalla và Yelp2018 là các benchmark graph-CF xuất hiện trong LightGCN \cite{lightgcn}; chúng phù hợp khi cần kiểm tra generalization ngoài Amazon. MIND có title, abstract và body bài báo nên có thể đo relevance/semantic content \cite{mind}; KuaiRec gần fully observed, hữu ích cho exposure bias \cite{kuairec}. Tuy nhiên các dataset này trả lời những câu hỏi khác: movie/news có content, KuaiRec có cấu trúc exposure khác, còn các benchmark graph đã xử lý thường không cùng temporal protocol.
+
+Baby\_Products được chọn vì khớp trực tiếp câu hỏi về sparse e-commerce product graph, đủ long-tail để stress sampler, nhưng vẫn chạy được trong ngân sách Colab đã kiểm chứng. Lựa chọn được khóa theo audit dữ liệu, không theo score model. Bảng \ref{tab:choice} đặt nó trong portfolio Amazon Reviews'23 chính thức \cite{amazon}.
+
+\begin{table}[h]
+\centering
+\caption{Portfolio dữ liệu Amazon đã kiểm toán.}\label{tab:choice}
+\begin{tabularx}{\linewidth}{l r Y}
+\toprule
+Dataset & Raw row & Vai trò trong nghiên cứu \\
+\midrule
+All\_Beauty & 693.929 & Pipeline/schema control; P4 warm validation retention chỉ 3,98\%. \\
+Baby\_Products & 5.953.891 & Benchmark chính: đủ interaction, long-tail rõ, warm validation retention 21,90\%. \\
+Home\_and\_Kitchen & 66.623.880 & Raw scale reference, lớn hơn Baby 11,19 lần; chưa có full protocol hay paired experiment. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Không được dùng Home\_and\_Kitchen để suy luận performance, vì nó mới có provenance/schema audit. Không chạy MovieLens, Gowalla, Yelp2018, MIND hoặc KuaiRec trong báo cáo này; chúng là đối chiếu thiết kế, không phải evidence thực nghiệm.
+
+\section{Nguồn, schema và làm sạch}
+Dữ liệu là artifact Amazon Reviews'23 \texttt{Baby\_Products.csv.gz}, bản 0-core rating-only của McAuley Lab \cite{amazon}. File nén có 148.609.233 byte. SHA-256 là \texttt{e2a8d0498afed767ee2615db7fac5495}\\\texttt{59d82490b1a73c7241b84b5e9e8c279e}. Bốn trường được dùng là \texttt{user\_id}, \texttt{parent\_asin}, \texttt{rating}, \texttt{timestamp}; \texttt{parent\_asin} là item key. Không có title, category, description hay image trong tệp rating-only đã dùng.
+
+Raw audit có 5.953.891 dòng, 3.386.206 user và 217.654 item. Có một rating 0,0 ngoài miền 1--5 và dòng này được quarantine. Không có missing ID, timestamp không hợp lệ hay duplicate user--item pair. Điều đó không biến rating thành dữ liệu ``sạch'' theo nghĩa hành vi: người tự đánh giá tạo selection bias, và một pair không quan sát không thể được gọi là dislike. Nghiên cứu vì vậy không tự ý loại outlier ngoài rule đã ghi nhận.
+
+Vì mục tiêu là implicit ranking, positive P4 được định nghĩa là rating 4 hoặc 5. P4 giữ 4.655.843 dòng, tương đương 78,1983\% raw data; rating 1--3 không tạo positive edge. Đây không phải dự đoán rating và không nên diễn giải score model như mức độ dự đoán điểm sao.
+
+\section{Temporal protocol và phân tích phân phối}
+Interaction được tách theo timestamp: train trước $t_1$, validation trong $[t_1,t_2)$, test từ $t_2$ trở đi. Mapping, degree, cohort và graph chỉ được tạo từ train. Candidate cho mỗi target là toàn bộ 162.125 item train trừ positive history đã quan sát trước target. Exact evaluator không dùng một negative sample nhỏ để thay full catalog. User hoặc item chưa xuất hiện trong train được ghi OOV ledger và không thuộc warm-start population.
+
+\begin{table}[h]
+\centering
+\caption{Population sau temporal split.}\label{tab:population}
+\begin{tabular}{lrrr}
+\toprule
+Split & Candidate row & Warm row & Retention \\
+\midrule
+Validation & 373.776 & 81.871 & 21,9038\% \\
+Test & 413.413 & 40.587 & 9,8175\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Graph train có 3.868.654 cạnh, 2.318.308 user và 162.125 item; density là $1,0292924\times10^{-5}$. User-degree p50/p90/p99 là 1/3/9; item-degree p50/p90/p99 là 3/32/397. 71,7634\% user và 33,3496\% item là singleton. Item-degree Gini là 0,8584; top 1\% item giữ 44,0941\% interaction. Histogram degree trên thang log và cumulative share trong artifact phân tích cho thấy long tail rất mạnh: không nên chỉ báo một average score rồi gọi dữ liệu là cân bằng.
+
+Popularity cohort được khóa từ training degree, trước khi xem result. Tie-aware boundary tạo head (khoảng 1\% item, 44,16\% edge), body (18,92\% item, 45,45\% edge) và tail (80,07\% item, 10,39\% edge). Đây là nền để đọc phân bổ recommendation, không phải nhãn được học từ target.
+
+\section{Metric: mỗi metric trả lời một câu hỏi}
+\begin{table}[h]
+\centering
+\caption{Ý nghĩa và giới hạn của các metric.}\label{tab:metrics}
+\begin{tabularx}{\linewidth}{l Y Y}
+\toprule
+Metric & Câu hỏi trả lời & Không đo được \\
+\midrule
+NDCG@20 & Target đúng đứng sớm đến mức nào? Với một target, hit tại rank $r\le20$ nhận $1/\log_2(r+1)$. & Không nói catalog rộng hay semantic diversity. \\
+Recall@20 & Target có xuất hiện trong top 20 không? Với một target, đây là hit rate. & Không phân biệt rank 1 và rank 20. \\
+Catalog Coverage@20 & Bao nhiêu item khác nhau xuất hiện trong mọi top-20 list, chia cho catalog train? & Không đo relevance, item similarity hay semantic diversity. \\
+Exposure/hit theo cohort & Slot recommendation và hit được phân bổ vào head/body/tail ra sao? & Exposure không đồng nghĩa target đã được tìm đúng. \\
+Wall time / peak GPU & Trade-off thực thi trong runner đã ghi nhận. & Không đủ để suy ra production scalability. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+``Mức độ khớp về ngữ nghĩa'' và ``đa dạng theo ngữ nghĩa'' chưa đo được một cách trung thực, vì tệp đã dùng chỉ có ID, rating, timestamp. Có thể đo catalog breadth và popularity distribution, nhưng không thể suy ra hai item có giống nghĩa hay không. Muốn đo semantic diversity cần title/category/text/image/embedding hoặc taxonomy được xác định trước. Đây là một giới hạn dữ liệu, không phải metric bị bỏ quên.
+
+\section{Thiết kế thí nghiệm và sanity baselines}
+Ba sampler được chạy matched. Trong từng paired seed, embedding initialization, pair order và negative draw được fingerprint để xác nhận ghép cặp. Baseline dùng làm sanity gate: MostPop cho popularity collapse, BPR-MF cho matrix-factorization control, và Full LightGCN cho reference không sampling ở budget tương ứng. Các baseline chưa được hyperparameter tuning, nên không baseline nào được gọi là tối ưu.
+
+\begin{table}[h]
+\centering
+\caption{Sanity baseline trên validation warm population.}\label{tab:baseline}
+\begin{tabular}{lrrr}
+\toprule
+Model & NDCG@20 & Recall@20 & Coverage@20 \\
+\midrule
+MostPop & 0,005873 & 0,014596 & 0,000154 \\
+BPR-MF & 0,004054 & 0,010419 & 0,033517 \\
+Full LightGCN & 0,004931 & 0,012373 & 0,006365 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+MostPop có 1.195 hit nhưng chỉ 25 unique recommended item và 100\% exposure ở head. BPR-MF dùng 5.434 item và có 23 body hit nhưng quality aggregate thấp hơn. Full LightGCN có 1.032 item và 1.012/1.013 hit ở head. Vì thế accuracy, coverage và long-tail relevance là ba vấn đề khác nhau.
+
+\section{Kết quả}
+\subsection{Smoke seed s0}
+\begin{table}[h]
+\centering
+\caption{Kết quả matched ở seed s0.}\label{tab:s0}
+\begin{tabular}{lrrrrr}
+\toprule
+Method & NDCG@20 & Recall@20 & Coverage@20 & Wall time & Peak GPU \\
+\midrule
+M0 & 0,005727 & 0,014657 & \textbf{0,018486} & 705,32 s & 3.482,90 MiB \\
+M1 & \textbf{0,006153} & \textbf{0,015989} & 0,017783 & 795,11 s & 2.665,10 MiB \\
+M2 & 0,005921 & 0,015317 & 0,017863 & 868,63 s & 2.669,06 MiB \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+M1 tăng 109 hit so với M0, nhưng toàn bộ gain thuộc head; body vẫn 25 hit và tail bằng 0. M2 thấp hơn M1 55 head hit, body/tail không đổi. M0 có 60,52\% item-context ở tail. M1 chuyển trọng tâm sang body (68,29\%). M2 có 68,60\% item-context ở tail nhưng tail hit vẫn bằng 0. M2 dùng ít directed block entry hơn M1 11,97\%, song chậm hơn 45,14 giây vì phải tính frontier support.
+
+\subsection{Paired validation qua ba seed}
+\begin{table}[h]
+\centering
+\caption{Mean $\pm$ sample SD qua ba validation seed.}\label{tab:paired}
+\begin{tabular}{lrrr}
+\toprule
+Method & NDCG@20 & Recall@20 & Coverage@20 \\
+\midrule
+M0 & 0,00570640 $\pm$ 0,00007324 & 0,01486892 & \textbf{0,01813210} \\
+M1 & \textbf{0,00586598} $\pm$ 0,00024947 & \textbf{0,01529642} & 0,01753380 \\
+M2 & 0,00572092 $\pm$ 0,00017933 & 0,01487299 & 0,01751324 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+M2 thấp hơn M1 về NDCG@20 và Recall@20 ở 3/3 seed. Theo mean, M2 thấp hơn M1 2,47\% NDCG và 2,77\% Recall. Trong hai repeat mới, M2 chậm hơn M1 trung bình 114,88 giây (14,36\%); peak GPU chênh khoảng 4,11 MiB, quá nhỏ để diễn giải là khác biệt thực chất. M2 không cho output giống M1: ở s1 có 191 gained hit và 238 lost hit, s2 có 242 gained và 244 lost. Vấn đề là gained hit không bù lost hit trong top 20. Tail hit bằng 0 cho M0, M1 và M2 ở toàn bộ ba seed.
+
+\section{Trả lời các vấn đề đặt ra ban đầu}
+Các câu hỏi về context, NDCG, phân bổ, long tail, nhiễu, rating, sampling và quan hệ node đều được trả lời bởi protocol và kết quả ở trên. Cần phân biệt ba thứ dễ bị gộp: (i) coverage là độ rộng catalog, (ii) exposure/hit cohort là phân bổ theo popularity và relevance theo nhóm, (iii) semantic diversity là khác biệt về nội dung. Báo cáo đo (i) và (ii), không claim (iii). 
+
+M2 chứng minh rằng ta có thể thay đổi computation context: nó đẩy item-context về tail và thay đổi rank của target. Nhưng dữ liệu thưa không đảm bảo một tail neighbor mang collaborative signal đủ mạnh. Quan hệ nối với frontier là tín hiệu cục bộ; nó không tự động có giá trị hơn degree trong BPR ranking. Vì vậy kết luận đúng là ``M2 chưa có trade-off tốt hơn M1 dưới protocol này'', không phải ``frontier sampling vô ích'' hay ``tail không thể recommendation''.
+
+Từ ``converat'' trong ghi chú gốc không có định nghĩa đủ chắc chắn để tự diễn giải. Báo cáo không tùy tiện thay nó bằng coverage, conversion hay convergence. Nếu ý muốn nói conversion rate, cần log impression/click/purchase; nếu ý muốn nói convergence, cần training-loss trajectory và tiêu chí dừng được chỉ định. Các dữ liệu đó không có trong artifact rating-only hiện tại.
+
+\section{Giới hạn và bước tiếp theo}
+Giới hạn là một dataset chính, một budget, ba validation seed, không có test result, không metadata semantic và evidence tài nguyên phụ thuộc Tesla T4/runner. Không mở thêm sampler sau khi đã nhìn validation result; điều đó sẽ làm selection bias. Bước kế tiếp hợp lệ là (1) chạy final test cho quyết định M0/M1/M2 đã khóa, (2) đăng ký trước và chạy Gowalla/Yelp2018 để kiểm tra graph-CF generalization, (3) dùng MovieLens hoặc metadata-rich dataset nếu câu hỏi chuyển sang semantic diversity, hoặc (4) chạy Home\_and\_Kitchen bounded stress test nếu câu hỏi là scale. Mỗi bước là một câu hỏi mới, không được gộp để làm số lượng thí nghiệm trông lớn hơn.
+
+\section*{Tái lập và nguồn evidence}
+Số liệu được tổng hợp từ các artifact versioned: \sourcepath{Do An/06_code/results/data_story/data_story_summary.json}, \sourcepath{Do An/06_code/results/paired_sampling_validation/paired_sampling_validation_summary.json}, audit protocol và baseline summaries trong \sourcepath{Do An/06_code/results}. Slide trình bày và báo cáo Markdown cùng dùng một narrative đã kiểm tra consistency. Các nguồn công bố bên ngoài được liệt kê trong tài liệu tham khảo.
+
+\begingroup\small
+\bibliographystyle{plain}
+\bibliography{THESIS_REFERENCES}
+\endgroup
+\end{document}

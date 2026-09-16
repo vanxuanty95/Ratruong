@@ -4,9 +4,9 @@ import { pathToFileURL } from "node:url";
 import { Presentation, PresentationFile } from "@oai/artifact-tool";
 
 const SKILL_DIR = "/Users/tyvan/.codex/plugins/cache/openai-primary-runtime/presentations/26.904.11930/skills/presentations";
-const workspaceDir = "/Users/tyvan/.codex/worktrees/0158/Ratruong";
-const TMP_DIR = path.join(workspaceDir, ".codex-build/thesis-presentation");
-const FINAL_PPTX = path.join(workspaceDir, "Do An/05_slides/final-output/THESIS_PRESENTATION_vn_20260916_checked.pptx");
+const workspaceDir = "/Users/tyvan/Documents/Master/Ratruong";
+const TMP_DIR = path.join(workspaceDir, "Do An/05_slides/.build-thesis-presentation-21");
+const FINAL_PPTX = path.join(workspaceDir, "Do An/05_slides/final-output/THESIS_PRESENTATION_vn_21.pptx");
 const RUNTIME_PYTHON = "/Users/tyvan/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3";
 
 const { applyPresentationChartFont, finalizePresentation, makeNativeBulletParagraphs } = await import(
@@ -214,23 +214,47 @@ function notes(slide, lines) {
   ]);
 }
 
-// 03 — external benchmark landscape
+// 03 — what context means
+{
+  const slide = presentation.slides.add();
+  addHeader(slide, "00 / KHÁI NIỆM", "Context là phần graph model được nhìn thấy trong một batch", 3, "Nguồn: THESIS_REPORT_vn.md, Section 1 and 4");
+  addText(slide, "Trong graph recommendation, user và item là node; rating tích cực là edge. LightGCN học embedding bằng cách truyền tín hiệu qua các edge.", 54, 150, 1120, 54, { fontSize: 22, bold: true });
+  const blocks = [
+    ["Target batch", "Những user–item interaction đang dùng để cập nhật model."],
+    ["Context", "Các node và edge lân cận được lấy thêm để propagation trong từng layer."],
+    ["Sampler", "Quy tắc quyết định node lân cận nào được lấy khi không thể dùng toàn graph."],
+  ];
+  for (let i = 0; i < blocks.length; i += 1) {
+    const x = 54 + i * 390;
+    addText(slide, blocks[i][0].toUpperCase(), x, 278, 330, 20, { fontSize: 13, bold: true, color: [C.blue, C.green, C.orange][i] });
+    addText(slide, blocks[i][1], x, 316, 320, 88, { fontSize: 20, bold: i === 1 });
+    if (i < 2) addRule(slide, x + 350, 268, 1, 170, C.grid);
+  }
+  addRect(slide, 54, 476, 1132, 64, C.paleBlue);
+  addText(slide, "Sampler không đổi target hay metric. Nó đổi thông tin hàng xóm mà model nhận được để học từ target đó.", 75, 495, 1080, 28, { fontSize: 20, bold: true });
+  addBlackStrip(slide, "Câu hỏi thực nghiệm: context khác có giúp xếp đúng item mục tiêu tốt hơn không?", 606);
+  notes(slide, [
+    "Định nghĩa context: Do An/04_thesis/THESIS_REPORT_vn.md, Sections 1.1 and 4.",
+    "Không có claim rằng sampler thay đổi semantic meaning của sản phẩm.",
+  ]);
+}
+
+// 04 — external benchmark landscape
 {
   const slide = presentation.slides.add();
   addHeader(slide, "01 / LỰA CHỌN DỮ LIỆU", "Các benchmark ngoài Amazon đã được xem xét", 3, "Nguồn: GroupLens; LightGCN; MIND; KuaiRec");
   const table = slide.tables.add({
-    rows: 6, columns: 4, left: 54, top: 145, width: 1172, height: 338,
+    rows: 5, columns: 4, left: 54, top: 145, width: 1172, height: 338,
     columnWidths: [200, 260, 365, 347],
     values: [
       ["Bộ dữ liệu", "Được dùng phổ biến cho", "Điểm phù hợp", "Vì sao chưa chạy trong nghiên cứu này"],
       ["MovieLens 25M", "Collaborative filtering", "25M rating, 162.541 user, 62.423 phim; có tag", "Khác miền sản phẩm và khác cấu trúc long-tail Amazon"],
       ["Gowalla / Yelp2018", "Graph-CF", "LightGCN dùng hai benchmark này", "Phù hợp để mở rộng sau này, chưa phải thực nghiệm hiện tại"],
-      ["MIND", "News recommendation", "Có title, abstract, body; có thể đo semantic/content", "Khác bài toán pure-ID và tin tức thay đổi nhanh"],
-      ["KuaiRec", "Exposure-aware evaluation", "Gần fully observed: 1.411 user và 3.327 item", "Không đại diện graph thưa long-tail quy mô lớn"],
+      ["MIND / KuaiRec", "Content / exposure", "MIND có text; KuaiRec gần fully observed", "Khác pure-ID e-commerce hoặc không đại diện graph thưa quy mô lớn"],
       ["Amazon Reviews’23", "E-commerce recommendation", "Có category, review theo thời gian và volume lớn", "Được chọn sau audit nội bộ, không phải vì là lựa chọn duy nhất"],
     ],
   });
-  styleTable(table, { rows: 6, columns: 4, fontSize: 13, headerSize: 13 });
+  styleTable(table, { rows: 5, columns: 4, fontSize: 14, headerSize: 14 });
   addRect(slide, 54, 514, 1132, 53, C.paleOrange);
   addText(slide, "Các bộ trên là benchmark tham khảo. Nghiên cứu này chỉ chạy Amazon Reviews’23 Baby_Products.", 70, 530, 1090, 22, { fontSize: 16, bold: true });
   addBlackStrip(slide, "Dữ liệu phải khớp câu hỏi và giới hạn đo lường, không chỉ cần nổi tiếng", 606);
@@ -590,31 +614,29 @@ function notes(slide, lines) {
 // 09 — research question and metrics
 {
   const slide = presentation.slides.add();
-  addHeader(slide, "07 / METRIC", "Vì sao dùng những metric này?", 9, "Nguồn nền tảng: BPR (UAI 2009), LightGCN (SIGIR 2020)");
+  addHeader(slide, "07 / METRIC", "NDCG@20 và Recall@20 đọc chất lượng ranking khác nhau", 9, "Nguồn nền tảng: BPR (UAI 2009), LightGCN (SIGIR 2020)");
   addRect(slide, 54, 142, 1172, 72, C.ink);
-  addText(slide, "Đánh giá một recommender không chỉ hỏi có hit hay không. Ta cần biết hit nằm ở thứ hạng nào, catalog nào được chạm tới và phải trả bao nhiêu chi phí.", 78, 158, 1124, 43, {
+  addText(slide, "Mỗi dòng validation có một item mục tiêu. Hai metric đầu tiên trả lời: item đó có vào top 20 không, và nếu có thì đứng ở đâu?", 78, 158, 1124, 43, {
     fontSize: 18,
     bold: true,
     color: C.white,
     align: "center",
   });
-  addText(slide, "CÁCH ĐỌC", 54, 259, 300, 20, { fontSize: 12, bold: true, color: C.blue });
+  addText(slide, "NDCG@20", 54, 259, 300, 20, { fontSize: 12, bold: true, color: C.blue });
   const fixedList = addText(slide, "", 54, 293, 525, 205, { fontSize: 18 });
   fixedList.text = makeNativeBulletParagraphs([
-    "NDCG@20 đặt hit đúng top-20 cao hơn hit ở cuối top-20, nên là metric chính.",
-    "Recall@20 cho biết có tìm được target hay không. Mỗi dòng chỉ có một target hợp lệ.",
-    "Catalog Coverage@20 cho biết top-20 chạm bao nhiêu item khác nhau, không thay thế accuracy.",
-    "Head/body/tail exposure và hit chỉ ra ranking dồn về popularity hay không.",
-    "Wall time và peak GPU memory kiểm tra đánh đổi thực thi tại cùng budget.",
+    "Hit ở rank 1 giá trị hơn hit ở rank 20, nên NDCG là metric chính.",
+    "Với một target mỗi dòng, hit ở rank r nhận điểm 1/log₂(r+1).",
+    "Miss hoặc rank ngoài 20 nhận điểm 0.",
   ], { marginLeftPoints: 16, hangingPoints: 8, spaceAfterPoints: 3 });
   fixedList.text.style = { typeface: FONT, fontSize: 18, color: C.ink, autoFit: "none" };
   addRule(slide, 615, 250, 2, 300, C.grid);
-  addText(slide, "GIỚI HẠN DIỄN GIẢI", 660, 259, 300, 20, { fontSize: 12, bold: true, color: C.green });
+  addText(slide, "RECALL@20", 660, 259, 300, 20, { fontSize: 12, bold: true, color: C.green });
   const metricRows = [
-    ["Không dùng sampled ranking", "Full-catalog exact ranking trên item hợp lệ", C.green],
-    ["Diversity cấu trúc", "Coverage và cohort distribution, không phải semantic diversity", C.blue],
-    ["Semantic relevance", "Không đo được vì tệp chính chỉ có ID và rating", C.orange],
-    ["Test", "Artifact có sẵn nhưng chưa đọc target để chọn phương pháp", C.red],
+    ["Câu hỏi", "Item mục tiêu có xuất hiện trong 20 item đầu không?", C.green],
+    ["Điểm", "Có hit là 1, không hit là 0. Không phân biệt rank 1 và 20.", C.blue],
+    ["Vai trò", "Dễ hiểu, nhưng phải đi cùng NDCG để không bỏ qua thứ tự.", C.orange],
+    ["Evaluator", "Xếp hạng exact trên toàn bộ training catalog hợp lệ, không sampled ranking.", C.red],
   ];
   for (let i = 0; i < metricRows.length; i += 1) {
     const yy = 295 + i * 60;
@@ -623,11 +645,11 @@ function notes(slide, lines) {
     if (i < metricRows.length - 1) addRule(slide, 660, yy + 39, 525, 1, C.grid);
   }
   addRect(slide, 660, 527, 525, 42, C.paleOrange);
-  addText(slide, "Pure-ID không có taxonomy, text hay embedding để đo semantic diversity.", 675, 538, 495, 22, {
+  addText(slide, "NDCG và Recall đo ranking target, chưa nói gì về đa dạng hay nghĩa của item.", 675, 538, 495, 22, {
     fontSize: 14,
     bold: true,
   });
-  addBlackStrip(slide, "Metric chẩn đoán làm rõ chất lượng ranking đi kèm sự tập trung và chi phí");
+  addBlackStrip(slide, "NDCG ưu tiên thứ hạng sớm; Recall trả lời trực tiếp tỷ lệ tìm được target");
   notes(slide, [
     "BPR: https://www.cs.mcgill.ca/~uai2009/papers/UAI2009_0139_48141db02b9f0b02bc7158819ebfa2c7.pdf",
     "LightGCN: https://hexiangnan.github.io/papers/sigir20-LightGCN.pdf",
@@ -637,7 +659,33 @@ function notes(slide, lines) {
   ]);
 }
 
-// 10 — experimental design
+// 10 — distribution, diversity, and cost diagnostics
+{
+  const slide = presentation.slides.add();
+  addHeader(slide, "07 / METRIC", "Coverage, cohort và semantic diversity là ba khái niệm khác nhau", 10, "Nguồn: data_story_summary.json; THESIS_REPORT_vn.md");
+  const rows = [
+    ["Catalog Coverage@20", "Bao nhiêu item khác nhau xuất hiện trong mọi top-20 list?", "Phát hiện catalog collapse; không nói item có giống nhau về nghĩa hay không.", C.blue],
+    ["Exposure và hit theo cohort", "Các slot và hit thuộc head, body hay tail?", "Kiểm tra phân bổ popularity và target relevance theo nhóm.", C.green],
+    ["Semantic match/diversity", "Sản phẩm có giống nghĩa, khác category hay hợp sở thích không?", "Không đo được: file chính chỉ có ID, rating và thời gian; không có text/category/embedding.", C.orange],
+    ["Time và GPU memory", "Mất bao lâu, dùng bộ nhớ đỉnh bao nhiêu?", "Đọc trade-off, vì sampler tốt hơn một chút nhưng quá chậm chưa chắc đáng dùng.", C.red],
+  ];
+  for (let i = 0; i < rows.length; i += 1) {
+    const y = 150 + i * 100;
+    addText(slide, rows[i][0], 54, y, 280, 45, { fontSize: 18, bold: true, color: rows[i][3] });
+    addText(slide, rows[i][1], 360, y, 370, 52, { fontSize: 17, bold: true });
+    addText(slide, rows[i][2], 760, y, 410, 58, { fontSize: 16, color: C.muted });
+    if (i < rows.length - 1) addRule(slide, 54, y + 76, 1132, 1, C.grid);
+  }
+  addRect(slide, 54, 565, 1132, 34, C.paleOrange);
+  addText(slide, "Vì vậy không dùng một chữ “đa dạng” chung chung: phải nói rõ đa dạng catalog, phân bổ popularity hay đa dạng ngữ nghĩa.", 70, 573, 1090, 18, { fontSize: 15, bold: true });
+  addBlackStrip(slide, "M2 có thể đổi phân bổ context, nhưng điều đó chỉ có giá trị nếu target ranking hoặc trade-off cải thiện", 608);
+  notes(slide, [
+    "Coverage and cohorts: Do An/04_thesis/THESIS_REPORT_vn.md, Sections 5.3--5.5.",
+    "Semantic diversity is deliberately not measured from this pure-ID artifact.",
+  ]);
+}
+
+// 11 — experimental design
 {
   const slide = presentation.slides.add();
   addHeader(slide, "08 / THIẾT KẾ", "Đi từ sanity gate đến matched sampler rồi paired validation", 10, "Nguồn: configs/*.json; PHASE2_RESEARCH_PLAN_vn.md");
@@ -733,10 +781,45 @@ function notes(slide, lines) {
   ]);
 }
 
-// 12 — sampler mechanisms
+// 12 — what the method labels M0/M1/M2 mean
 {
   const slide = presentation.slides.add();
-  addHeader(slide, "10 / SAMPLERS", "M0, M1 và M2 khác nhau ở cách chọn context", 12, "Nguồn: M0/M1/M2 configs và full validation traces");
+  addHeader(slide, "10 / THIẾT KẾ SO SÁNH", "M không phải tên model: M0, M1, M2 là ba cách chọn context", 12, "Nguồn: configs M0/M1/M2; protocol audit; THESIS_REPORT_vn.md");
+  addRect(slide, 54, 140, 1172, 72, C.light);
+  addText(slide, "Cùng một LightGCN được huấn luyện trên cùng graph. M chỉ cho biết quy tắc sampler dùng để chọn các node và edge lân cận mà model nhìn thấy trong batch.", 76, 162, 1125, 32, { fontSize: 18, bold: true });
+  const fixed = [
+    ["GIỮ CỐ ĐỊNH", "Baby P4 graph, LightGCN 3 layer, BPR, training pair, negative draw, 5 epoch / 300 step, budget [65.536, 65.536, 65.536], seed, evaluator và GPU."],
+    ["CHỈ THAY ĐỔI", "Quy tắc chọn hàng xóm. Vì vậy so sánh M0–M2 trả lời: context nào đáng đưa vào propagation hơn?"],
+  ];
+  for (let i = 0; i < fixed.length; i += 1) {
+    const x = 54 + i * 590;
+    addText(slide, fixed[i][0], x, 238, 220, 18, { fontSize: 12, bold: true, color: i === 0 ? C.blue : C.green });
+    addText(slide, fixed[i][1], x, 266, 540, 60, { fontSize: 15, color: C.ink, bold: i === 1 });
+  }
+  const methods = [
+    ["M0", C.blue, "Bốc thăm đều", "Mỗi hàng xóm có cơ hội như nhau. Đây là đối chứng trung tính: random context tự nó đạt mức nào?"],
+    ["M1", C.green, "Ưu tiên degree cao", "Node có nhiều tương tác trong training graph được ưu tiên. Câu hỏi: tín hiệu phổ biến, ổn định có giúp ranking không?"],
+    ["M2", C.orange, "Ưu tiên frontier, phạt hub", "Ưu tiên node đang nối với frontier của layer trước, đồng thời giảm trọng số hub. Câu hỏi: context cục bộ có liên quan hơn không?"],
+  ];
+  for (let i = 0; i < methods.length; i += 1) {
+    const x = 54 + i * 393;
+    addRect(slide, x, 355, 355, 155, [C.paleBlue, C.paleGreen, C.paleOrange][i]);
+    addText(slide, methods[i][0], x + 18, 374, 55, 28, { fontSize: 23, bold: true, color: methods[i][1] });
+    addText(slide, methods[i][2], x + 86, 379, 242, 20, { fontSize: 16, bold: true });
+    addText(slide, methods[i][3], x + 18, 415, 318, 74, { fontSize: 14, color: C.ink });
+  }
+  addText(slide, "Frontier = các node ở layer trước đang cần hàng xóm để tiếp tục truyền thông tin. Đây là biến kỹ thuật của sampler, không phải một metric.", 54, 532, 1110, 24, { fontSize: 14, color: C.muted, italic: true });
+  addBlackStrip(slide, "Đừng đọc M0, M1, M2 như ba kiến trúc khác nhau: đó là ba chính sách chọn context trong cùng một kiến trúc");
+  notes(slide, [
+    "M0: uniform without replacement. M1: log(training_degree)+Gumbel. M2: log(frontier_support)-0.5 log(training_degree)+Gumbel.",
+    "Không thay backbone, objective, data split, budget hay evaluator giữa ba method.",
+  ]);
+}
+
+// 13 — sampler mechanisms
+{
+  const slide = presentation.slides.add();
+  addHeader(slide, "11 / SAMPLERS", "Dấu vết context cho thấy mỗi chính sách thực sự chọn khác nhau", 13, "Nguồn: M0/M1/M2 configs và full validation traces");
   const table = slide.tables.add({
     rows: 4,
     columns: 4,
@@ -903,7 +986,7 @@ function notes(slide, lines) {
   });
   addText(slide, "85/85", 1000, 492, 180, 39, { fontSize: 30, bold: true, color: C.green, align: "right" });
   addText(slide, "artifact checks", 1000, 532, 180, 18, { fontSize: 12, color: C.muted, align: "right" });
-  addText(slide, "91/91", 1000, 554, 180, 31, { fontSize: 24, bold: true, color: C.blue, align: "right" });
+  addText(slide, "96/96", 1000, 554, 180, 31, { fontSize: 24, bold: true, color: C.blue, align: "right" });
   addText(slide, "project tests", 1000, 584, 180, 18, { fontSize: 12, color: C.muted, align: "right" });
   addBlackStrip(slide, "Sampler phức tạp hơn không tự động tạo recommendation tốt hơn", 612);
   notes(slide, [
@@ -920,9 +1003,9 @@ const candidatePath = path.join(stagingDir, "candidate.pptx");
 await (await PresentationFile.exportPptx(presentation)).save(candidatePath);
 
 const requirements = {
-  explicitTotalSlideCount: 18,
-  requiredNativeTableOwnerSlides: [3, 4, 6, 13, 15, 18],
-  requiredNativeChartOwnerSlides: [4, 8, 9, 10, 11, 14, 16, 17],
+  explicitTotalSlideCount: 21,
+  requiredNativeTableOwnerSlides: [4, 5, 7, 15, 18, 21],
+  requiredNativeChartOwnerSlides: [5, 9, 10, 11, 12, 16, 19, 20],
   materializeLiteralChartWorkbooks: true,
 };
 const fontPolicy = { basis: "design", families: [FONT] };
@@ -945,7 +1028,7 @@ const result = await finalizePresentation({
   materializeLiteralChartWorkbooks: true,
   fontPolicy,
   verifyArtifactToolImport: true,
-  receiptPath: path.join(stagingDir, "THESIS_PRESENTATION_vn_20260916_checked.pptx.validation.json"),
+  receiptPath: path.join(stagingDir, "THESIS_PRESENTATION_vn_21.pptx.validation.json"),
 });
 
 console.log(JSON.stringify({ final: FINAL_PPTX, result }, null, 2));
