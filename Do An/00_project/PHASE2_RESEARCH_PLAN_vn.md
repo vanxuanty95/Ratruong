@@ -25,16 +25,20 @@ RQ phụ: TB vs REINFORCE (RQ2), hành vi sampler và popularity bias (RQ3), đ�
 
 ## 3. Gate
 
-| Gate | Việc | Điều kiện qua | Nơi chạy | Trạng thái |
-|---|---|---|---|---|
-| R0 | Spec, decision log, docs trung tâm, archive pilot, checker | Checker pass; không file trung tâm gọi M2 là method | Local | Xong (`b122d1d`) |
-| R1 | Development split theo spec §3.1 | Manifest + hash; isolation test pass | Colab | Chưa |
-| R2 | Primitive + oracle GRAPES-GFN-Rec (G1–G7) | Oracle test pass trên CPU | Local | Đang làm: core 28 oracle pass; còn T04, T23/D9, D6 legacy, embedding cho scale |
-| R3 | Development: backbone adequacy, budget regime, sweep `α`/`log_z_init`/lr, feasibility T4, sampler học thật | Full LightGCN > MostPop trên `D_dev`; loss hữu hạn; replay xác định | Colab | Chưa |
-| R4 | Freeze config/seed/budget/evaluator/analysis; chốt OD-1..OD-4 | `current_validation_read=false` khi tạo | Local+Colab | Chưa |
-| R5 | Holdout paired matrix tầng A+B | Hash khớp; metric tính lại được | Colab | Chưa |
-| R6 | Phân tích RQ1–RQ4, ablation D9/D6 | Bảng truy về JSON | Local | Chưa |
-| R7 | Rebuild report/slide/README; pilot vào appendix | Checker pass | Local | Chưa |
+| Gate | Việc | Điều kiện qua | Nơi chạy | Tuần (ước lượng) | Trạng thái |
+|---|---|---|---|---|---|
+| R0 | Spec, decision log, docs trung tâm, archive pilot, checker | Checker pass; không file trung tâm gọi M2 là method | Local | 0,5 | Xong (`b122d1d`) |
+| R1 | Development split theo spec §3.1 | Manifest + hash; isolation test pass | Colab | 0,5 | Chưa |
+| R2 | Primitive + oracle GRAPES-GFN-Rec (G1–G7) | Oracle test pass trên CPU | Local | 1 | Đang làm: core 28 oracle pass; còn T04, T23/D9, D6 legacy, embedding cho scale |
+| R3 | Development: backbone adequacy, budget regime, sweep `α`/`log_z_init`/lr, feasibility T4, sampler học thật | Full LightGCN > MostPop trên `D_dev`; loss hữu hạn; replay xác định | Colab | 3 | Chưa |
+| R4 | Freeze config/seed/budget/evaluator/analysis; chốt OD-1..OD-4 | `current_validation_read=false` khi tạo | Local+Colab | 0,5 | Chưa |
+| R5 | Holdout paired matrix tầng A+B | Hash khớp; metric tính lại được | Colab | 2 | Chưa |
+| R6 | Phân tích RQ1–RQ4, ablation D9/D6 | Bảng truy về JSON | Local | 1 | Chưa |
+| R7 | Rebuild report/slide/README; pilot vào appendix | Checker pass | Local | 1,5 | Chưa |
+
+Tổng ~10 tuần; chỉnh lại sau R3 khi đo được thời gian chạy thực tế.
+
+**Bản trình bày cho giảng viên:** [`../05_slides/PHASE2_PROPOSAL_GRAPES_GFN_REC_vn.pptx`](../05_slides/PHASE2_PROPOSAL_GRAPES_GFN_REC_vn.pptx) (19 slide) và [`../04_thesis/PHASE2_PROPOSAL_GRAPES_GFN_REC_vn.pdf`](../04_thesis/PHASE2_PROPOSAL_GRAPES_GFN_REC_vn.pdf) (báo cáo đề xuất 10 trang). Hai file này là đề xuất, chưa có kết quả method.
 
 ## 4. Khối lượng công việc giai đoạn 2 (step by step)
 

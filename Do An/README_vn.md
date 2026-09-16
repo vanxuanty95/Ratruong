@@ -22,6 +22,7 @@ Một phương pháp chỉ được gọi là biến thể GRAPES khi có đủ 
 4. [`00_project/PHASE2_RESEARCH_PLAN_vn.md`](./00_project/PHASE2_RESEARCH_PLAN_vn.md) — gate R0–R7 và khối lượng công việc.
 5. [`PROJECT_CONTEXT_AND_RESEARCH_RULES_vn.md`](./PROJECT_CONTEXT_AND_RESEARCH_RULES_vn.md) — quy tắc thực nghiệm và ranh giới claim.
 6. [`06_code/README_vn.md`](./06_code/README_vn.md) — code, notebook, artifact, cách kiểm tra.
+7. Đề xuất Phase 2 cho giảng viên: [`05_slides/PHASE2_PROPOSAL_GRAPES_GFN_REC_vn.pptx`](./05_slides/PHASE2_PROPOSAL_GRAPES_GFN_REC_vn.pptx) và [`04_thesis/PHASE2_PROPOSAL_GRAPES_GFN_REC_vn.pdf`](./04_thesis/PHASE2_PROPOSAL_GRAPES_GFN_REC_vn.pdf).
 
 Bản tiếng Việt là bản chuẩn. Các file `_en` chưa đồng bộ sau DL-001 và mang banner `SUPERSEDED`.
 
