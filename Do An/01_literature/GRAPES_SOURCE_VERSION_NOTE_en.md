@@ -127,5 +127,4 @@ When paper and code disagree, record the discrepancy, design a minimal falsifica
 - Paper version: `PINNED`.
 - Official code reference: `PINNED`.
 - Exact Phase 1 executed commit: `UNKNOWN` and not recoverable from current artifacts.
-- Phase 2 environment: `OPEN`.
-- Canonical G1 is `PASS` as of 2026-09-03; see the frozen [G1 research-design record](../00_project/G1_RESEARCH_DESIGN_en.md) and [canonical plan](../00_project/PHASE2_RESEARCH_PLAN_en.md). Environment readiness is tracked separately as E0.
+- The Phase 2 reference-design environment remains historical. The completed empirical branch is the fixed M0/M1/M2 comparison, documented in the [current research plan](../00_project/PHASE2_RESEARCH_PLAN_en.md).

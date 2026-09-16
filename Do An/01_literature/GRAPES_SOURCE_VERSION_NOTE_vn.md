@@ -127,5 +127,4 @@ Khi paper và code không khớp, ghi discrepancy, thiết kế minimal falsific
 - Paper version: `PINNED`.
 - Official code reference: `PINNED`.
 - Exact Phase 1 executed commit: `UNKNOWN` và không thể khôi phục từ artifact hiện tại.
-- Phase 2 environment: `OPEN`.
-- G1 chuẩn đã `PASS` ngày 2026-09-03; xem [biên bản thiết kế nghiên cứu G1](../00_project/G1_RESEARCH_DESIGN_vn.md) và [kế hoạch chuẩn](../00_project/PHASE2_RESEARCH_PLAN_vn.md). Environment readiness được theo dõi riêng bằng E0.
+- Môi trường reference-design của Phase 2 chỉ còn giá trị lịch sử. Nhánh thực nghiệm đã hoàn tất là so sánh M0/M1/M2 cố định, được ghi trong [kế hoạch nghiên cứu hiện hành](../00_project/PHASE2_RESEARCH_PLAN_vn.md).
