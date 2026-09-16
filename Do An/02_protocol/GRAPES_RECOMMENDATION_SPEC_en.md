@@ -1,5 +1,7 @@
 # GRAPES-Informed Reference Design for Graph-Sampling Recommendation
 
+> **`SUPERSEDED — NOT SYNCED AFTER DL-001`** (2026-09-16). Phase 2 was reset to GRAPES-GFN-Rec (a learned GRAPES variant for recommendation). The Vietnamese files are canonical: `00_project/DECISION_LOG_vn.md`, `00_project/PHASE2_GRAPES_GFN_REC_SPEC_vn.md`.
+
 > **Status:** `REFERENCE DESIGN — SUPERSEDED AS THE CANONICAL PHASE 2 METHOD`  
 > **Recorded:** 2026-08-26  
 > **Role:** candidate mechanisms and verification ideas informed by GRAPES; not the final thesis method.

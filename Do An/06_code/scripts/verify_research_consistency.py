@@ -20,6 +20,9 @@ from xml.etree import ElementTree
 
 ACTIVE_MARKDOWN = (
     "Do An/README_vn.md",
+    "Do An/00_project/DECISION_LOG_vn.md",
+    "Do An/00_project/PHASE2_GRAPES_GFN_REC_SPEC_vn.md",
+    "Do An/02_protocol/GRAPES_RECOMMENDATION_SPEC_vn.md",
     "Do An/PROJECT_CONTEXT_AND_RESEARCH_RULES_vn.md",
     "Do An/PROJECT_CONTEXT_AND_RESEARCH_RULES_en.md",
     "Do An/00_project/PHASE2_RESEARCH_PLAN_vn.md",
@@ -34,8 +37,31 @@ ACTIVE_MARKDOWN = (
 
 CANONICAL_SLIDE = "Do An/05_slides/THESIS_PRESENTATION_vn.pptx"
 
+# Central documents that define the current Phase 2 scope (DL-001). Each must
+# name the learned GRAPES variant so a future edit cannot silently fall back to
+# the archived M2 heuristic narrative.
+CANONICAL_SCOPE_DOCS = (
+    "Do An/README_vn.md",
+    "Do An/PROJECT_CONTEXT_AND_RESEARCH_RULES_vn.md",
+    "Do An/00_project/PHASE2_RESEARCH_PLAN_vn.md",
+    "Do An/00_project/PHASE2_GRAPES_GFN_REC_SPEC_vn.md",
+    "Do An/00_project/DECISION_LOG_vn.md",
+    "Do An/06_code/README_vn.md",
+)
+
 REQUIRED_PHRASES = {
-    "Do An/README_vn.md": ("M0", "M1", "M2", "semantic diversity"),
+    "Do An/README_vn.md": ("GRAPES-GFN-Rec", "DL-001", "ARCHIVED PILOT", "M2", "Semantic"),
+    "Do An/PROJECT_CONTEXT_AND_RESEARCH_RULES_vn.md": ("GRAPES-GFN-Rec", "G1–G7"),
+    "Do An/00_project/PHASE2_RESEARCH_PLAN_vn.md": ("GRAPES-GFN-Rec", "DL-001", "R7"),
+    "Do An/00_project/PHASE2_GRAPES_GFN_REC_SPEC_vn.md": (
+        "GRAPES-GFN-Rec",
+        "Trajectory Balance",
+        "G7",
+        "D_dev",
+        "GRAPES-RL-Rec",
+    ),
+    "Do An/00_project/DECISION_LOG_vn.md": ("GRAPES-GFN-Rec", "DL-001"),
+    "Do An/06_code/README_vn.md": ("GRAPES-GFN-Rec", "ARCHIVED PILOT"),
     "Do An/03_reports/REPORT_TEACHER_vn.md": (
         "NDCG@20",
         "Recall@20",
@@ -119,6 +145,22 @@ def narrative_violations(text: str, label: str) -> list[str]:
         violations.append(f"{label}: M2 superiority over M1 is claimed")
     if re.search(r"\bm2\s+(?:outperforms|outperformed|beats|beat)\s+m1\b", lower):
         violations.append(f"{label}: M2 superiority over M1 is claimed")
+
+    # DL-001: M2 is an archived static heuristic. It must never be described as
+    # the Phase 2 / final method, a learned sampler or a GRAPES variant.
+    scope_patterns = (
+        r"\bm2\b[^.\n]{0,60}?\blà\s+(?:một\s+)?(?:phương pháp\s+(?:phase\s*2|chính|cuối|luận văn)"
+        r"|learned sampler|sampler học được|biến thể grapes|grapes variant)",
+        r"\bm2\b[^.\n]{0,60}?\bis\s+(?:the|a|an)\s+(?:phase\s*2 method|final (?:thesis )?method"
+        r"|learned sampler|grapes variant)",
+    )
+    for pattern in scope_patterns:
+        for match in re.finditer(pattern, lower):
+            span = match.group(0)
+            if re.search(r"không phải|\bnot\b|\bno longer\b", span):
+                continue
+            violations.append(f"{label}: scope violation, M2 described as Phase 2/learned/GRAPES method")
+            break
 
     test_selection_patterns = (
         r"(?:test set|test target|tập test).{0,40}(?:đã được dùng|was used).{0,40}(?:chọn|select|tune|tuning)",

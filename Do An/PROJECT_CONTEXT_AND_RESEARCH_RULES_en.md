@@ -1,5 +1,7 @@
 # Current research context and rules
 
+> **`SUPERSEDED — NOT SYNCED AFTER DL-001`** (2026-09-16). Phase 2 was reset to GRAPES-GFN-Rec (a learned GRAPES variant for recommendation). The Vietnamese files are canonical: `00_project/DECISION_LOG_vn.md`, `00_project/PHASE2_GRAPES_GFN_REC_SPEC_vn.md`.
+
 > Updated: 2026-09-16
 
 ## Research question

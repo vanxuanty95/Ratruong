@@ -85,6 +85,37 @@ class ResearchConsistencyTests(unittest.TestCase):
             self.assertIn("M0 uniform", checker.extract_pptx_text(path))
             self.assertIn("M2 không vượt M1", checker.extract_pptx_text(path))
 
+    def test_scope_scan_rejects_m2_as_grapes_or_phase2_method(self):
+        checker = load_checker()
+        bad = [
+            "M2 là phương pháp Phase 2 của đồ án.",
+            "M2 là biến thể GRAPES cho recommendation.",
+            "M2 là learned sampler.",
+            "M2 is the final method of the thesis.",
+            "M2 is a GRAPES variant.",
+        ]
+        for text in bad:
+            joined = "\n".join(checker.narrative_violations(text, "bad.md"))
+            self.assertIn("scope", joined, text)
+
+    def test_scope_scan_accepts_archived_pilot_wording(self):
+        checker = load_checker()
+        text = (
+            "M2 là pilot heuristic, không phải learned GRAPES variant. "
+            "Phase 2 là GRAPES-GFN-Rec. M2 is an archived heuristic pilot."
+        )
+        self.assertEqual(checker.narrative_violations(text, "good.md"), [])
+
+    def test_canonical_docs_name_the_learned_method(self):
+        checker = load_checker()
+        for relative in checker.CANONICAL_SCOPE_DOCS:
+            self.assertIn("GRAPES-GFN-Rec", checker.REQUIRED_PHRASES[relative])
+
+    def test_repository_has_no_consistency_violations(self):
+        checker = load_checker()
+        report = checker.build_report(REPO_ROOT)
+        self.assertEqual(checker.validate_report(report), [])
+
 
 if __name__ == "__main__":
     unittest.main()

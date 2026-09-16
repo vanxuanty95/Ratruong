@@ -1,10 +1,10 @@
-# Reference Design GRAPES-Informed cho Graph-Sampling Recommendation
+# Hợp đồng thành phần GRAPES-GFN-Rec (D1–D11, T01–T25)
 
-> **Trạng thái:** `REFERENCE DESIGN — SUPERSEDED KHỎI VAI TRÒ PHƯƠNG PHÁP PHASE 2 CHUẨN`  
-> **Ngày ghi nhận:** 2026-08-26  
-> **Vai trò:** candidate mechanism và verification idea có nền tảng từ GRAPES; không phải phương pháp luận văn cuối cùng.
+> **Trạng thái:** `NORMATIVE COMPONENT CONTRACT CHO GRAPES-GFN-REC` (nâng lại theo DL-001, 16/09/2026)
+> **Ngày ghi nhận gốc:** 2026-08-26
+> **Vai trò:** hợp đồng ngữ nghĩa D1–D11 và oracle T01–T25 cho mọi thành phần của GRAPES-GFN-Rec (method chính) và GRAPES-RL-Rec (ablation). Spec cấp trên: [`../00_project/PHASE2_GRAPES_GFN_REC_SPEC_vn.md`](../00_project/PHASE2_GRAPES_GFN_REC_SPEC_vn.md); nếu mâu thuẫn, spec cấp trên thắng và sai khác được ghi vào decision log.
 
-> **Lưu ý hiện hành 16/09/2026:** nghiên cứu thực tế đã dừng ở M2 frontier-normalized, một heuristic cố định. Các phần RL, GFlowNet và learned policy bên dưới không được implement, không tham gia paired validation và không còn nằm trong kế hoạch đang mở. Phương pháp thực tế xem tại [`../04_thesis/THESIS_REPORT_vn.md`](../04_thesis/THESIS_REPORT_vn.md).
+> **Lịch sử:** từ khoảng G4 đến 16/09/2026, tài liệu này bị hạ thành "reference design, superseded" và phần RL/GFlowNet bị ghi là không implement; nghiên cứu khi đó dừng ở heuristic M2. Đó là lệch scope đã được sửa ở [`../00_project/DECISION_LOG_vn.md`](../00_project/DECISION_LOG_vn.md) (DL-001). Các nhãn `PROPOSED REFERENCE CHOICE`/`GRAPES-INFORMED CANDIDATE`/`REFERENCE-SPECIFIED` bên dưới nay được đọc là quyết định có hiệu lực cho method chính; câu "không chọn phương pháp luận văn" trong §1, §10, §12 không còn áp dụng.
 
 ## 1. Mục đích và quy tắc quản trị nguồn
 

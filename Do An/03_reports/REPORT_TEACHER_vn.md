@@ -1,5 +1,7 @@
 # Nội dung trình bày nghiên cứu
 
+> **`ARCHIVED PILOT NARRATIVE — NOT FINAL THESIS EVIDENCE`** (DL-001, 16/09/2026). Tài liệu này kể câu chuyện M0–M2 heuristic pilot. Phase 2 hiện là GRAPES-GFN-Rec; xem `00_project/PHASE2_GRAPES_GFN_REC_SPEC_vn.md`. Sẽ được viết lại ở gate R7.
+
 > Bản này dùng để nói và trả lời câu hỏi. Chi tiết kỹ thuật đầy đủ nằm trong thesis và thư mục kết quả.
 
 ## 1. Bài toán em đang làm

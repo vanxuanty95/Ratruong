@@ -1,5 +1,7 @@
 # Bản thảo luận văn
 
+> **`ARCHIVED PILOT NARRATIVE — NOT FINAL THESIS EVIDENCE`** (DL-001, 16/09/2026). Tài liệu này kể câu chuyện M0–M2 heuristic pilot. Phase 2 hiện là GRAPES-GFN-Rec; xem `00_project/PHASE2_GRAPES_GFN_REC_SPEC_vn.md`. Sẽ được viết lại ở gate R7.
+
 ## Tóm tắt
 
 Luận văn nghiên cứu ảnh hưởng của graph sampling đối với recommendation dựa trên LightGCN. Trên cùng temporal user–item graph, mô hình, sampling budget, số bước huấn luyện, negative draw, seed, evaluator và phần cứng, ba sampler được so sánh: M0 chọn đều, M1 ưu tiên node có training degree lớn và M2 ưu tiên node nối tốt vào frontier hiện tại sau khi giảm lợi thế của hub. Dữ liệu chính là Amazon Reviews’23 Baby Products với 5.953.891 rating raw. Sau khi quarantine một rating ngoài miền, giữ rating 4–5 và áp dụng temporal warm-start protocol, training graph có 3.868.654 cạnh, 2.318.308 user và 162.125 item. Graph rất thưa và mất cân bằng: 71,76% user chỉ có một interaction; item-degree Gini bằng 0,8584; top 1% item giữ 44,09% training interaction.

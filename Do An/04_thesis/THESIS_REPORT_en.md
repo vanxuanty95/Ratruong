@@ -1,5 +1,7 @@
 # Thesis draft
 
+> **`ARCHIVED PILOT NARRATIVE — NOT FINAL THESIS EVIDENCE`** (DL-001, 2026-09-16). This document narrates the M0–M2 heuristic pilot. Phase 2 is now GRAPES-GFN-Rec; see the canonical Vietnamese spec `00_project/PHASE2_GRAPES_GFN_REC_SPEC_vn.md`.
+
 ## Abstract
 
 This thesis studies computation-graph sampling for LightGCN recommendation. Three samplers are compared under the same temporal user-item graph, model, layer budget, optimizer steps, random inputs, evaluator, and Tesla T4: uniform M0, degree-aware M1, and frontier-normalized M2. The primary data are 5,953,891 raw Amazon Reviews'23 Baby Products ratings. After quarantining one out-of-range rating, keeping ratings 4–5, and applying a temporal warm-start protocol, the training graph contains 3,868,654 edges, 2,318,308 users, and 162,125 items. It is highly sparse and imbalanced.

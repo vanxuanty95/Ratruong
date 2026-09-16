@@ -1,5 +1,7 @@
 # Research presentation narrative
 
+> **`ARCHIVED PILOT NARRATIVE — NOT FINAL THESIS EVIDENCE`** (DL-001, 2026-09-16). This document narrates the M0–M2 heuristic pilot. Phase 2 is now GRAPES-GFN-Rec; see the canonical Vietnamese spec `00_project/PHASE2_GRAPES_GFN_REC_SPEC_vn.md`.
+
 ## What the project studies
 
 The project examines how context-node sampling changes LightGCN recommendation. The data, model, training steps, layer budget, random inputs, evaluator, and GPU stay fixed. Only the rule used to select context nodes changes.
