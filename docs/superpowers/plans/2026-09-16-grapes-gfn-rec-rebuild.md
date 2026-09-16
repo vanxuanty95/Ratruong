@@ -47,14 +47,15 @@
 - `bpr_loss`, `trajectory_balance_loss`, `reinforce_loss` (T18, T19, T22)
 - `GFNTrainStep(recommender, sampler, opt_r, opt_s, alpha, mode="tb"|"rl"|"uniform"|"degree")` (T20, G7)
 
+Implemented files (16/09/2026): `torch_graph.py`, `gfn_sampler.py`, `sampled_lightgcn.py`, `gfn_trainer.py`, `tests/test_gfn_rec_torch.py` (28 torch oracle tests; skipped where torch is absent).
+
 Steps:
-- [ ] Write failing tests T05–T07, T09, T10, T16, T17, T21 for sampler primitives.
-- [ ] Implement sampler primitives until green.
-- [ ] Write failing tests T11–T15 (path oracle `b–a–t` = 1; full-degree = 1/2; full receptive field equals full LightGCN).
-- [ ] Implement blocks + Sampled LightGCN.
-- [ ] Write failing tests T18, T19 (manual TB, log Z permutation invariance, invariance to nodes outside V⁰, isolated targets finite), T20 (TB grads None on Θ_R; BPR grads None on Θ_S/Θ_Z), G7 (Θ_S changes after one TB step), deterministic replay with fixed generator.
-- [ ] Implement train step with four modes sharing one code path (uniform/degree = fixed logits, no sampler optimizer).
-- [ ] Run full suite + checker; commit.
+- [x] Failing tests first for T01–T03, T05–T10, T16, T17, T21, D8 re-entry; implement sampler primitives (one code path for learned/uniform/degree).
+- [x] T11–T15: path oracle unit weights = 1, full-degree = 1/2, sampled bi-norm = 1/√2 (hand-derived: `a` also receives from `t ∈ K²`); full receptive field equals full LightGCN for a single-user target.
+- [x] Documented property test: non-cumulative `K^l = V0 ∪ V^l` is **not** full-LightGCN-equivalent for mixed user+item targets (V¹ nodes drop out of K²). Must be stated in report.
+- [x] T18 exact-enumeration REINFORCE gradient −0.5; T19 manual TB, `log Z` permutation/outside invariance, isolated finite; T20 ownership both directions; G7 sampler parameters change; deterministic replay; T22; T25 holdout guard.
+- [x] Mutation check (cloud, torch 2.14 CPU): removing TB detach, dropping unselected terms from `log q`, cumulative-union state, wrong RL sign → each killed by the suite.
+- [ ] Remaining for R2 close: T04 negative validity in batch sampler; T23 + D9 transient positive-edge mask; D6 legacy target+neighbour `log Z` ablation; sparse/partitioned sampler embedding option for 2.48M nodes on T4 (R-5).
 
 ### Task R1: Development split (Colab)
 
