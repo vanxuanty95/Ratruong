@@ -57,7 +57,7 @@ function footnote(s, text) {
 }
 
 
-const VERSION = "0.4", UPDATED = "16/09/2026";
+const VERSION = "0.5", UPDATED = "17/09/2026";
 const REG = {};
 function pending(title, kicker, gate, items, note) {
   const s = base(title, kicker);
@@ -109,6 +109,7 @@ function pending(title, kicker, gate, items, note) {
   s.addTable(rows, { x: 0.6, y: 1.5, w: 12.1, colW: [2.2, 5.6, 2.3, 2.0], fontFace: BF, fontSize: 13, color: C.ink, border: { type: "solid", pt: 0.5, color: C.grayLight }, rowH: 0.5, fill: { color: C.white } });
   s.addText([
     { text: "Nhật ký", options: { bold: true, breakLine: true } },
+    { text: "0.5 (17/09) — rà soát chống bịa đặt: sửa diễn giải Jaccard, dải loss_coef GRAPES, tỷ lệ user mới 54–60%, bỏ các suy đoán không có số liệu (nguyên nhân bất thường, backbone khác, ví dụ distributed); mọi số phái sinh ghi ở results/doc_facts/doc_facts.json.", options: { breakLine: true } },
     { text: "0.4 (16/09) — điền kết quả notebook 11: rating theo độ phổ biến, thời gian, bất thường, đồng mua, bùng nổ lân cận thực đo, khả năng chạm target, metadata, development split (R1 xong).", options: { breakLine: true } },
     { text: "0.3 (16/09) — chuyển sang bản sống; chương dữ liệu chi tiết; chương trả lời góp ý 3/9; kế hoạch nén về 30/11.", options: { breakLine: true } },
     { text: "0.2 (16/09) — đề xuất GRAPES-GFN-Rec, lõi code R2, 28 oracle test. 0.1 — reset scope (DL-001).", options: {} },
@@ -147,7 +148,7 @@ let MAP_SLIDE;
   s.addText(bullets([
     "LightGCN tính embedding của user bằng cách cộng embedding hàng xóm qua L bước (L = 2–3).",
     "Mỗi bước nhân số node cần tính với bậc của node đi qua. Trên graph lệch long-tail, chỉ cần chạm một item phổ biến là kéo theo hàng nghìn user.",
-    "Full-graph training vẫn chạy được ở quy mô Baby, nhưng chi phí tăng theo số cạnh × số layer: Home_and_Kitchen có 66,6 triệu dòng, graph thương mại điện tử thật còn lớn hơn.",
+    "Full-graph training đã chạy được ở quy mô Baby (pilot), nhưng chi phí tăng theo số cạnh × số layer; Home_and_Kitchen có 66,6 triệu dòng raw (11,2 lần Baby).",
     "Lấy mẫu giới hạn số node mỗi layer (budget k), đổi lại model chỉ thấy một phần ngữ cảnh → chọn node nào là câu hỏi nghiên cứu.",
   ], 17), { x: 0.6, y: 1.6, w: 6.3, h: 5.0, fontFace: BF, margin: 0, isTextBox: true, valign: "top", paraSpaceAfter: 8 });
   // hop diagram with measured stats
@@ -177,14 +178,14 @@ let MAP_SLIDE;
   const rows = [
     [head("Hướng"), head("Cách làm"), head("Ưu điểm"), head("Hạn chế với bài toán này"), head("Vai trò")],
     ["Full-graph, 1 GPU", "Lan truyền trên toàn graph", "Chính xác, đơn giản", "Bộ nhớ/thời gian tăng theo số cạnh × layer", "Tham chiếu (tầng B)"],
-    ["Distributed training", "Chia batch/model cho nhiều GPU, nhiều máy (PinSage [9])", "Mở rộng bằng phần cứng", "Cần cụm máy, chi phí giao tiếp; không giảm lượng tính mỗi batch", "Ngoài phạm vi (1×T4)"],
-    ["Chia đồ thị (Cluster-GCN [11])", "Học trên từng cụm con", "Batch nhỏ, dễ song song", "Cắt mất cạnh giữa cụm; graph lệch hub khó chia đều", "Không chọn"],
-    ["Embedding lịch sử (GAS [12])", "Dùng lại embedding cũ của hàng xóm", "Không bỏ hàng xóm", "Lưu embedding cho 2,48 tr node mỗi layer; embedding cũ bị lệch", "Không chọn"],
+    ["Distributed training", "Chia dữ liệu/model cho nhiều GPU hoặc nhiều máy", "Mở rộng bằng phần cứng", "Cần nhiều thiết bị; bản thân nó không giảm lượng tính của một batch", "Ngoài phạm vi (1×T4)"],
+    ["Chia đồ thị (Cluster-GCN [11])", "Lấy khối node của một subgraph dày tìm bằng clustering; chỉ tìm hàng xóm trong subgraph", "Tiết kiệm bộ nhớ", "Cạnh ra ngoài subgraph không được dùng trong batch", "Không chọn"],
+    ["Embedding lịch sử (GAS [12])", "Cắt nhánh computation graph bằng embedding từ vòng lặp trước", "Không bỏ dữ liệu; có cận sai số", "Phải lưu embedding lịch sử cho mọi node (2,48 tr) mỗi layer; sai số xấp xỉ", "Không chọn"],
     [{ text: "Sampling (GraphSAGE, FastGCN, LADIES, GRAPES)", options: hi }, { text: "Giới hạn k node mỗi layer", options: hi }, { text: "Kiểm soát trực tiếp chi phí mỗi batch", options: hi }, { text: "Mất ngữ cảnh → phải chọn node đúng", options: hi }, { text: "Hướng chính", options: hi }],
   ];
   s.addTable(rows, { x: 0.6, y: 1.55, w: 12.1, colW: [2.4, 2.8, 2.0, 3.3, 1.6], fontFace: BF, fontSize: 13.5, color: C.ink, border: { type: "solid", pt: 0.5, color: C.grayLight }, rowH: 0.72, fill: { color: C.white } });
-  card(s, 0.6, 5.95, 12.1, 0.9, "Hai hướng bổ sung cho nhau, không loại trừ", "", { fill: C.tealPale, headSize: 15 });
-  s.addText("Distributed nhân phần cứng; sampling giảm lượng tính mỗi batch. Sampler học được có thể chạy trong từng worker của hệ distributed. Đồ án chọn sampling vì đề tài hướng tới và giới hạn 1 GPU.", { x: 5.6, y: 5.95, w: 6.95, h: 0.9, fontFace: BF, fontSize: 13, color: C.ink, margin: 0, isTextBox: true, valign: "middle" });
+  card(s, 0.6, 5.95, 12.1, 0.9, "Hai hướng không loại trừ nhau", "", { fill: C.tealPale, headSize: 15 });
+  s.addText("Distributed tăng phần cứng; sampling giảm lượng tính mỗi batch. Đồ án chọn sampling vì đề tài hướng tới và giới hạn 1 GPU T4.", { x: 5.6, y: 5.95, w: 6.95, h: 0.9, fontFace: BF, fontSize: 13, color: C.ink, margin: 0, isTextBox: true, valign: "middle" });
   s.addNotes("Trả lời câu hỏi sampling hoặc distributed trong ghi chú của cô.");
 }
 
@@ -305,8 +306,8 @@ let MAP_SLIDE;
     [head("Loại"), head("Mức độ trong Baby_Products"), head("Quyết định"), head("Lý do")],
     ["Rating ngoài miền 1–5", "1 dòng (rating 0.0)", tag("Loại", C.coral), "Lỗi dữ liệu rõ ràng"],
     ["Trùng cặp, thiếu ID, sai timestamp", "0 dòng", tag("Không cần xử lý", C.tealMid), "Đã kiểm tra chính xác trên toàn file"],
-    ["Rating thấp 1–3★", "1.298.047 dòng (21,8%)", tag("Không làm cạnh positive", C.amber), "Không phải lỗi mà là tín hiệu không thích / không chắc; gợi ý top-N chỉ học từ 4–5★"],
-    ["User / item chỉ 1 tương tác", "71,76% user; 33,35% item", tag("Giữ, không lọc k-core", C.tealMid), "Là long-tail thật; lọc sẽ xóa đúng phần sampling phải xử lý"],
+    ["Rating thấp 1–3★", "1.298.047 dòng (21,8%)", tag("Không làm cạnh positive", C.amber), "Không phải lỗi; đồ án chọn không coi là positive (P4)"],
+    ["User / item chỉ 1 tương tác", "71,76% user; 33,35% item", tag("Giữ, không lọc k-core", C.tealMid), "Lọc k-core sẽ xóa các node này khỏi graph"],
     ["Hành vi bất thường (bot, spam, đánh giá dồn dập)", "0,1% tương tác từ user-ngày ≥20 đánh giá; tối đa 48/ngày", tag("Giữ, chỉ báo cáo", C.tealMid), "Quá ít để ảnh hưởng; không có quy tắc xóa đăng ký trước"],
     ["Thiên lệch phổ biến", "Top 1% item giữ 44,1% tương tác", tag("Giữ, báo theo nhóm", C.tealMid), "Không phải nhiễu nhưng làm lệch chỉ số tổng"],
   ];
@@ -325,7 +326,7 @@ let MAP_SLIDE;
     catAxisLabelColor: C.ink, valAxisHidden: true, valGridLine: { style: "none" }, catGridLine: { style: "none" },
     showTitle: true, title: "Phân bố rating Baby_Products (5.953.890 dòng hợp lệ)", titleFontSize: 12, titleColor: C.ink, showLegend: false,
   });
-  s.addText("Hình chữ J: 66,7% là 5★, 21,8% là 1–3★. Rating trên Amazon lệch mạnh về tích cực, nên 5★ không hiếm và 4★ đã là tín hiệu kém hơn trung bình.", { x: 0.6, y: 4.9, w: 5.0, h: 1.0, fontFace: BF, fontSize: 13, color: C.ink, margin: 0, isTextBox: true });
+  s.addText("Hình chữ J: 66,7% là 5★, 21,8% là 1–3★, trung bình 4,21. Rating của Baby_Products lệch mạnh về tích cực nên 4★ đã thấp hơn trung bình.", { x: 0.6, y: 4.9, w: 5.0, h: 1.0, fontFace: BF, fontSize: 13, color: C.ink, margin: 0, isTextBox: true });
   const head = (t) => ({ text: t, options: { bold: true, color: C.white, fill: { color: C.teal } } });
   const hi = (t) => ({ text: t, options: { bold: true, fill: { color: C.amberPale } } });
   const rows = [
@@ -421,7 +422,7 @@ let MAP_SLIDE;
     s.addText(l, { x: 8.45, y, w: 4.25, h: 0.8, fontFace: BF, fontSize: 13, color: C.ink, margin: 0, isTextBox: true, valign: "middle" });
   });
   card(s, 6.5, 5.95, 6.2, 0.9, "Hệ quả", "", { fill: C.amberPale, headSize: 14 });
-  s.addText("Đồ án giới hạn ở warm-start; cold-start cần feature nội dung (metadata) và là hướng phát triển.", { x: 7.6, y: 5.95, w: 5.0, h: 0.9, fontFace: BF, fontSize: 12.5, color: C.ink, margin: 0, isTextBox: true, valign: "middle" });
+  s.addText("Đồ án giới hạn ở warm-start; cold-start nằm ngoài phạm vi.", { x: 7.6, y: 5.95, w: 5.0, h: 0.9, fontFace: BF, fontSize: 12.5, color: C.ink, margin: 0, isTextBox: true, valign: "middle" });
   footnote(s, "Nguồn: data_story_summary.json (temporal_population) và baby_p4_g2c_manifest.json. Chỉ đếm số dòng, không dùng target để thiết kế.");
 }
 
@@ -472,7 +473,7 @@ let MAP_SLIDE;
     ["Tail", "≤ 12", "80,07%", "10,39%"],
   ];
   s.addTable(rows, { x: 0.6, y: 4.55, w: 6.0, colW: [1.6, 1.5, 1.45, 1.45], fontFace: BF, fontSize: 13, color: C.ink, border: { type: "solid", pt: 0.5, color: C.grayLight }, rowH: 0.45, fill: { color: C.white } });
-  card(s, 7.0, 1.55, 5.7, 2.55, "Đọc cấu trúc này thế nào", "Graph gần như liên thông nên lan truyền 2–3 bước chạm tới phần lớn graph. Một item head có hàng nghìn user; 80% sản phẩm tail chỉ giữ 10% cạnh. Mỗi lựa chọn node vì vậy đánh đổi giữa tín hiệu phổ biến (rẻ để có, ít cá nhân) và tín hiệu hiếm.", { fill: C.tealPale, bodySize: 13.5, headSize: 15 });
+  card(s, 7.0, 1.55, 5.7, 2.55, "Đọc cấu trúc này thế nào", "96,5% node thuộc một thành phần liên thông; đo không lấy mẫu, lan truyền 3 bước từ batch 1.024 triplet chạm 93% node. Item head có ít nhất 397 user; 80% sản phẩm tail chỉ giữ 10% cạnh.", { fill: C.tealPale, bodySize: 13.5, headSize: 15 });
   card(s, 7.0, 4.25, 5.7, 2.55, "Đo thêm (notebook 11)", "4,89 triệu cặp sản phẩm đồng mua. 20,7% sản phẩm (25,8% tail) không có sản phẩm đồng mua nào — chỉ được user một-tương-tác chạm tới. Một user ngẫu nhiên chạm trung vị 524 user sau 2 bước và 974 sản phẩm sau 3 bước.", { fill: C.amberPale, bodySize: 13, headSize: 15 });
   footnote(s, "Nguồn: data_story_summary.json (training_graph), configs/cohorts_v1.json (khóa trước khi có kết quả model).");
 }
@@ -526,7 +527,7 @@ let MAP_SLIDE;
     s.addText(v, { x, y, w: 2.8, h: 0.65, fontFace: HF, fontSize: 24, bold: true, color: C.teal, margin: 0, isTextBox: true });
     s.addText(l, { x, y: y + 0.65, w: 2.7, h: 0.7, fontFace: BF, fontSize: 12, color: C.gray, margin: 0, isTextBox: true, valign: "top" });
   });
-  card(s, 7.0, 4.65, 5.7, 2.2, "Hệ quả", "Rating mang nhiều thói quen của người đánh giá hơn là mức thích tuyệt đối → dùng tín hiệu nhị phân 4–5★ thay vì hồi quy rating là hợp lý. Cần báo kết quả theo head/body/tail vì positive đã lệch về head từ dữ liệu.", { fill: C.tealPale, bodySize: 13, headSize: 15 });
+  card(s, 7.0, 4.65, 5.7, 2.2, "Hệ quả", "Nhiều user cho mọi sản phẩm cùng một mức → giá trị rating tuyệt đối khó so sánh giữa user (diễn giải, chưa kiểm định); đồ án dùng tín hiệu nhị phân 4–5★. Positive đã lệch về head từ dữ liệu → báo kết quả theo head/body/tail.", { fill: C.tealPale, bodySize: 13, headSize: 15 });
   footnote(s, "Nguồn: results/dataset_deep_analysis/deep_analysis_summary.json (S1_rating), 4.886.112 rating trước t1.");
 }
 
@@ -541,16 +542,16 @@ let MAP_SLIDE;
   ], {
     x: 0.5, y: 1.45, w: 6.6, h: 4.2, chartColors: [C.teal, C.amber, C.grayLight], lineSize: 2.5, lineDataSymbol: "circle", lineDataSymbolSize: 7,
     catAxisLabelColor: C.ink, valAxisLabelColor: C.gray, valAxisMinVal: 0, valAxisMaxVal: 0.7, valAxisLabelFormatCode: "0.0", valGridLine: { color: "E3E8E8", size: 0.5 },
-    showLegend: true, legendPos: "b", legendFontSize: 11, showTitle: true, title: "Top 1% sản phẩm thay đổi khoảng một nửa mỗi năm", titleFontSize: 12, titleColor: C.ink,
+    showLegend: true, legendPos: "b", legendFontSize: 11, showTitle: true, title: "Top 1% sản phẩm chỉ trùng một phần giữa các năm (Jaccard 0,45–0,54)", titleFontSize: 12, titleColor: C.ink,
   });
-  const stats = [["20,9 ngày", "khoảng cách trung vị giữa hai tương tác của cùng user (p90: 598 ngày)"], ["41,4%", "cặp tương tác liên tiếp của user xảy ra trong cùng một ngày"], ["565 ngày", "thời gian hoạt động trung vị của sản phẩm có ≥2 rating"], ["55–60%", "tỷ lệ rating mỗi năm (2014–2023) đến từ user lần đầu xuất hiện"]];
+  const stats = [["20,9 ngày", "khoảng cách trung vị giữa hai tương tác của cùng user (p90: 598 ngày)"], ["41,4%", "cặp tương tác liên tiếp của user xảy ra trong cùng một ngày"], ["565 ngày", "thời gian hoạt động trung vị của sản phẩm có ≥2 rating"], ["54–60%", "tỷ lệ rating mỗi năm (2014–2023) đến từ user lần đầu xuất hiện"]];
   stats.forEach(([v, l], i) => {
     const y = 1.5 + i * 1.02;
     s.addText(v, { x: 7.4, y, w: 2.0, h: 0.85, fontFace: HF, fontSize: 20, bold: true, color: C.teal, margin: 0, isTextBox: true, valign: "middle" });
     s.addText(l, { x: 9.45, y, w: 3.25, h: 0.85, fontFace: BF, fontSize: 12.5, color: C.ink, margin: 0, isTextBox: true, valign: "middle" });
   });
   card(s, 0.6, 5.8, 12.1, 1.0, "Hệ quả", "", { fill: C.amberPale, headSize: 14 });
-  s.addText("Phổ biến của năm trước chỉ giải thích một phần năm sau → chia theo thời gian là cần thiết; sampler ưu tiên bậc tích lũy (M1) có thể bám vào sản phẩm đã hết thời. User thường đánh giá theo đợt → lịch sử cá nhân rất ngắn.", { x: 1.75, y: 5.8, w: 10.8, h: 1.0, fontFace: BF, fontSize: 12.5, color: C.ink, margin: 0, isTextBox: true, valign: "middle" });
+  s.addText("Top 1% năm trước chỉ nhận 23,8–30,3% rating năm sau (top 1% của chính năm đó: 30,8–33,6%) → chia theo thời gian là cần thiết; giả thuyết cần kiểm tra: M1 (bậc tích lũy) có thể bám sản phẩm cũ. 41,4% cặp tương tác liên tiếp cùng ngày.", { x: 1.75, y: 5.8, w: 10.8, h: 1.0, fontFace: BF, fontSize: 12.5, color: C.ink, margin: 0, isTextBox: true, valign: "middle" });
   footnote(s, "Nguồn: deep_analysis_summary.json (S2_temporal). Độ trôi và khoảng cách tính trên dữ liệu trước t1; tỷ lệ user mới theo năm dùng toàn bộ số dòng.");
 }
 
@@ -560,16 +561,16 @@ let MAP_SLIDE;
   const head = (t) => ({ text: t, options: { bold: true, color: C.white, fill: { color: C.teal } } });
   const rows = [
     [head("Dấu hiệu"), head("Số lượng (trước t1)"), head("Tỷ lệ tương tác"), head("Đánh giá")],
-    ["User đánh giá ≥5 sản phẩm trong 1 ngày", "36.470 user-ngày (33.367 user)", "4,90%", "Mua sắm theo đợt, bình thường"],
-    ["User đánh giá ≥10 sản phẩm trong 1 ngày", "3.335 user-ngày (3.229 user)", "0,87%", "Có thể là đánh giá hàng loạt"],
-    ["User đánh giá ≥20 sản phẩm trong 1 ngày", "197 user-ngày (195 user)", "0,10%", "Đáng ngờ nhưng rất ít"],
+    ["User đánh giá ≥5 sản phẩm trong 1 ngày", "36.470 user-ngày (33.367 user)", "4,90%", "Chưa kết luận là bất thường"],
+    ["User đánh giá ≥10 sản phẩm trong 1 ngày", "3.335 user-ngày (3.229 user)", "0,87%", "Chưa xác định nguyên nhân"],
+    ["User đánh giá ≥20 sản phẩm trong 1 ngày", "197 user-ngày (195 user)", "0,10%", "Rất ít; chưa xác định nguyên nhân"],
     ["User đánh giá ≥50 sản phẩm trong 1 ngày", "0", "0%", "Không có; tối đa 48/ngày"],
     ["Cùng user, cùng timestamp", "66 nhóm, 135 dòng, tối đa 3", "~0%", "Không đáng kể"],
-    ["Sản phẩm tăng đột biến (≥50/ngày và ≥10× trung vị)", "32 sản phẩm-ngày, 10 sản phẩm", "3.349 dòng", "Có thể do khuyến mãi"],
-    ["User ≥10 rating cho cùng một mức", "2.610 / 31.882 user", "8,2% nhóm này", "Thói quen, phần lớn 5★"],
+    ["Sản phẩm tăng đột biến (≥50/ngày và ≥10× trung vị)", "32 sản phẩm-ngày, 10 sản phẩm", "3.349 dòng", "Chưa xác định nguyên nhân"],
+    ["User ≥10 rating cho cùng một mức", "2.610 / 31.882 user", "8,2% nhóm này", "Mức rating cụ thể chưa đo"],
   ];
   s.addTable(rows, { x: 0.6, y: 1.5, w: 12.1, colW: [4.1, 3.3, 1.8, 2.9], fontFace: BF, fontSize: 13.5, color: C.ink, border: { type: "solid", pt: 0.5, color: C.grayLight }, rowH: 0.56, fill: { color: C.white } });
-  s.addText("Kết luận: tín hiệu bất thường chiếm dưới 1% tương tác. Không xóa (không có quy tắc đăng ký trước và ảnh hưởng quá nhỏ); ghi nhận như một hạn chế.", { x: 0.6, y: 6.15, w: 12.1, h: 0.6, fontFace: BF, fontSize: 14, italic: true, color: C.tealMid, margin: 0, isTextBox: true });
+  s.addText("Kết luận: user-ngày ≥10 đánh giá chiếm 0,87% tương tác, ≥20 chiếm 0,10%. Không xóa (không có quy tắc đăng ký trước); ghi nhận như một hạn chế.", { x: 0.6, y: 6.15, w: 12.1, h: 0.6, fontFace: BF, fontSize: 14, italic: true, color: C.tealMid, margin: 0, isTextBox: true });
   footnote(s, "Nguồn: deep_analysis_summary.json (S3_anomalies). Chỉ báo cáo, không có dòng nào bị loại.");
 }
 
@@ -616,7 +617,7 @@ let MAP_SLIDE;
     catAxisLabelColor: C.ink, valAxisHidden: true, valGridLine: { style: "none" }, catGridLine: { style: "none" }, valAxisMaxVal: 30,
     showTitle: true, title: "% sản phẩm không có sản phẩm đồng mua nào (graph train)", titleFontSize: 12, titleColor: C.ink, showLegend: false,
   });
-  card(s, 0.6, 5.2, 5.5, 1.65, "Chỉ 29% target có bằng chứng đồng mua trực tiếp", "Tail gần như không có (4,5%). Với phần còn lại, model phải dựa vào embedding lan truyền xa hơn hoặc độ phổ biến.", { fill: C.tealPale, bodySize: 13, headSize: 14 });
+  card(s, 0.6, 5.2, 5.5, 1.65, "Chỉ 29% target có bằng chứng đồng mua trực tiếp", "Tail 4,5%. Phần còn lại không có đường đồng mua ngắn; điểm LightGCN vẫn tính được từ embedding hai phía, nhưng thiếu bằng chứng trực tiếp.", { fill: C.tealPale, bodySize: 13, headSize: 14 });
   card(s, 6.3, 5.2, 6.4, 1.65, "33.560 sản phẩm không nhận collaborative signal", "4,89 triệu cặp đồng mua, nhưng 20,7% sản phẩm chỉ được user một-tương-tác chạm tới. Không sampler nào tạo ra tín hiệu không tồn tại.", { fill: C.coralPale, bodySize: 13, headSize: 14 });
   footnote(s, "Nguồn: S4_graph.item_item_cooccurrence; R1_dev_target_analysis (20.000 target development mẫu, graph G_dev_train). Không dùng validation/test.");
 }
@@ -640,7 +641,7 @@ let MAP_SLIDE;
   });
   card(s, 0.6, 5.85, 6.3, 1.0, "Cách ly", "", { fill: C.tealPale, headSize: 14 });
   s.addText("Mọi cạnh train < mọi target; mọi dòng < t1; không dùng dòng validation/test. SHA-256 lưu trong manifest.", { x: 1.8, y: 5.85, w: 5.0, h: 1.0, fontFace: BF, fontSize: 12, color: C.ink, margin: 0, isTextBox: true, valign: "middle" });
-  card(s, 7.1, 5.1, 5.6, 1.75, "Target user", "46,5% target thuộc user chỉ có 1 tương tác train; 39,1% user 2–5; 12,6% user 6–20; 1,8% user >20. 77,2% tương tác trong cửa sổ bị loại vì user mới.", { fill: C.amberPale, bodySize: 12.5, headSize: 14 });
+  card(s, 7.1, 5.1, 5.6, 1.75, "Target user", "Bậc của user trong G_dev_train: 46,5% target thuộc user 1 tương tác; 39,1% user 2–5; 12,6% user 6–20; 1,8% user >20. 77,2% tương tác trong cửa sổ bị loại vì user mới.", { fill: C.amberPale, bodySize: 12.5, headSize: 14 });
   footnote(s, "Nguồn: results/grapes_gfn_rec_development/development_graph_manifest.json; test: tests/test_grapes_gfn_rec_protocol.py.");
 }
 
@@ -662,7 +663,7 @@ let MAP_SLIDE;
     showTitle: true, title: "Danh mục cấp 2 lớn nhất (96 danh mục cấp 2, 448 danh mục lá)", titleFontSize: 12, titleColor: C.ink, showLegend: true, legendPos: "t", legendFontSize: 11,
   });
   card(s, 0.6, 5.2, 6.0, 1.65, "Đủ cho semantic match và ILD", "Title gần 100%, danh mục 93,4% → đo được mức khớp văn bản và đa dạng danh mục. Giá chỉ 22,6% → không dùng. Chỉ 61% sản phẩm có main_category là “Baby”.", { fill: C.tealPale, bodySize: 12.5, headSize: 14 });
-  card(s, 6.8, 5.2, 5.9, 1.65, "Phân bổ theo danh mục cũng lệch", "Nursery chiếm 32,7% sản phẩm nhưng 22,4% tương tác; Safety 6,0% sản phẩm nhưng 11,3% tương tác. Giá trung vị ~19–20 USD ở cả head, body, tail.", { fill: C.amberPale, bodySize: 12.5, headSize: 14 });
+  card(s, 6.8, 5.2, 5.9, 1.65, "Phân bổ theo danh mục cũng lệch", "Nursery chiếm 32,7% sản phẩm nhưng 22,4% tương tác; Safety 6,0% sản phẩm nhưng 11,3% tương tác. Giá trung vị ~19–20 ở cả head, body, tail (chỉ trên 22,6% sản phẩm có giá).", { fill: C.amberPale, bodySize: 12.5, headSize: 14 });
   footnote(s, "Nguồn: deep_analysis_summary.json (S6_metadata), meta_Baby_Products.jsonl.gz. Metadata chỉ dùng cho đánh giá, không vào huấn luyện.");
 }
 
@@ -681,7 +682,7 @@ let MAP_SLIDE;
     ["Graph gần liên thông, bậc kỳ vọng theo cạnh ~1.009", "Lấy mẫu có budget k; chi phí sampler được tính vào trade-off"],
     ["Batch 65.536 triplet chạm 87% graph ngay bước 1", "Budget R3 bắt đầu từ batch ≤ 4.096 cho mọi sampler"],
     ["Chỉ 29% target có đường ≤3 bước; tail 4,5%", "Báo kết quả theo nhóm có/không có đường ≤3 bước (DL-003)"],
-    ["Top 1% sản phẩm đổi ~một nửa mỗi năm", "Theo dõi M1 (bậc tích lũy) có bám sản phẩm cũ"],
+    ["Top 1% sản phẩm chỉ trùng một phần giữa các năm (Jaccard 0,45–0,54)", "Theo dõi M1 (bậc tích lũy) có bám sản phẩm cũ"],
     ["Metadata: title ~100%, danh mục 93%, giá 23%", "Đo ngữ nghĩa bằng title + danh mục, không dùng giá"],
   ];
   s.addTable(rows, { x: 0.6, y: 1.5, w: 12.1, colW: [5.6, 6.5], fontFace: BF, fontSize: 12.5, color: C.ink, border: { type: "solid", pt: 0.5, color: C.grayLight }, rowH: 0.42, fill: { color: C.white } });
@@ -698,7 +699,7 @@ let MAP_SLIDE;
     showTitle: true, title: "Điểm NDCG@20 theo hạng của item đúng", titleFontSize: 12, titleColor: C.ink, showLegend: false,
   });
   card(s, 0.6, 4.15, 2.9, 2.65, "Coverage@20", "Tỷ lệ item trong catalog xuất hiện ít nhất một lần trong top-20 của mọi user. Đo độ phủ, chưa đo ý nghĩa.", { bodySize: 13, headSize: 15 });
-  card(s, 3.65, 4.15, 2.9, 2.65, "Conversion", "Tỷ lệ gợi ý dẫn tới mua. Cần log hiển thị–click–mua và A/B test online; dữ liệu review offline không có. Proxy offline: Recall@20.", { fill: C.coralPale, bodySize: 13, headSize: 15 });
+  card(s, 3.65, 4.15, 2.9, 2.65, "Conversion", "Tỷ lệ gợi ý dẫn tới mua. Cần log hiển thị–click–mua; dữ liệu review offline không có. Recall@20 chỉ đo sản phẩm tương lai có vào top-20, không thay được conversion.", { fill: C.coralPale, bodySize: 13, headSize: 15 });
   footnote(s, "NDCG: Järvelin & Kekäläinen [14]. Recall@20 = tỷ lệ dòng có item đúng trong top-20.");
   s.addNotes("Nếu “converat” trong ghi chú là coverage thì đã có; nếu là conversion rate thì giải thích vì sao không đo được offline.");
 }
@@ -714,7 +715,7 @@ let MAP_SLIDE;
   const head = (t) => ({ text: t, options: { bold: true, color: C.white, fill: { color: C.teal } } });
   const rows = [
     [head("Điều kiện"), head("Trạng thái")],
-    ["Amazon Reviews'23 có meta_Baby_Products (title, categories, features, store, price)", "Có sẵn, công bố chính thức [10]"],
+    ["Amazon Reviews'23 có meta_Baby_Products (title, categories, features, store, price)", "Có; notebook 11 đã tải và đọc (S6)"],
     ["Độ phủ trên 162.125 sản phẩm train: title 99,99%, danh mục 93,4%, features 77,6%, giá 22,6%", "Đủ cho title + danh mục; không dùng giá"],
     ["Metadata không vào huấn luyện → không đổi phương pháp, chỉ thêm phép đo", "Cần cô duyệt (OD-2)"],
     ["Tính trên rank vector đã lưu của R5", "Sau R5"],
@@ -728,9 +729,9 @@ let MAP_SLIDE;
   const items = [
     ["user → item", "Lịch sử trực tiếp", "Tín hiệu mạnh nhất cho user; với user 1 tương tác đây là toàn bộ thông tin.", C.teal],
     ["item → user → item", "“Người mua A cũng mua B”", "Collaborative signal cốt lõi của LightGCN, xuất hiện từ bước 2.", C.tealMid],
-    ["qua item head", "Bậc ≥ 397 · 1% item · 44% cạnh", "Nhiều thông tin phổ biến, ít tính cá nhân, tốn chi phí lan truyền.", C.amber],
-    ["qua item tail", "Bậc ≤ 12 · 80% item · 10% cạnh", "Tín hiệu riêng, ngách, nhưng ít quan sát nên dễ nhiễu.", C.coral],
-    ["qua user hoạt động nhiều", "Bậc user cao (p99 = 9)", "Cầu nối nhiều sản phẩm, có thể quá chung chung.", C.gray],
+    ["qua item head", "Bậc ≥ 397 · 1% item · 44% cạnh", "Mang phần lớn bằng chứng đồng mua: 53% target head có đường ≤3 bước.", C.amber],
+    ["qua item tail", "Bậc ≤ 12 · 80% item · 10% cạnh", "Ít quan sát; chỉ 4,5% target tail có đường đồng mua ≤3 bước.", C.coral],
+    ["qua user hoạt động nhiều", "Bậc user cao (p99 = 9)", "Cầu nối nhiều sản phẩm (giả thuyết về vai trò).", C.gray],
   ];
   items.forEach(([h, sub, b, col], i) => {
     const y = 1.55 + i * 1.02;
@@ -741,7 +742,7 @@ let MAP_SLIDE;
   });
   card(s, 7.9, 1.55, 4.8, 2.45, "Không giả định trước giá trị", "Heuristic cố định (M1 ưu tiên head, M2 phạt hub) áp đặt một câu trả lời. GRAPES-GFN-Rec để sampler học: quan hệ nào giúp BPR loss giảm sẽ được chọn nhiều hơn.", { fill: C.amberPale, bodySize: 14, headSize: 16 });
   card(s, 7.9, 4.15, 4.8, 2.65, "Đo lại bằng dữ liệu (RQ3, RQ4)", "Phân phối loại node, bậc, nhóm head/body/tail của node được chọn theo layer, so với M0 và M1 trên cùng tập ứng viên. Khi budget chặt hơn, quan hệ nào vẫn được giữ cho biết quan hệ nào quan trọng nhất.", { fill: C.tealPale, bodySize: 14, headSize: 16 });
-  footnote(s, "Ngưỡng head/body/tail khóa trước khi có kết quả model (06_code/configs/cohorts_v1.json).");
+  footnote(s, "Mô tả vai trò từng loại quan hệ là giả thuyết, kiểm chứng ở RQ3. Ngưỡng head/body/tail: 06_code/configs/cohorts_v1.json.");
   s.addNotes("Trả lời: mối quan hệ giữa các node để có giá trị như nào.");
 }
 
@@ -751,16 +752,16 @@ let MAP_SLIDE;
   const s = base("Ưu tiên tiêu chí nào thì các giá trị khác thay đổi ra sao", "Chương 3 · Góp ý của cô"); REG["trade"] = n;
   const head = (t) => ({ text: t, options: { bold: true, color: C.white, fill: { color: C.teal } } });
   const rows = [
-    [head("Nếu chỉ tối ưu"), head("Điều thường xảy ra"), head("Bằng chứng trên Baby_Products"), head("Cách đồ án đo")],
+    [head("Nếu chỉ tối ưu"), head("Điều có thể xảy ra"), head("Bằng chứng trên Baby_Products"), head("Cách đồ án đo")],
     ["Độ chính xác tổng (NDCG)", "Dồn về sản phẩm phổ biến, độ phủ sụp", "MostPop: NDCG@20 0,0059 nhưng chỉ gợi ý 25 sản phẩm, coverage 0,00015, 100% exposure ở head", "NDCG kèm coverage và exposure theo nhóm"],
     ["Độ phủ / đa dạng", "Có thể giảm độ chính xác", "BPR-MF: coverage 0,0335 (~218 lần MostPop) nhưng NDCG@20 0,0041", "Đồ thị NDCG–coverage"],
-    ["Chi phí thấp (budget k nhỏ)", "Ít ngữ cảnh, chất lượng có thể giảm", "Chưa đo — là RQ4", "NDCG–thời gian ở 2 mức budget"],
-    ["Đưa sản phẩm tail lên", "Exposure tail tăng nhưng hit tail có thể không tăng", "Chưa đo cho phương pháp mới", "Exposure và hit tail tách riêng"],
-    ["Mức khớp ngữ nghĩa", "Gợi ý an toàn, giống nhau, kém đa dạng", "Chưa đo — cần metadata", "Semantic match@20 cùng ILD@20"],
+    ["Chi phí thấp (budget k nhỏ)", "Giả thuyết: ít ngữ cảnh, chất lượng giảm", "Chưa đo — là RQ4", "NDCG–thời gian ở 2 mức budget"],
+    ["Đưa sản phẩm tail lên", "Giả thuyết: exposure tail tăng nhưng hit tail không tăng", "Chưa đo cho phương pháp mới", "Exposure và hit tail tách riêng"],
+    ["Mức khớp ngữ nghĩa", "Chưa đo; giả thuyết: giảm đa dạng", "Chưa đo — metadata đã có, số chờ R5", "Semantic match@20 cùng ILD@20"],
   ];
   s.addTable(rows, { x: 0.6, y: 1.55, w: 12.1, colW: [2.4, 2.9, 4.2, 2.6], fontFace: BF, fontSize: 13.5, color: C.ink, border: { type: "solid", pt: 0.5, color: C.grayLight }, rowH: 0.78, fill: { color: C.white } });
   s.addText("Không chọn phương pháp bằng một con số. Kết quả được báo như mặt trận Pareto: không phương pháp nào được coi là tốt hơn nếu nó thua ở một trục mà không thắng ở trục khác.", { x: 0.6, y: 6.25, w: 12.1, h: 0.6, fontFace: BF, fontSize: 14, italic: true, color: C.tealMid, margin: 0, isTextBox: true });
-  footnote(s, "MostPop, BPR-MF là baseline sanity cũ (validation, 5 epoch) — chỉ minh họa trade-off của dữ liệu, không phải kết quả GRAPES-GFN-Rec.");
+  footnote(s, "MostPop (không huấn luyện) và BPR-MF (5 epoch) là baseline sanity cũ trên validation — chỉ minh họa trade-off của dữ liệu, không phải kết quả GRAPES-GFN-Rec.");
   s.addNotes("Trả lời: nếu quan tâm tiêu chí gì thì xem các giá trị tiếp theo mang lại sẽ như thế nào; và trade-off.");
 }
 
@@ -786,7 +787,7 @@ let MAP_SLIDE;
   s.addText("Suy luận", { x: 0.6, y: 5.85, w: 4, h: 0.35, fontFace: BF, fontSize: 13, bold: true, color: C.tealMid, margin: 0, isTextBox: true });
   box(s, 0.6, 6.25, 12.1, 0.6, "Không lấy mẫu: LightGCN trên toàn bộ graph train → xếp hạng toàn catalog → NDCG@20, Recall@20, coverage, head/tail", C.tealPale, C.ink, 13, true);
   s.addText("Sampler không nhận gradient BPR; recommender không nhận gradient TB (đã có test kiểm chứng).", { x: 0.6, y: 3.45, w: 2.2, h: 1.1, fontFace: BF, fontSize: 11, italic: true, color: C.gray, margin: 0, isTextBox: true, valign: "top" });
-  s.addNotes("Đây là khung kiến trúc chung: có thể thay backbone (LightGCN → NGCF/SGL) hoặc thay loss mà không đổi phần sampler. Trong triển khai thực tế, sampler chỉ dùng lúc train; serving dùng embedding đã học.");
+  s.addNotes("Sampler chỉ dùng lúc huấn luyện; đánh giá dùng LightGCN full-graph trên embedding đã học. Việc thay backbone khác chưa được thiết kế hay kiểm chứng.");
 }
 
 
@@ -809,7 +810,7 @@ let MAP_SLIDE;
   });
   card(s, 8.5, 1.6, 4.2, 2.35, "Ba sampler, một đường code", "Learned: điểm từ GCN_S, có log q.\nUniform (M0): điểm bằng nhau.\nDegree (M1): điểm = log(degree).\nKhác nhau duy nhất ở cách tính điểm → so sánh công bằng.", { fill: C.tealPale, bodySize: 13 });
   card(s, 8.5, 4.15, 4.2, 2.6, "Giới hạn đã chứng minh bằng test", "Vì K^l không cộng dồn, khi V⁰ có cả user lẫn item, một số node ở bước 1 bị rơi khỏi bước 2 → không tương đương Full LightGCN kể cả khi lấy hết. Đây là tính chất kế thừa từ GRAPES, sẽ nêu trong báo cáo.", { fill: C.coralPale, bodySize: 13 });
-  s.addNotes("Công thức log q theo paper dùng cả node không chọn; code GRAPES chính thức chỉ cộng node được chọn — sai khác đã ghi nhận.");
+  s.addNotes("log q dùng Bernoulli trên cả node chọn và không chọn. Snapshot code GRAPES local (modules/utils.py) cũng trả Bernoulli log_prob trên toàn bộ mask khi k < |C|, và logsigmoid của mọi ứng viên khi k ≥ |C|.");
 }
 
 
@@ -826,7 +827,7 @@ let MAP_SLIDE;
     s.addText(l, { x, y: 5.75, w: 2.8, h: 0.6, fontFace: BF, fontSize: 13, color: C.gray, margin: 0, isTextBox: true, valign: "top" });
   });
   footnote(s, "Lỗi cài cố ý: bỏ detach trong TB, bỏ số hạng node không chọn trong log q, cộng dồn K^l, sai dấu REINFORCE. Ablation: GRAPES-RL-Rec dùng L = stopgrad(L_BPR) · log q.");
-  s.addNotes("TB theo Malkin et al. 2022 [3]. α và log_z_init sẽ quét trên development split — GRAPES gốc dùng α từ 10³ đến 10⁵.");
+  s.addNotes("TB theo Malkin et al. 2022 [3]. α và log_z_init sẽ quét trên development split. Các file config GRAPES (snapshot local) dùng loss_coef 151,6–789.615 (GFlowNet) và 210,5–93.660 (RL): results/reference_sources/grapes_official_configs.json.");
 }
 
 
@@ -834,7 +835,7 @@ let MAP_SLIDE;
 {
   const s = base("Những điểm riêng của bài toán gợi ý phải xử lý", "Chương 4 · Phương pháp"); REG["issues"] = n;
   const items = [
-    ["R-1", "Quá ít phần thưởng", "Pilot: batch 65.536 × 5 epoch ≈ 300 bước → sampler chỉ học từ ~300 số. Chọn lại batch/budget chung cho mọi sampler."],
+    ["R-1", "Quá ít phần thưởng", "Nếu dùng budget pilot (batch 65.536, ~300 bước), một sampler học được chỉ nhận ~300 phần thưởng. Chọn lại batch/budget chung cho mọi sampler."],
     ["R-2", "Thang phần thưởng", "BPR ≈ 0,69 và chênh lệch nhỏ; α quá nhỏ thì log q lấn át. Quét α, log_z_init trên D_dev, log từng thành phần."],
     ["R-3", "Phần thưởng thay đổi", "Recommender học thêm thì cùng trajectory cho loss khác. Giữ như GRAPES, ghi log drift."],
     ["R-4", "Graph cực thưa", "71,76% user có 1 cạnh; theo dõi bậc/loại/nhóm node được chọn để phát hiện dồn về hub."],
@@ -860,7 +861,7 @@ let MAP_SLIDE;
     [head("Tầng"), head("Phương pháp"), head("Vai trò"), head("Câu hỏi trả lời")],
     r(["A · cùng budget", "GRAPES-GFN-Rec", "Phương pháp đề xuất", "—"], { ...tierA, bold: true }),
     r(["A · cùng budget", "M0 Uniform", "Đối chứng trung lập", "Học có hơn chọn ngẫu nhiên?"], tierA),
-    r(["A · cùng budget", "M1 Degree-importance", "Đối chứng tĩnh mạnh (họ FastGCN/LADIES)", "Học có hơn ưu tiên node phổ biến?"], tierA),
+    r(["A · cùng budget", "M1 Degree-importance", "Đối chứng tĩnh theo bậc", "Học có hơn ưu tiên node phổ biến?"], tierA),
     r(["A · cùng budget", "GRAPES-RL-Rec", "Ablation hàm mục tiêu", "GFlowNet TB có cần hơn REINFORCE?"], tierA),
     r(["B · tham chiếu", "Full LightGCN", "Không lấy mẫu", "Lấy mẫu mất bao nhiêu chất lượng?"], tierB),
     r(["B · tham chiếu", "MostPop, BPR-MF", "Sanity", "Graph và propagation có giá trị?"], tierB),

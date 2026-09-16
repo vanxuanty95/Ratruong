@@ -76,7 +76,7 @@ Giai đoạn 1 (ThucTap2) đã tái hiện GRAPES trên node classification. Hư
 ### Quan sát
 1. Không lấy mẫu, batch 65.536 triplet chạm 86,6% trong 2,48 triệu node sau 1 bước; batch 4.096 chạm 46,3% (1 bước), 95,1% (3 bước); batch 1.024 chạm 23,6% / 44,7% / 93,2%.
 2. Chỉ 29,0% target development có đường user→SP→user→target trong `G_dev_train` (head 53,0%, body 16,9%, tail 4,5%). 20,7% sản phẩm train (25,8% tail) không có sản phẩm đồng mua nào.
-3. Top 1% sản phẩm đổi khoảng một nửa mỗi năm (Jaccard 0,45–0,54).
+3. Top 1% sản phẩm chỉ trùng một phần giữa hai năm liên tiếp (Jaccard 0,45–0,54; nếu cùng kích thước thì ~62–70% trùng).
 4. Metadata: title 99,99%, danh mục 93,4%, giá 22,6%.
 5. Development split theo quy tắc chính: t0 = 05/09/2020, 3.315.497 cạnh, 105.401 target warm.
 
@@ -88,6 +88,14 @@ Giai đoạn 1 (ThucTap2) đã tái hiện GRAPES trên node classification. Hư
 
 ### Lưu ý kỹ thuật cho notebook 12
 `dev_user_ids.csv.gz` / `dev_item_ids.csv.gz` lưu **mã factorize nội bộ** (`pd.factorize` theo thứ tự dòng raw sau khi loại rating ngoài 1–5), không phải chuỗi `user_id` / `parent_asin` gốc. Mã này xác định được lại bằng cách chạy đúng `load_raw()` của `scripts/deep_dataset_analysis.py` trên cùng file raw (SHA-256 đã kiểm). Notebook 12 đọc trực tiếp `dev_train_edges`/`dev_targets` (đã là chỉ số liên tục) nên không cần ID gốc, trừ khi nối metadata — khi đó phải tái tạo factorize và kiểm tra lại số dòng.
+
+---
+
+## DL-004 — Rà soát chống bịa đặt tài liệu (17/09/2026)
+
+- **Người yêu cầu:** Ty. **Trạng thái:** `ACCEPTED`.
+- **Lỗi đã sửa:** (1) diễn giải Jaccard 0,5 thành "đổi một nửa" (sai: ~62–70% trùng nếu cùng kích thước); (2) dải `loss_coef` GRAPES ghi 10³–10⁵ / 6·10³–6·10⁵ (thực tế config: 151,6–789.615 GFlowNet, 210,5–93.660 RL); (3) nói code GRAPES "chỉ cộng node được chọn" trong `log q` (sai: snapshot dùng `Bernoulli.log_prob(mask)` trên mọi ứng viên); (4) "~196k target node" (đo được trung bình 132.749); (5) tỷ lệ user mới "55–60%" (thực tế 54,0–60,2%); (6) MostPop ghi "5 epoch" (MostPop không huấn luyện); (7) suy đoán không số liệu: nguyên nhân bất thường ("khuyến mãi", "bình thường", "phần lớn 5★"), thay backbone NGCF/SGL, sampler trong worker distributed, PinSage làm ví dụ distributed, "graph lệch hub khó chia đều".
+- **Quy tắc bổ sung:** mọi số phái sinh phải được tính bởi `06_code/scripts/derive_doc_facts.py` và lưu ở `results/doc_facts/doc_facts.json`; nguồn tham khảo phase 1 được sao chép vào `results/reference_sources/` kèm provenance; kết quả oracle/mutation R2 lưu ở `results/r2_oracle_verification/`. Nhận định chưa có số liệu phải ghi rõ "giả thuyết" hoặc bỏ. Tài liệu tham khảo đã đối chiếu trực tuyến (arXiv / ACM / Semantic Scholar) ngày 17/09/2026.
 
 ---
 

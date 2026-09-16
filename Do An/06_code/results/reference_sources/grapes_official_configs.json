@@ -1,0 +1,261 @@
+{
+  "provenance": "parsed from local snapshot ThucTap2/GRAPES report/grapes-main/configs/*/*.txt (not byte-identical to pinned commit, see 01_literature/GRAPES_SOURCE_VERSION_NOTE_vn.md)",
+  "configs": [
+    {
+      "objective_dir": "gflownet",
+      "dataset": "blogcat",
+      "loss_coef": "6414.70642460407",
+      "batch_size": "256",
+      "num_samples": "256",
+      "lr_gf": "0.00015793805566708893"
+    },
+    {
+      "objective_dir": "gflownet",
+      "dataset": "citeseer",
+      "loss_coef": "16197.874895075958",
+      "batch_size": "256",
+      "num_samples": "256",
+      "lr_gf": "0.008996396593742092"
+    },
+    {
+      "objective_dir": "gflownet",
+      "dataset": "cora",
+      "loss_coef": "500277.7932890254",
+      "batch_size": "256",
+      "num_samples": "256",
+      "lr_gf": "0.007456728029893029"
+    },
+    {
+      "objective_dir": "gflownet",
+      "dataset": "dblp",
+      "loss_coef": "28717.59418418475",
+      "batch_size": "256",
+      "num_samples": "256",
+      "lr_gf": "0.00015657434501627836"
+    },
+    {
+      "objective_dir": "gflownet",
+      "dataset": "flickr",
+      "loss_coef": "151.61393597869164",
+      "batch_size": "256",
+      "num_samples": "256",
+      "lr_gf": "8.940375384996575e-05"
+    },
+    {
+      "objective_dir": "gflownet",
+      "dataset": "ogbn-arxiv",
+      "loss_coef": "789615.3776717983",
+      "batch_size": "256",
+      "num_samples": "256",
+      "lr_gf": "1.4369839193098112e-05"
+    },
+    {
+      "objective_dir": "gflownet",
+      "dataset": "ogbn-products",
+      "loss_coef": "15227.124438334951",
+      "batch_size": "256",
+      "num_samples": "256",
+      "lr_gf": "2.5564414649576825e-05"
+    },
+    {
+      "objective_dir": "gflownet",
+      "dataset": "ogbn-proteins",
+      "loss_coef": "6346.9508656540875",
+      "batch_size": "256",
+      "num_samples": "256",
+      "lr_gf": "4.015363051110161e-05"
+    },
+    {
+      "objective_dir": "gflownet",
+      "dataset": "pubmed",
+      "loss_coef": "339.9039832707257",
+      "batch_size": "256",
+      "num_samples": "256",
+      "lr_gf": "0.004777134984398841"
+    },
+    {
+      "objective_dir": "gflownet",
+      "dataset": "reddit",
+      "loss_coef": "577507.8222693868",
+      "batch_size": "256",
+      "num_samples": "256",
+      "lr_gf": "0.001386321175708781"
+    },
+    {
+      "objective_dir": "gflownet",
+      "dataset": "snap-patents",
+      "loss_coef": "253909.56287641663",
+      "batch_size": "256",
+      "num_samples": "256",
+      "lr_gf": "0.00001222777585970442"
+    },
+    {
+      "objective_dir": "gflownet",
+      "dataset": "yelp",
+      "loss_coef": "40914.60948082353",
+      "batch_size": "256",
+      "num_samples": "256",
+      "lr_gf": "9.608658019523553e-05"
+    },
+    {
+      "objective_dir": "random",
+      "dataset": "blogcat",
+      "loss_coef": null,
+      "batch_size": "256",
+      "num_samples": "256",
+      "lr_gf": null
+    },
+    {
+      "objective_dir": "random",
+      "dataset": "citeseer",
+      "loss_coef": null,
+      "batch_size": "256",
+      "num_samples": "256",
+      "lr_gf": null
+    },
+    {
+      "objective_dir": "random",
+      "dataset": "cora",
+      "loss_coef": null,
+      "batch_size": "256",
+      "num_samples": "256",
+      "lr_gf": null
+    },
+    {
+      "objective_dir": "random",
+      "dataset": "dblp",
+      "loss_coef": null,
+      "batch_size": "256",
+      "num_samples": "256",
+      "lr_gf": null
+    },
+    {
+      "objective_dir": "random",
+      "dataset": "flickr",
+      "loss_coef": "232.30986408867068",
+      "batch_size": "256",
+      "num_samples": "256",
+      "lr_gf": "0.00021832387950656656"
+    },
+    {
+      "objective_dir": "random",
+      "dataset": "ogbn-arxiv",
+      "loss_coef": null,
+      "batch_size": "256",
+      "num_samples": "256",
+      "lr_gf": null
+    },
+    {
+      "objective_dir": "random",
+      "dataset": "ogbn-products",
+      "loss_coef": null,
+      "batch_size": "256",
+      "num_samples": "256",
+      "lr_gf": null
+    },
+    {
+      "objective_dir": "random",
+      "dataset": "ogbn-proteins",
+      "loss_coef": "100",
+      "batch_size": "256",
+      "num_samples": "256",
+      "lr_gf": "100"
+    },
+    {
+      "objective_dir": "random",
+      "dataset": "pubmed",
+      "loss_coef": null,
+      "batch_size": "256",
+      "num_samples": "256",
+      "lr_gf": null
+    },
+    {
+      "objective_dir": "random",
+      "dataset": "reddit",
+      "loss_coef": null,
+      "batch_size": "256",
+      "num_samples": "256",
+      "lr_gf": null
+    },
+    {
+      "objective_dir": "random",
+      "dataset": "snap-patents",
+      "loss_coef": "10000",
+      "batch_size": "256",
+      "num_samples": "256",
+      "lr_gf": "0.0001"
+    },
+    {
+      "objective_dir": "random",
+      "dataset": "yelp",
+      "loss_coef": "93660.4248213627",
+      "batch_size": "256",
+      "num_samples": "256",
+      "lr_gf": null
+    },
+    {
+      "objective_dir": "rl",
+      "dataset": "citeseer",
+      "loss_coef": null,
+      "batch_size": "256",
+      "num_samples": "256",
+      "lr_gf": "0.0031404966468197007"
+    },
+    {
+      "objective_dir": "rl",
+      "dataset": "cora",
+      "loss_coef": null,
+      "batch_size": "256",
+      "num_samples": "256",
+      "lr_gf": "0.001551060748789309"
+    },
+    {
+      "objective_dir": "rl",
+      "dataset": "flickr",
+      "loss_coef": "12790.965986432258",
+      "batch_size": "256",
+      "num_samples": "256",
+      "lr_gf": "0.006869060945184281"
+    },
+    {
+      "objective_dir": "rl",
+      "dataset": "ogbn-arxiv",
+      "loss_coef": null,
+      "batch_size": "256",
+      "num_samples": "256",
+      "lr_gf": "0.0001885553722938995"
+    },
+    {
+      "objective_dir": "rl",
+      "dataset": "ogbn-proteins",
+      "loss_coef": "210.48244794419497",
+      "batch_size": "256",
+      "num_samples": "256",
+      "lr_gf": "0.00010571440819096722"
+    },
+    {
+      "objective_dir": "rl",
+      "dataset": "pubmed",
+      "loss_coef": null,
+      "batch_size": "256",
+      "num_samples": "256",
+      "lr_gf": "1.7946508362298798e-06"
+    },
+    {
+      "objective_dir": "rl",
+      "dataset": "reddit",
+      "loss_coef": null,
+      "batch_size": "256",
+      "num_samples": "256",
+      "lr_gf": "0.00030794338890472903"
+    },
+    {
+      "objective_dir": "rl",
+      "dataset": "yelp",
+      "loss_coef": "93660.4248213627",
+      "batch_size": "256",
+      "num_samples": "256",
+      "lr_gf": "1.5799008673813115e-06"
+    }
+  ]
+}

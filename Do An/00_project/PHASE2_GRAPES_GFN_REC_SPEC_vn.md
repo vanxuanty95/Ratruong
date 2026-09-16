@@ -47,7 +47,7 @@ GRAPES gốc (arXiv:2310.03399, code commit `71ecebe`) giải node classificatio
 | Feature sampler | `data.x` + indicator hop | `E_S` riêng + one-hot type + degree train chuẩn hóa + history `L+1` kênh |
 | Policy | `gcn_gf` trên `batch_nodes` | `GCN_S` hai layer trên subgraph `K^{l-1} ∪ C^l` |
 | Action | `topk(log p + Gumbel, k)`; nếu `k ≥ n` lấy hết | Giống hệt, D11 cho nhánh ít/rỗng candidate |
-| `log q` | `logsigmoid` của node chọn (code) | Full Bernoulli chọn + không chọn (paper, D11) — sai khác paper/code đã ghi |
+| `log q` | Snapshot code: `Bernoulli.log_prob(mask)` trên mọi ứng viên khi k < |C|; `logsigmoid` mọi ứng viên khi k ≥ |C| | Full Bernoulli chọn + không chọn (D11), cùng ngữ nghĩa |
 | Classifier | `gcn_c` | Sampled LightGCN, block `K^l → K^{l-1}`, bi-norm chữ nhật, không self-loop (D1–D3) |
 | Task loss | Cross-entropy | Mean BPR (D10); regularizer không vào reward (D5) |
 | `log Z` | `gcn_z` trên target+neighbor, `mean − log_z_init` | `GCN_Z` chỉ trên `V⁰` (D6); legacy target+neighbor là ablation |
@@ -59,9 +59,9 @@ GRAPES gốc (arXiv:2310.03399, code commit `71ecebe`) giải node classificatio
 
 Đây là lý do không thể "port nguyên". Mỗi điểm có quyết định hoặc gate đo trước khi chạy holdout.
 
-**R-1. Credit assignment theo kích thước batch.** *(Bằng chứng DL-003: batch 65.536 triplet chạm 86,6% graph sau 1 bước khi không lấy mẫu; lưới R3 bắt đầu từ batch ≤ 4.096.)* GRAPES dùng batch 256–512 target, nên có hàng nghìn sampler update. Pilot M0–M2 dùng batch 65.536 triplet × 5 epoch ≈ 300 optimizer step: một reward vô hướng cho ~196k target node và chỉ ~300 update sampler — gần như chắc chắn không học được policy. **Quyết định:** budget regime (batch size, số step, `k_l`) được chọn lại trên development split cho *mọi* sampler cùng lúc (Gate R3). Pilot budget không được kế thừa.
+**R-1. Credit assignment theo kích thước batch.** *(Bằng chứng DL-003: batch 65.536 triplet chạm 86,6% graph sau 1 bước khi không lấy mẫu; lưới R3 bắt đầu từ batch ≤ 4.096.)* Config GRAPES dùng batch 256 target (mặc định `main.py` 512), nên có hàng nghìn sampler update. Pilot M0–M2 dùng batch 65.536 triplet × 5 epoch ≈ 300 optimizer step; một sampler học được với budget này chỉ nhận ~300 reward vô hướng, mỗi reward cho trung bình 132.749 target node (đo ở notebook 11). Nhận định rằng khó học được policy với số update này là giả thuyết, sẽ kiểm tra ở R3. **Quyết định:** budget regime (batch size, số step, `k_l`) được chọn lại trên development split cho *mọi* sampler cùng lúc (Gate R3). Pilot budget không được kế thừa.
 
-**R-2. Scale của reward.** Mean BPR ≈ 0,69 lúc đầu và chênh lệch giữa các trajectory rất nhỏ. GRAPES chọn `loss_coef` từ ~6·10³ tới ~6·10⁵ bằng sweep. **Quyết định:** `α` và `log_z_init` được chọn trên development split từ grid log-scale đăng ký trước; log riêng `log q`, `log Z`, `α·L_task` và TB residual để phát hiện `log q` áp đảo reward.
+**R-2. Scale của reward.** Mean BPR ≈ 0,69 lúc đầu và chênh lệch giữa các trajectory rất nhỏ. Các config GRAPES (snapshot local) dùng `loss_coef` 151,6–789.615 cho GFlowNet và 210,5–93.660 cho RL (`06_code/results/reference_sources/grapes_official_configs.json`). **Quyết định:** `α` và `log_z_init` được chọn trên development split từ grid log-scale đăng ký trước; log riêng `log q`, `log Z`, `α·L_task` và TB residual để phát hiện `log q` áp đảo reward.
 
 **R-3. Reward không dừng (non-stationary).** Cùng một trajectory cho loss khác nhau khi recommender đã học thêm. GRAPES cũng có tính chất này. **Quyết định:** giữ nguyên như GRAPES trong phương án chính; không claim sampler hội tụ tới phân phối cố định. Log reward theo step để mô tả drift.
 

@@ -36,8 +36,8 @@
 
 \newcommand{\pending}[2]{\begin{tcolorbox}[colback=amberpale,colframe=amber,boxrule=0.8pt,arc=2pt,left=6pt,right=6pt,top=4pt,bottom=4pt,fontupper=\small]\textbf{\color{coral}ĐANG CHỜ} · \textbf{#1}\\ #2\end{tcolorbox}}
 \newcommand{\rstar}{\ensuremath{\bigstar}}
-\newcommand{\docversion}{0.4}
-\newcommand{\docdate}{16/09/2026}
+\newcommand{\docversion}{0.5}
+\newcommand{\docdate}{17/09/2026}
 \title{\textbf{Học cách lấy mẫu đồ thị cho hệ gợi ý quy mô lớn dùng GNN}\\[6pt]\Large GRAPES-GFN-Rec trên Amazon Reviews'23 Baby\_Products\\[10pt]\normalsize Luận văn --- bản sống \docversion}
 \author{Ty Van Xuan}
 \date{Cập nhật \docdate}
@@ -70,6 +70,7 @@ Chương & Nội dung & Trạng thái & Điền tiếp khi \\
 
 \noindent\textbf{Nhật ký.}
 \begin{itemize}
+\item \textbf{0.5 (17/09/2026)} Rà soát chống bịa đặt: sửa diễn giải Jaccard, dải \texttt{loss\_coef} của GRAPES, tỷ lệ user mới 54--60\%; bỏ các suy đoán không có số liệu (nguyên nhân bất thường, thay backbone, ví dụ distributed). Số phái sinh ghi tại \texttt{results/doc\_facts/doc\_facts.json}; kết quả oracle R2 và mutation ghi tại \texttt{results/r2\_oracle\_verification/}.
 \item \textbf{0.4 (16/09/2026)} Điền kết quả notebook 11: rating theo độ phổ biến, bất thường, hành vi thời gian và độ trôi, bùng nổ lân cận đo thực tế, đồng mua và bằng chứng collaborative cho target, metadata, development split (R1 xong). Thêm DL-003.
 \item \textbf{0.3 (16/09/2026)} Chuyển sang bản sống; mở rộng chương dữ liệu; thêm chương trả lời góp ý 3/9; kế hoạch nén về hạn nộp 30/11/2026.
 \item \textbf{0.2 (16/09/2026)} Đề xuất GRAPES-GFN-Rec; lõi mã R2 với 28 oracle test.
@@ -109,22 +110,22 @@ Có năm hướng chính để huấn luyện GNN trên graph lớn (Bảng~\ref
 Hướng & Cách làm & Hạn chế với bài toán này & Vai trò \\
 \midrule
 Full-graph, 1 GPU & Lan truyền trên toàn graph & Bộ nhớ và thời gian tăng theo số cạnh $\times$ số layer & Tham chiếu \\
-Distributed training & Chia batch/model cho nhiều GPU, nhiều máy (PinSage \cite{pinsage}) & Cần cụm máy, chi phí giao tiếp; không giảm lượng tính mỗi batch & Ngoài phạm vi \\
-Chia đồ thị & Cluster-GCN \cite{clustergcn}: học trên cụm con & Cắt cạnh giữa cụm; graph lệch hub khó chia đều & Không chọn \\
-Embedding lịch sử & GAS \cite{gas}: dùng lại embedding cũ của hàng xóm & Lưu embedding 2,48 triệu node mỗi layer; embedding cũ bị lệch & Không chọn \\
+Distributed training & Chia dữ liệu/model cho nhiều GPU hoặc nhiều máy & Cần nhiều thiết bị; bản thân nó không giảm lượng tính của một batch & Ngoài phạm vi \\
+Chia đồ thị & Cluster-GCN \cite{clustergcn}: lấy khối node của subgraph dày tìm bằng clustering, chỉ tìm hàng xóm trong subgraph & Cạnh ra ngoài subgraph không được dùng trong batch & Không chọn \\
+Embedding lịch sử & GAS \cite{gas}: cắt nhánh computation graph bằng embedding từ vòng lặp trước, có cận sai số & Lưu embedding lịch sử cho mọi node (2,48 triệu) mỗi layer; sai số xấp xỉ & Không chọn \\
 \textbf{Sampling} & \textbf{GraphSAGE, FastGCN, LADIES, GRAPES}: giới hạn $k$ node mỗi layer & Mất ngữ cảnh $\rightarrow$ phải chọn node đúng & \textbf{Hướng chính} \\
 \bottomrule
 \end{tabularx}
 \end{table}
 
-Hai hướng bổ sung cho nhau: distributed nhân phần cứng, sampling giảm lượng tính mỗi batch; sampler học được có thể chạy trong từng worker của hệ distributed. Đồ án chọn sampling vì đề tài hướng tới và giới hạn một GPU T4.
+Hai hướng không loại trừ nhau: distributed tăng phần cứng, sampling giảm lượng tính mỗi batch. Đồ án chọn sampling vì đề tài hướng tới và giới hạn một GPU T4.
 
 \section{Giai đoạn 1: GRAPES}
 GRAPES \cite{grapes} dùng hai GNN: $\mathrm{GCN}_C$ giải bài toán chính và $\mathrm{GCN}_S$ chấm điểm hàng xóm để chọn đúng $k$ node mỗi layer bằng Gumbel Top-$k$ \cite{gumbeltopk}; $\mathrm{GCN}_S$ được huấn luyện bằng GFlowNet Trajectory Balance \cite{tb} hoặc REINFORCE với chi phí là loss của $\mathrm{GCN}_C$.
 
 \begin{table}[h]
 \centering\small
-\caption{Tái hiện GRAPES ở giai đoạn 1 trên Tesla T4 (accuracy).}\label{tab:phase1}
+\caption{Tái hiện GRAPES ở giai đoạn 1 trên Tesla T4 (accuracy trung bình; nguồn \texttt{results/reference\_sources/phase1\_grapes\_results.json}).}\label{tab:phase1}
 \begin{tabular}{lcccc}
 \toprule
 Dataset & GRAPES & Random & Thời gian GRAPES & Thời gian Random \\
@@ -213,7 +214,7 @@ User $\ge$10 rating cùng một mức & 2.610 / 31.882 user & -- \\
 \bottomrule
 \end{tabularx}
 \end{table}
-Tín hiệu bất thường chiếm dưới 1\% tương tác; đánh giá theo đợt 5--10 sản phẩm/ngày là hành vi mua sắm bình thường. Đồ án giữ nguyên và ghi nhận như một hạn chế.
+User-ngày có $\ge$10 đánh giá chiếm 0,87\% tương tác, $\ge$20 chiếm 0,10\%. Nguyên nhân (mua sắm theo đợt, đánh giá hàng loạt, khuyến mãi) chưa được xác định. Đồ án không loại dòng nào và ghi nhận như một hạn chế.
 
 \section{Rating và chọn tương tác positive}
 \begin{figure}[h]
@@ -249,7 +250,7 @@ User validation chưa thấy & 75,07\% & \textbf{77,43\%} & 78,88\% \\
 \end{tabular}
 \end{table}
 
-Coi mọi rating là positive sẽ gộp cả 1--3\rstar{} vào tín hiệu ``thích''; chỉ lấy 5\rstar{} làm mất 14,65\% tương tác và tăng cold-start. P4 là điểm cân bằng và được chọn trước khi có kết quả model.
+Coi mọi rating là positive sẽ gộp cả 1--3\rstar{} vào positive; chỉ lấy 5\rstar{} làm mất 14,65\% tương tác và tăng cold-start. P4 là điểm cân bằng và được chọn trước khi có kết quả model.
 
 \begin{table}[h]
 \centering\small
@@ -264,7 +265,7 @@ Tỷ lệ $\le$3\rstar{} & 26,0\% & 24,0\% & 22,8\% & 22,5\% & 20,7\% & 18,9\% \
 \bottomrule
 \end{tabular}
 \end{table}
-Sản phẩm phổ biến vừa nhiều tương tác vừa được đánh giá tốt hơn, nên tương tác positive P4 còn dồn về head mạnh hơn tương tác thô. Phía user: rating trung bình tăng từ 4,18 (user 1 rating) lên 4,34 (user $>$20 rating); 44,2\% user có $\ge$2 rating cho mọi sản phẩm cùng một mức; 18,1\% user có $\ge$5 rating chỉ cho 5\rstar{}; độ lệch chuẩn trung vị 0,58. Rating phản ánh thói quen người đánh giá nhiều hơn mức thích tuyệt đối, ủng hộ việc dùng tín hiệu nhị phân 4--5\rstar{}.
+Sản phẩm phổ biến vừa nhiều tương tác vừa được đánh giá tốt hơn, nên tương tác positive P4 còn dồn về head mạnh hơn tương tác thô. Phía user: rating trung bình tăng từ 4,18 (user 1 rating) lên 4,34 (user $>$20 rating); 44,2\% user có $\ge$2 rating cho mọi sản phẩm cùng một mức; 18,1\% user có $\ge$5 rating chỉ cho 5\rstar{}; độ lệch chuẩn trung vị 0,58. Việc nhiều user cho mọi sản phẩm cùng một mức gợi ý giá trị rating tuyệt đối khó so sánh giữa user (diễn giải, chưa kiểm định); đồ án dùng tín hiệu nhị phân 4--5\rstar{}.
 
 \section{Bao nhiêu sản phẩm và histogram theo sản phẩm}
 Số sản phẩm phụ thuộc bước lọc: 217.654 trong dữ liệu raw $\rightarrow$ 194.722 còn tương tác 4--5\rstar{} $\rightarrow$ 162.125 có trong graph train (trước $t_1$). Coverage dùng 162.125 làm mẫu số.
@@ -340,7 +341,7 @@ Dữ liệu trải từ 10/06/2000 đến 12/09/2023, tăng mạnh từ 2013, đ
 \includegraphics[width=0.49\linewidth]{D3_popularity_drift.png}
 \caption{Trái: khối lượng và tỷ lệ rating từ user mới theo năm. Phải: độ trôi của top 1\% sản phẩm.}\label{fig:drift}
 \end{figure}
-Mỗi năm từ 2014 đến 2023, 55--60\% rating đến từ user lần đầu xuất hiện. Khoảng cách trung vị giữa hai tương tác của cùng user là 20,9 ngày (p90: 598 ngày), và 41,4\% cặp tương tác liên tiếp nằm trong cùng một ngày: user thường đánh giá theo đợt. Sản phẩm có $\ge$2 rating hoạt động trung vị 565 ngày. Top 1\% sản phẩm phổ biến của năm sau chỉ trùng khoảng một nửa với năm trước (Jaccard 0,45--0,54 giai đoạn 2015--2021); tỷ lệ rating vào top 1\% của năm trước là 24--30\%, thấp hơn 31--34\% của top 1\% chính năm đó. Rating trung bình theo năm đạt 4,35 năm 2019 rồi giảm còn 4,06 năm 2022. Hệ quả: chia theo thời gian là cần thiết, và sampler dựa trên bậc tích lũy (M1) có thể bám vào sản phẩm đã hết thời.
+Mỗi năm từ 2014 đến 2023, 54--60\% rating đến từ user lần đầu xuất hiện. Khoảng cách trung vị giữa hai tương tác của cùng user là 20,9 ngày (p90: 598 ngày), và 41,4\% cặp tương tác liên tiếp nằm trong cùng một ngày: user thường đánh giá theo đợt. Sản phẩm có $\ge$2 rating hoạt động trung vị 565 ngày. Top 1\% sản phẩm phổ biến chỉ trùng một phần giữa hai năm liên tiếp: Jaccard 0,45--0,54 giai đoạn 2015--2021 (nếu hai năm có cùng số sản phẩm top 1\%, tương đương 62--70\% sản phẩm top năm sau đã có trong top năm trước). Tỷ lệ rating vào top 1\% của năm trước là 23,8--30,3\%, thấp hơn 30,8--33,6\% vào top 1\% của chính năm đó. Rating trung bình theo năm đạt 4,35 năm 2019 rồi giảm còn 4,06 năm 2022. Hệ quả: chia theo thời gian là cần thiết; giả thuyết cần kiểm tra là sampler dựa trên bậc tích lũy (M1) bám vào sản phẩm phổ biến cũ.
 
 \subsection*{Development split (gate R1)}
 Quy tắc chính được áp dụng, không cần dự phòng: $t_0$ = 05/09/2020. $G_{\text{dev\_train}}$ có 3.315.497 cạnh (85,7\% graph train hiện tại), 1.965.541 user, 144.011 sản phẩm. Cửa sổ $[t_0, t_1)$ có 553.157 tương tác P4, trong đó 105.401 target warm (19,1\%); 77,2\% bị loại vì user mới. Mọi cạnh train có timestamp nhỏ hơn mọi target, mọi dòng trước $t_1$, không dùng dòng validation/test; SHA-256 của bốn file được ghi trong \texttt{development\_graph\_manifest.json} và kiểm tra bởi \texttt{tests/test\_grapes\_gfn\_rec\_protocol.py}.
@@ -364,7 +365,7 @@ Graph train có 4.887.104 cặp sản phẩm đồng mua (cùng ít nhất một
 \bottomrule
 \end{tabular}
 \end{table}
-Chỉ 29,0\% target có đường đi độ dài 3 từ user tới target trong graph train, tức có một user khác đã mua cả sản phẩm của user lẫn target. Với tail con số là 4,5\%. Điểm số LightGCN là tích vô hướng giữa hai embedding đã lan truyền nên vẫn có thể xếp hạng target xa hơn, nhưng bằng chứng collaborative trực tiếp là rất hạn chế. 46,5\% target thuộc user chỉ có một tương tác train. Quyết định (DL-003): mọi kết quả holdout được báo thêm theo nhóm có/không có đường độ dài $\le$3.
+Chỉ 29,0\% target có đường đi độ dài 3 từ user tới target trong graph train, tức có một user khác đã mua cả sản phẩm của user lẫn target. Với tail con số là 4,5\%. Điểm số LightGCN là tích vô hướng giữa hai embedding đã lan truyền nên vẫn có thể xếp hạng target xa hơn, nhưng bằng chứng collaborative trực tiếp là rất hạn chế. 46,5\% target thuộc user chỉ có một tương tác trong $G_{\text{dev\_train}}$. Quyết định (DL-003): mọi kết quả holdout được báo thêm theo nhóm có/không có đường độ dài $\le$3.
 
 \section{Metadata sản phẩm}
 Amazon Reviews'23 công bố \texttt{meta\_Baby\_Products} với title, categories (phân cấp), features, description, price, store, details \cite{amazon23}. Metadata cho phép đo mức khớp ngữ nghĩa và đa dạng (mục~\ref{sec:semantic}) mà không thay đổi phương pháp.
@@ -374,7 +375,7 @@ Amazon Reviews'23 công bố \texttt{meta\_Baby\_Products} với title, categori
 \includegraphics[width=0.62\linewidth]{D6_metadata_categories.png}
 \caption{Danh mục cấp 2: tỷ lệ sản phẩm và tỷ lệ tương tác.}\label{fig:meta}
 \end{figure}
-Metadata phủ 100\% sản phẩm train. Độ phủ theo trường: title 99,99\%, store 98,5\%, danh mục 93,4\%, features 77,6\%, mô tả 62,3\%, giá chỉ 22,6\%. Cây danh mục chủ yếu sâu 4--5 cấp, gồm 96 danh mục cấp 2 và 448 danh mục lá; chỉ 61\% sản phẩm có \texttt{main\_category} là ``Baby'' (tiếp theo là Amazon Home 13,3\%, Health \& Personal Care 4,7\%). Phân bổ theo danh mục cũng lệch: Nursery chiếm 32,7\% sản phẩm nhưng 22,4\% tương tác, Safety 6,0\% sản phẩm nhưng 11,3\% tương tác, Feeding 13,5\% và 17,9\%. Giá trung vị gần như bằng nhau ở head (20,04), body (18,99) và tail (19,47). Kết luận: title và danh mục đủ để đo semantic match và ILD; không dùng giá.
+Metadata phủ 100\% sản phẩm train. Độ phủ theo trường: title 99,99\%, store 98,5\%, danh mục 93,4\%, features 77,6\%, mô tả 62,3\%, giá chỉ 22,6\%. Cây danh mục chủ yếu sâu 4--5 cấp, gồm 96 danh mục cấp 2 và 448 danh mục lá; chỉ 61\% sản phẩm có \texttt{main\_category} là ``Baby'' (tiếp theo là Amazon Home 13,3\%, Health \& Personal Care 4,7\%). Phân bổ theo danh mục cũng lệch: Nursery chiếm 32,7\% sản phẩm nhưng 22,4\% tương tác, Safety 6,0\% sản phẩm nhưng 11,3\% tương tác, Feeding 13,5\% và 17,9\%. Trên 22,6\% sản phẩm có giá, giá trung vị gần như bằng nhau ở head (20,04), body (18,99) và tail (19,47). Kết luận: title và danh mục đủ để đo semantic match và ILD; không dùng giá.
 
 \section{Đường đi dữ liệu và chia split}
 Raw CSV (kiểm SHA-256) $\rightarrow$ kiểm toán $\rightarrow$ P4 $\rightarrow$ chia theo thời gian $\rightarrow$ graph train và mapping ID $\rightarrow$ huấn luyện có lấy mẫu $\rightarrow$ đánh giá full-graph, toàn catalog.
@@ -410,7 +411,7 @@ Phân bố thay đổi mạnh theo năm & Chia theo thời gian; development spl
 Graph gần liên thông, bậc kỳ vọng theo cạnh ~1.009 & Lấy mẫu có budget $k$; tính chi phí sampler \\
 Batch 65.536 triplet chạm 87\% graph ngay bước 1 & Budget R3 bắt đầu từ batch $\le$4.096 cho mọi sampler \\
 Chỉ 29\% target có đường độ dài 3; tail 4,5\% & Báo kết quả theo nhóm có/không có đường $\le$3 (DL-003) \\
-Top 1\% sản phẩm đổi khoảng một nửa mỗi năm & Theo dõi M1 bám sản phẩm cũ \\
+Top 1\% sản phẩm chỉ trùng một phần giữa các năm (Jaccard 0,45--0,54) & Theo dõi M1 bám sản phẩm cũ \\
 Metadata: title $\approx$100\%, danh mục 93\%, giá 23\% & Đo ngữ nghĩa bằng title và danh mục, không dùng giá \\
 \bottomrule
 \end{tabularx}
@@ -421,7 +422,7 @@ Metadata: title $\approx$100\%, danh mục 93\%, giá 23\% & Đo ngữ nghĩa b�
 Mỗi mục trình bày: câu hỏi, phân tích, số liệu và hệ quả cho thiết kế.
 
 \section{``Converat'' — coverage và conversion}
-\textbf{Coverage@20} là tỷ lệ sản phẩm trong catalog xuất hiện ít nhất một lần trong top-20 của mọi user; đo độ phủ, chưa đo ý nghĩa. \textbf{Conversion} là tỷ lệ gợi ý dẫn tới mua; cần log hiển thị--click--mua và A/B test online, dữ liệu review offline không có. Proxy offline gần nhất là Recall@20 trên tương tác tương lai. Ví dụ baseline sanity cũ: MostPop chỉ gợi ý 25 sản phẩm (coverage 0,00015) trong khi BPR-MF đạt 0,0335.
+\textbf{Coverage@20} là tỷ lệ sản phẩm trong catalog xuất hiện ít nhất một lần trong top-20 của mọi user; đo độ phủ, chưa đo ý nghĩa. \textbf{Conversion} là tỷ lệ gợi ý dẫn tới mua; cần log hiển thị--click--mua và A/B test online, dữ liệu review offline không có. Recall@20 chỉ đo sản phẩm tương lai có vào top-20, không thay được conversion. Ví dụ baseline sanity cũ: MostPop chỉ gợi ý 25 sản phẩm (coverage 0,00015) trong khi BPR-MF đạt 0,0335.
 
 \section{Context}
 Trong đồ án, \emph{context} là tập node và cạnh lân cận model dùng để tính embedding cho batch ở mỗi layer ($K^l$). Sampler quyết định context. Đây không phải ngữ cảnh người dùng như thời gian, thiết bị, vị trí (context-aware recommendation, ngoài phạm vi).
@@ -454,17 +455,17 @@ Exposure theo nhóm = tỷ lệ vị trí trong top-20 thuộc head/body/tail; h
 \caption{Nếu chỉ tối ưu một tiêu chí.}\label{tab:tradeoff}
 \begin{tabularx}{\linewidth}{p{2.3cm}YYp{2.8cm}}
 \toprule
-Tối ưu & Thường xảy ra & Bằng chứng trên Baby & Cách đo \\
+Tối ưu & Có thể xảy ra & Bằng chứng trên Baby & Cách đo \\
 \midrule
 NDCG tổng & Dồn về sản phẩm phổ biến & MostPop: NDCG@20 0,0059, 25 sản phẩm, 100\% exposure head & NDCG + coverage + exposure \\
 Độ phủ/đa dạng & Có thể giảm độ chính xác & BPR-MF: coverage 0,0335 ($\approx$218$\times$ MostPop), NDCG@20 0,0041 & NDCG--coverage \\
-Chi phí thấp (budget nhỏ) & Ít ngữ cảnh & Chưa đo (RQ4) & NDCG--thời gian \\
-Đưa tail lên & Exposure tăng, hit chưa chắc & Chưa đo & Exposure và hit tail \\
-Khớp ngữ nghĩa & Gợi ý giống nhau & Chưa đo & Semantic match + ILD \\
+Chi phí thấp (budget nhỏ) & Giả thuyết: ít ngữ cảnh, chất lượng giảm & Chưa đo (RQ4) & NDCG--thời gian \\
+Đưa tail lên & Giả thuyết: exposure tăng, hit không tăng & Chưa đo & Exposure và hit tail \\
+Khớp ngữ nghĩa & Giả thuyết: giảm đa dạng & Chưa đo (metadata đã có) & Semantic match + ILD \\
 \bottomrule
 \end{tabularx}
 \end{table}
-MostPop, BPR-MF là baseline sanity cũ (5 epoch, validation), chỉ minh họa trade-off. Kết quả cuối được trình bày như mặt trận Pareto: một phương pháp không được coi là tốt hơn nếu thua ở một trục mà không thắng ở trục khác.
+MostPop (không huấn luyện) và BPR-MF (5 epoch) là baseline sanity cũ trên validation, chỉ minh họa trade-off. Kết quả cuối được trình bày như mặt trận Pareto: một phương pháp không được coi là tốt hơn nếu thua ở một trục mà không thắng ở trục khác.
 
 \section{Phân tích dữ liệu ban đầu}
 Các câu hỏi về số sản phẩm, histogram, mất cân bằng, dồn về, không đủ dữ liệu, rating, cách biểu diễn, nhiễu và cân bằng được trả lời trong chương~\ref{ch:data}: mục 2.1--2.9 và Bảng~\ref{tab:noise}, \ref{tab:policy}.
@@ -476,9 +477,9 @@ Xem mục~\ref{sec:dist}: chọn sampling; distributed bổ sung, không thay th
 \begin{itemize}
 \item \textbf{user$\rightarrow$sản phẩm}: lịch sử trực tiếp; với user một tương tác đây là toàn bộ thông tin.
 \item \textbf{sản phẩm$\rightarrow$user$\rightarrow$sản phẩm}: ``người mua A cũng mua B'', collaborative signal cốt lõi, xuất hiện từ bước 2.
-\item \textbf{qua sản phẩm head}: nhiều tín hiệu phổ biến, ít tính cá nhân, tốn chi phí lan truyền.
-\item \textbf{qua sản phẩm tail}: tín hiệu riêng, ngách, ít quan sát nên dễ nhiễu.
-\item \textbf{qua user hoạt động nhiều}: cầu nối nhiều sản phẩm, có thể quá chung.
+\item \textbf{qua sản phẩm head}: 1\% sản phẩm giữ 44\% cạnh; 53\% target development head có đường độ dài 3.
+\item \textbf{qua sản phẩm tail}: ít quan sát (80\% sản phẩm, 10\% cạnh); vai trò là giả thuyết.
+\item \textbf{qua user hoạt động nhiều}: cầu nối nhiều sản phẩm; vai trò là giả thuyết.
 \end{itemize}
 Heuristic cố định áp đặt trước giá trị (M1 ưu tiên head, M2 phạt hub). GRAPES-GFN-Rec để sampler học: quan hệ nào giúp BPR loss giảm sẽ được chọn nhiều hơn; RQ3 đo lại phân phối node được chọn và RQ4 cho biết quan hệ nào vẫn được giữ khi budget chặt.
 
@@ -515,7 +516,7 @@ Số liệu đã có (mục 2.9): 20,7\% sản phẩm (25,8\% tail) không có s
 \caption{Một bước huấn luyện. $\mathrm{sg}$ là stop-gradient. Suy luận không lấy mẫu: LightGCN chạy trên toàn graph train, xếp hạng toàn catalog.}\label{fig:arch}
 \end{figure}
 
-Hình~\ref{fig:arch} là khung kiến trúc chung. Sampler và recommender có tham số, optimizer và gradient tách biệt. Backbone có thể thay (ví dụ NGCF, SGL) mà không đổi sampler; trong triển khai thực tế, sampler chỉ dùng lúc huấn luyện, phục vụ gợi ý dùng embedding đã học.
+Hình~\ref{fig:arch} là khung kiến trúc chung. Sampler và recommender có tham số, optimizer và gradient tách biệt. Sampler chỉ dùng lúc huấn luyện; đánh giá dùng LightGCN full-graph trên embedding đã học. Việc thay backbone khác chưa được thiết kế hay kiểm chứng.
 
 \section{Chuyển đổi từ GRAPES sang gợi ý}
 \begin{table}[h]
@@ -591,8 +592,8 @@ Ghi log: $L_{\text{BPR}}$, $L_{\text{TB}}$, $\log q$, $\log Z$, $|C^l|$, $|V^l|$
 
 \section{Những điểm riêng của bài toán gợi ý}
 \begin{description}[style=nextline,leftmargin=1.2cm]
-\item[R-1 Quá ít phần thưởng.] Pilot dùng batch 65.536 trong 5 epoch, khoảng 300 bước tối ưu: sampler chỉ nhận khoảng 300 phần thưởng vô hướng cho hàng trăm nghìn node mục tiêu mỗi bước. GRAPES gốc dùng batch 256--512. Batch và budget sẽ được chọn lại trên development split, chung cho mọi sampler.
-\item[R-2 Thang phần thưởng.] BPR khởi đầu khoảng 0,69 và chênh lệch giữa trajectory rất nhỏ; nếu $\alpha$ quá nhỏ, $\log q$ lấn át phần thưởng. GRAPES gốc chọn hệ số trong khoảng $10^3$ đến $10^5$. $\alpha$ và $\log Z$ khởi đầu được quét trên $D_{\text{dev}}$.
+\item[R-1 Quá ít phần thưởng.] Budget pilot là batch 65.536 trong 5 epoch, khoảng 300 bước tối ưu; một sampler học được dùng budget này chỉ nhận khoảng 300 phần thưởng vô hướng, mỗi phần thưởng cho trung bình 132.749 node mục tiêu (đo ở notebook 11). Các file config GRAPES dùng batch 256 (mặc định trong main.py là 512). Batch và budget sẽ được chọn lại trên development split, chung cho mọi sampler.
+\item[R-2 Thang phần thưởng.] BPR khởi đầu khoảng 0,69 và chênh lệch giữa trajectory rất nhỏ; nếu $\alpha$ quá nhỏ, $\log q$ lấn át phần thưởng. Các file config GRAPES (snapshot local) dùng hệ số 151,6--789.615 cho GFlowNet và 210,5--93.660 cho RL (\texttt{results/reference\_sources/grapes\_official\_configs.json}). $\alpha$ và $\log Z$ khởi đầu được quét trên $D_{\text{dev}}$.
 \item[R-3 Phần thưởng không dừng.] Khi recommender học thêm, cùng trajectory cho loss khác. Giữ như GRAPES và ghi log mức trôi.
 \item[R-4 Graph cực thưa.] Theo dõi phân phối bậc, loại và nhóm của node được chọn để phát hiện sampler dồn về hub.
 \item[R-5 Chi phí sampler.] Embedding cho 2,48 triệu node cộng $\mathrm{GCN}_S$ có thể đắt hơn LightGCN; chi phí báo cáo gồm cả sampler.

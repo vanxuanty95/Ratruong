@@ -1,6 +1,6 @@
 # Trạng thái bàn giao cho agent tiếp theo
 
-> **Cập nhật lần cuối:** 16/09/2026, sau khi xử lý kết quả notebook 11 (tài liệu sống v0.4, DL-003).
+> **Cập nhật lần cuối:** 17/09/2026, sau rà soát chống bịa đặt (tài liệu sống v0.5, DL-004).
 > **Cập nhật file này ở cuối mỗi phiên làm việc** (commit cuối, việc đang dở, việc kế tiếp). Đây là nơi đầu tiên agent mới đọc sau `AGENTS.md`.
 
 ## 1. Mục tiêu một câu
@@ -23,7 +23,7 @@ Hiện thực **GRAPES-GFN-Rec** — biến thể GRAPES có sampler học đư�
 | R0 governance | Xong | `b122d1d` |
 | R2 primitives | **Lõi xong**; còn việc ở §5.2 | `85307b7`: `src/grapes_rec/{torch_graph,gfn_sampler,sampled_lightgcn,gfn_trainer}.py`, `tests/test_gfn_rec_torch.py` (28 test) |
 | R1 dev split + phân tích sâu | **Xong** | Notebook `0c8d724`; kết quả `results/dataset_deep_analysis/` (summary, figures D1–D6, bundle), `results/grapes_gfn_rec_development/development_graph_manifest.json`; test `tests/test_grapes_gfn_rec_protocol.py`; kết luận DL-003 |
-| Tài liệu sống **v0.4** | Xong | `05_slides/THESIS_vn.pptx` (44 slide), `04_thesis/THESIS_vn.tex/.pdf` (24 trang); chương 2 và 3 không còn chỗ chờ notebook 11 |
+| Tài liệu sống **v0.5** | Xong | `05_slides/THESIS_vn.pptx` (44 slide), `04_thesis/THESIS_vn.tex/.pdf` (25 trang); rà soát chống bịa đặt DL-004 |
 | R3, R4, R5, R6, R7 | Chưa | Lịch: R3 23/9–10/10 · R4 10–13/10 · R5 14–27/10 · R6 28/10–3/11 · R7 4–17/11 · dự phòng đến 30/11 |
 
 ## 4. Đang chờ người dùng
@@ -45,7 +45,7 @@ Các con số chính và quyết định rút ra nằm trong `DECISION_LOG_vn.md
 - Vectorize `graph.edges_between` / `local_edges` cho quy mô thật (hiện đúng nhưng dùng `torch.isin` trên toàn bộ neighbor list).
 
 ### 5.3 R3 — notebook 12 (xem plan Task R3)
-Đọc `dev_train_edges.csv.gz`, `dev_targets.csv.gz` trên Drive (kiểm SHA-256 theo manifest); **lưới batch bắt đầu từ ≤ 4.096 triplet** (DL-003); R3a Full LightGCN vs MostPop theo epoch trên `D_dev`; R3b budget chung (batch × k); R3c quét α (log-grid, GRAPES gốc dùng ~10³–10⁵), log_z_init, lr_S; R3d bằng chứng G7; R3e chi phí sampler. Tuyệt đối không đọc `baby_p4_validation_targets` / `baby_p4_test_targets`.
+Đọc `dev_train_edges.csv.gz`, `dev_targets.csv.gz` trên Drive (kiểm SHA-256 theo manifest); **lưới batch bắt đầu từ ≤ 4.096 triplet** (DL-003); R3a Full LightGCN vs MostPop theo epoch trên `D_dev`; R3b budget chung (batch × k); R3c quét α (log-grid; config GRAPES dùng 151,6–789.615 cho GFlowNet, xem `results/reference_sources/grapes_official_configs.json`), log_z_init, lr_S; R3d bằng chứng G7; R3e chi phí sampler. Tuyệt đối không đọc `baby_p4_validation_targets` / `baby_p4_test_targets`.
 
 ## 6. Quy trình cập nhật tài liệu sống
 
@@ -69,6 +69,8 @@ Các con số chính và quyết định rút ra nằm trong `DECISION_LOG_vn.md
 - Không commit: `Claude outputs/` (bản sao ứng dụng tải về), `.~lock.*`, hai file ghi chú của giảng viên (giữ untracked như cũ).
 
 ## 8. Không được làm
+
+- Không đưa vào slide/luận văn con số không truy được về `06_code/results/` (số phái sinh: chạy `python3 scripts/derive_doc_facts.py`, lấy từ `results/doc_facts/doc_facts.json`); nhận định chưa có số liệu phải ghi "giả thuyết" hoặc bỏ (DL-004).
 
 - Không gọi M2 hoặc bất kỳ heuristic nào là biến thể GRAPES (checklist G1–G7).
 - Không đọc current validation/test để thiết kế/tune; test chỉ đọc một lần với protocol riêng.

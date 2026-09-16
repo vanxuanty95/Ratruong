@@ -1,0 +1,49 @@
+{
+  "gate": "R2",
+  "executed_at_utc": "2026-09-16T18:52:32.297653Z",
+  "environment": {
+    "python": "3.11.15",
+    "torch": "2.14.0+cu130",
+    "device": "cpu"
+  },
+  "source_sha256": {
+    "src/grapes_rec/gfn_sampler.py": "9e7fac18d4b7d9a8f9ff1d157c9cd11bdaf57ea9188974219b59c927b785c616",
+    "src/grapes_rec/gfn_trainer.py": "8eb1c259c8cfd391707a6c49eabd65f1f83ecb26b92db184f784609c7a412530",
+    "src/grapes_rec/sampled_lightgcn.py": "39a07b950187828b213182cb2b5060ea7b332fe3f50ac5b864b7e6987afc9e57",
+    "src/grapes_rec/torch_graph.py": "03adec5d0beb94bcf519f711ec296240d60900ee2a6eae112e5c8644b2208fa5",
+    "tests/test_gfn_rec_torch.py": "e8490820cd1ccc60fabd533d9f025d6ab1054a9062946ef2ff298a30ad337a17"
+  },
+  "baseline": {
+    "returncode": 0,
+    "ran": "Ran 28 tests in 16.568s",
+    "status": "OK"
+  },
+  "mutations": {
+    "tb_without_detach": {
+      "returncode": 1,
+      "ran": "Ran 28 tests in 2.236s",
+      "status": "FAILED (errors=2)",
+      "killed": true
+    },
+    "log_q_drops_unselected_terms": {
+      "returncode": 1,
+      "ran": "Ran 28 tests in 1.367s",
+      "status": "FAILED (failures=2)",
+      "killed": true
+    },
+    "cumulative_union_state": {
+      "returncode": 1,
+      "ran": "Ran 28 tests in 1.369s",
+      "status": "FAILED (failures=3)",
+      "killed": true
+    },
+    "reinforce_wrong_sign": {
+      "returncode": 1,
+      "ran": "Ran 28 tests in 1.327s",
+      "status": "FAILED (failures=1)",
+      "killed": true
+    }
+  },
+  "mutations_killed": 4,
+  "mutations_total": 4
+}

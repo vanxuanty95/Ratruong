@@ -1,0 +1,207 @@
+{
+  "item_degree_size_biased_mean": {
+    "value": 1009.0,
+    "source": "data_story/data_story_summary.json training_graph histogram",
+    "note": "sum d^2 / sum d"
+  },
+  "item_degree_bucket_share_nodes_pct": {
+    "value": {
+      "1-1": 33.35,
+      "2-5": 32.79,
+      "6-20": 19.87,
+      "21-100": 10.13,
+      "101-1000": 3.55,
+      "1001-1000000000000": 0.31
+    },
+    "source": "data_story_summary.json histogram"
+  },
+  "item_degree_bucket_share_edges_pct": {
+    "value": {
+      "1-1": 1.4,
+      "2-5": 4.12,
+      "6-20": 8.84,
+      "21-100": 18.65,
+      "101-1000": 40.64,
+      "1001-1000000000000": 26.35
+    },
+    "source": "data_story_summary.json histogram"
+  },
+  "user_degree_size_biased_mean": {
+    "value": 4.1,
+    "source": "data_story/data_story_summary.json training_graph histogram",
+    "note": "sum d^2 / sum d"
+  },
+  "user_degree_bucket_share_nodes_pct": {
+    "value": {
+      "1-1": 71.76,
+      "2-5": 25.15,
+      "6-20": 2.97,
+      "21-1000000000000": 0.11
+    },
+    "source": "data_story_summary.json histogram"
+  },
+  "user_degree_bucket_share_edges_pct": {
+    "value": {
+      "1-1": 43.0,
+      "2-5": 39.65,
+      "6-20": 15.19,
+      "21-1000000000000": 2.16
+    },
+    "source": "data_story_summary.json histogram"
+  },
+  "item_degree_mean": {
+    "value": 23.86,
+    "source": "baby_p4_g2c_manifest.json training_graph"
+  },
+  "user_degree_mean": {
+    "value": 1.669,
+    "source": "baby_p4_g2c_manifest.json training_graph"
+  },
+  "item_degree_max": {
+    "value": 21348,
+    "source": "baby_p4_g2c_manifest.json training_graph"
+  },
+  "rating_share_pct": {
+    "value": {
+      "1": 9.33,
+      "2": 5.2,
+      "3": 7.27,
+      "4": 11.45,
+      "5": 66.74
+    },
+    "source": "data_story_summary.json source.rating_counts"
+  },
+  "rating_le3_pct": {
+    "value": 21.8,
+    "source": "data_story_summary.json"
+  },
+  "rating_mean": {
+    "value": 4.211,
+    "source": "data_story_summary.json"
+  },
+  "p5_vs_p4_interaction_loss_pct": {
+    "value": 14.65,
+    "source": "Baby_Products_protocol_audit.json semantic_snapshots"
+  },
+  "validation_composition_pct": {
+    "value": {
+      "warm": 21.9,
+      "unseen_user_only": 64.18,
+      "unseen_user_and_item": 9.25,
+      "unseen_item_only": 4.67,
+      "any_unseen_user": 73.43
+    },
+    "source": "data_story_summary.json temporal_population.validation"
+  },
+  "p4_rows_per_year": {
+    "value": {
+      "2000": 8,
+      "2001": 144,
+      "2002": 653,
+      "2003": 1088,
+      "2004": 2035,
+      "2005": 3633,
+      "2006": 3236,
+      "2007": 5815,
+      "2008": 8173,
+      "2009": 11018,
+      "2010": 21151,
+      "2011": 43070,
+      "2012": 56685,
+      "2013": 140671,
+      "2014": 217199,
+      "2015": 346665,
+      "2016": 417378,
+      "2017": 414201,
+      "2018": 497560,
+      "2019": 664832,
+      "2020": 637961,
+      "2021": 533675,
+      "2022": 438337,
+      "2023": 190655
+    },
+    "source": "data_story_summary.json source.monthly_p4"
+  },
+  "phase1_time_overhead_pct": {
+    "value": {
+      "cora": 84.6,
+      "citeseer": 68.9,
+      "ogbn_arxiv": 36.7
+    },
+    "source": "reference_sources/phase1_grapes_results.json"
+  },
+  "grapes_config_loss_coef_range_gflownet": {
+    "value": [
+      151.6,
+      789615.4
+    ],
+    "source": "reference_sources/grapes_official_configs.json"
+  },
+  "grapes_config_loss_coef_range_rl": {
+    "value": [
+      210.5,
+      93660.4
+    ],
+    "source": "reference_sources/grapes_official_configs.json"
+  },
+  "grapes_config_batch_sizes": {
+    "value": [
+      "256"
+    ],
+    "source": "reference_sources/grapes_official_configs.json",
+    "note": "main.py default batch_size = 512"
+  },
+  "new_user_rows_share_2014_2023_pct": {
+    "value": [
+      54.0,
+      60.2
+    ],
+    "source": "deep_analysis_summary.json S2"
+  },
+  "top1pct_jaccard_range": {
+    "value": [
+      0.45,
+      0.541
+    ],
+    "source": "deep_analysis_summary.json S2"
+  },
+  "top1pct_overlap_share_of_current_year_pct": {
+    "value": {
+      "2015": 70.2,
+      "2016": 67.1,
+      "2017": 68.0,
+      "2018": 62.0,
+      "2019": 67.1,
+      "2020": 66.4,
+      "2021": 66.9
+    },
+    "source": "deep_analysis_summary.json S2",
+    "note": "approximation |A∩B|/|A| = 2J/(1+J), exact only when both years have the same top-1% size"
+  },
+  "row_share_prev_year_top1pct_range_pct": {
+    "value": [
+      23.8,
+      30.3
+    ],
+    "source": "deep_analysis_summary.json S2"
+  },
+  "row_share_own_year_top1pct_range_pct": {
+    "value": [
+      30.8,
+      33.6
+    ],
+    "source": "deep_analysis_summary.json S2"
+  },
+  "users_ge10_constant_rating_pct": {
+    "value": 8.2,
+    "source": "deep_analysis_summary.json S3"
+  },
+  "main_category_baby_pct": {
+    "value": 61.0,
+    "source": "deep_analysis_summary.json S6"
+  },
+  "metadata_price_note": {
+    "value": "price medians computed only on the 22.6% of train items with a parseable price",
+    "source": "deep_analysis_summary.json S6"
+  }
+}

@@ -10,5 +10,5 @@ Quy tắc không đổi:
 1. Phase 2 là biến thể GRAPES **học được** (đủ G1–G7) cho recommendation + so sánh với phương pháp khác (DL-001).
 2. Một slide sống `Do An/05_slides/THESIS_vn.pptx` và một luận văn sống `Do An/04_thesis/THESIS_vn.tex` được bồi đắp theo gate (DL-002).
 3. Không dùng validation/test hiện tại để thiết kế; mọi tuning trên development split.
-4. Mọi con số trong tài liệu phải truy được về artifact đã lưu trong `Do An/06_code/results/`.
+4. Mọi con số trong tài liệu phải truy được về artifact đã lưu trong `Do An/06_code/results/` (số phái sinh: `scripts/derive_doc_facts.py` → `results/doc_facts/doc_facts.json`). Nhận định chưa có số liệu phải ghi "giả thuyết" hoặc bỏ; không bịa trích dẫn (DL-004).
 5. Trả lời người dùng bằng tiếng Việt.
