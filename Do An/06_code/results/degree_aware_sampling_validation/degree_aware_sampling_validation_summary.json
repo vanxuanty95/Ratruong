@@ -1,0 +1,498 @@
+{
+  "claim_boundary": "One fixed validation-only M1 training-degree-aware sampled-training smoke run at the predeclared k_l=65536 layer budget. This is an implementation and resource-envelope probe, not the middle point of a tested budget grid. No test access, hyperparameter search, method selection, learned sampler, sampled-inference claim, or comparison to full LightGCN as a budget-matched method.",
+  "environment": {
+    "cuda": "12.8",
+    "gpu": "Tesla T4",
+    "platform": "Linux-6.6.122+-x86_64-with-glibc2.39",
+    "process_peak_rss_mb": 2438.453125,
+    "python": "3.13.15",
+    "torch": "2.11.0+cu128"
+  },
+  "integrity_assertions": {
+    "K_l_equals_V0_union_V_l": true,
+    "all_ranks_within_candidate_count": true,
+    "all_registered_epochs_completed": true,
+    "bpr_integrity_passed": true,
+    "bpr_sha256_matches": true,
+    "candidate_count_matches_every_target": true,
+    "catalog_coverage_reconciles": true,
+    "cuda_used": true,
+    "degree_mass_matches_train_rows": true,
+    "degree_method_is_degree_proportional": true,
+    "degree_proposal_weights_positive": true,
+    "deterministic_first_batch_sampler_replay": true,
+    "each_epoch_saw_all_training_edges_as_positive_pairs": true,
+    "embedding_parameters_changed": true,
+    "every_validation_target_ranked": true,
+    "exact_k_every_layer": true,
+    "fixed_last_epoch_used": true,
+    "full_graph_inference_used": true,
+    "full_inference_adjacency_has_two_directions_per_edge": true,
+    "full_lightgcn_integrity_passed": true,
+    "full_lightgcn_sha256_matches": true,
+    "losses_finite": true,
+    "matched_evaluation_equal": true,
+    "matched_model_equal": true,
+    "matched_sampler_core_equal_except_proposal": true,
+    "matched_training_equal": true,
+    "mostpop_integrity_passed": true,
+    "mostpop_sha256_matches": true,
+    "negative_sampler_policy_enforced": true,
+    "negative_sampler_preflight_has_no_positive_collision": true,
+    "optimizer_steps_match_batches": true,
+    "positive_edge_retain_policy_used": true,
+    "rank_tie_break_applied": true,
+    "recommendation_slots_reconcile": true,
+    "rectangular_sampled_local_normalization_used": true,
+    "same_gpu_as_uniform_control": true,
+    "same_validation_rows_as_all_references": true,
+    "sampled_block_weights_finite": true,
+    "sampled_blocks_have_no_self_loop": true,
+    "sampled_blocks_use_only_registered_training_edges": true,
+    "sampled_nodes_disjoint_from_previous_K": true,
+    "sampled_nodes_unique": true,
+    "sampled_training_used": true,
+    "target_not_in_strict_prior_history": true,
+    "test_targets_not_read": true,
+    "test_targets_not_read_during_evaluation": true,
+    "topk_boundary_ties_resolved": true,
+    "train_rows_match_manifest": true,
+    "train_sha256_matches_manifest": true,
+    "training_csr_has_two_directions_per_edge": true,
+    "training_pairs_unique": true,
+    "uniform_and_degree_matched_control_id": true,
+    "uniform_integrity_passed": true,
+    "uniform_method_is_uniform": true,
+    "uniform_sha256_matches": true,
+    "validation_rows_match_manifest": true,
+    "validation_sha256_matches_manifest": true
+  },
+  "matched_comparison": {
+    "comparison_boundary": "M0 uniform is the only budget-matched static control. Deltas are descriptive for one fixed validation seed; no significance or test-set claim.",
+    "degree_m1": {
+      "catalog_coverage_at_20": 0.017782575173477255,
+      "hits_at_20": 1309,
+      "ndcg_at_20": 0.006153296206536906,
+      "recall_at_20": 0.015988567380391103,
+      "training_peak_gpu_memory_mb": 2665.09521484375,
+      "training_wall_seconds": 795.10390311
+    },
+    "degree_minus_uniform": {
+      "catalog_coverage_at_20": -0.0007031611410948345,
+      "hits_at_20": 109,
+      "ndcg_at_20": 0.00042601321467111795,
+      "recall_at_20": 0.0013313627536001762,
+      "training_peak_gpu_memory_mb": -817.80126953125,
+      "training_wall_seconds": 89.78062150499989
+    },
+    "uniform_m0": {
+      "catalog_coverage_at_20": 0.01848573631457209,
+      "hits_at_20": 1200,
+      "ndcg_at_20": 0.005727282991865788,
+      "recall_at_20": 0.014657204626790927,
+      "training_peak_gpu_memory_mb": 3482.896484375,
+      "training_wall_seconds": 705.3232816050001
+    }
+  },
+  "reference_comparison": {
+    "bpr_mf": {
+      "ndcg_at_20": 0.0040535123936547065,
+      "recall_at_20": 0.010418829622210551
+    },
+    "comparison_boundary": "MostPop, BPR-MF and full LightGCN are context references, not budget-matched controls.",
+    "degree_m1": {
+      "ndcg_at_20": 0.006153296206536906,
+      "recall_at_20": 0.015988567380391103
+    },
+    "full_lightgcn": {
+      "ndcg_at_20": 0.004931237897653004,
+      "recall_at_20": 0.012373123572449341
+    },
+    "mostpop": {
+      "ndcg_at_20": 0.005872550223853306,
+      "recall_at_20": 0.014596132940845965
+    },
+    "uniform_m0": {
+      "ndcg_at_20": 0.005727282991865788,
+      "recall_at_20": 0.014657204626790927
+    }
+  },
+  "registered_config": {
+    "claim_boundary": "One fixed validation-only M1 training-degree-aware sampled-training smoke run at the predeclared k_l=65536 layer budget. This is an implementation and resource-envelope probe, not the middle point of a tested budget grid. No test access, hyperparameter search, method selection, learned sampler, sampled-inference claim, or comparison to full LightGCN as a budget-matched method.",
+    "config_id": "degree-aware-sampling-k65536-smoke-v1-2026-09-14",
+    "evaluation": {
+      "candidate_universe": "all frozen training items minus strict prior mapped positives",
+      "eval_batch_size": 128,
+      "inference_graph": "full_frozen_training_graph",
+      "k": 20,
+      "rank_tie_break": "item_idx_ascending",
+      "split": "validation_only",
+      "target_unit": "one relevant item per target row",
+      "timestamp_rule": "events at the target timestamp are not prior history"
+    },
+    "file_sha256": "fdc9b95930b4975eb17f8e4ab5325bd835cb619f2891587ab419625c24812d9f",
+    "matched_control_id": "static-controls-k65536-smoke-v1",
+    "model": {
+      "aggregation": "unweighted_mean_of_ego_and_all_layers",
+      "bias": false,
+      "embedding_dim": 64,
+      "initialization_std": 0.01,
+      "layers": 3,
+      "name": "Sampled-LightGCN",
+      "recommender_self_loops": false
+    },
+    "sampler": {
+      "candidate_rule": "unique_neighbors_of_previous_K_excluding_previous_K",
+      "cross_layer_reentry": true,
+      "degree_exponent": 1.0,
+      "degree_source": "full_frozen_training_graph_only",
+      "exact_k_without_replacement": true,
+      "k_l": [
+        65536,
+        65536,
+        65536
+      ],
+      "k_l_interpretation": "global_context_node_budget_per_batch_and_layer_equal_to_training_batch_size_for_this_smoke_only",
+      "method": "degree_proportional",
+      "normalization": "rectangular_sampled_local_bi_normalization",
+      "positive_edge_policy": "retain",
+      "seed": 20261013,
+      "state_rule": "K_l_equals_V0_union_V_l_not_cumulative_union"
+    },
+    "training": {
+      "batch_size": 65536,
+      "epoch_selection": "fixed_last_epoch",
+      "epochs": 5,
+      "l2_coefficient": 1e-06,
+      "learning_rate": 0.01,
+      "mixed_precision": false,
+      "negative_sampling": "uniform_training_catalog_reject_all_training_positives",
+      "optimizer": "SparseAdam",
+      "seed": 20260913,
+      "training_pair_order": "seeded_epoch_permutation"
+    }
+  },
+  "source": {
+    "bpr_mf_summary": {
+      "path": "/content/drive/MyDrive/Phase2_Amazon_Audit/bpr_mf_sanity_v1/bpr_mf_validation_summary.json",
+      "sha256": "611bd820c66c57ef7a06d18e52a36a61942bfaf55fc9a615ee6b4708ac5a1f74"
+    },
+    "directed_training_csr_entries": 7737308,
+    "full_lightgcn_summary": {
+      "path": "/content/drive/MyDrive/Phase2_Amazon_Audit/full_lightgcn_sanity_v1/full_lightgcn_validation_summary.json",
+      "sha256": "ebddb3ece87abc0098106dd2271b9134f641ca8e2582e35491b9f26b6fe0faa9"
+    },
+    "items": 162125,
+    "manifest_path": "/content/drive/MyDrive/Phase2_Amazon_Audit/g2c_baby_p4/baby_p4_g2c_manifest.json",
+    "mostpop_summary": {
+      "path": "/content/drive/MyDrive/Phase2_Amazon_Audit/mostpop_validation/mostpop_validation_summary.json",
+      "sha256": "00332090cae73a563a7fcafde895572fb06d574366ce37bf6f9d90208dfccf62"
+    },
+    "nodes": 2480433,
+    "train_edges": {
+      "path": "/content/drive/MyDrive/Phase2_Amazon_Audit/g2c_baby_p4/baby_p4_train_edges.csv.gz",
+      "rows": 3868654,
+      "sha256": "33abbd98b1d75b179bf45ef41ba3f5622d80005ad4aaf414320dbe48c17aeb72"
+    },
+    "uniform_m0_summary": {
+      "path": "/content/drive/MyDrive/Phase2_Amazon_Audit/uniform_sampling_k65536_smoke_v1/uniform_sampling_validation_summary.json",
+      "sha256": "f29ed8f15d50a6d585ecb9cdcfc160232b64f9936e83fc8db6dac442bf941474"
+    },
+    "users": 2318308,
+    "validation_targets": {
+      "path": "/content/drive/MyDrive/Phase2_Amazon_Audit/g2c_baby_p4/baby_p4_validation_targets.csv.gz",
+      "rows": 81871,
+      "sha256": "fd807f68fd03787931546ac31d7c2fe8e7ffcc7c43d3b92c627dce98fa87afca"
+    }
+  },
+  "status": "DEGREE_AWARE_SAMPLING_VALIDATION_SMOKE_EXECUTED",
+  "training": {
+    "deterministic_first_batch_trace_passed": true,
+    "epochs": [
+      {
+        "epoch": 1,
+        "examples": 3868654,
+        "layer_totals": [
+          {
+            "candidate_node_slots": 119916591,
+            "directed_block_entries": 35169692,
+            "layer": 1,
+            "requested_k_per_batch": 65536,
+            "selected_context_node_slots": 3932160
+          },
+          {
+            "candidate_node_slots": 120279731,
+            "directed_block_entries": 45721254,
+            "layer": 2,
+            "requested_k_per_batch": 65536,
+            "selected_context_node_slots": 3932160
+          },
+          {
+            "candidate_node_slots": 119388615,
+            "directed_block_entries": 44793330,
+            "layer": 3,
+            "requested_k_per_batch": 65536,
+            "selected_context_node_slots": 3932160
+          }
+        ],
+        "mean_loss": 0.5912994890727239,
+        "optimizer_steps": 60,
+        "propagation_and_update_seconds": 13.93049983300051,
+        "sampler_seconds": 129.582051101,
+        "selected_item_context_slots_by_cohort": {
+          "body": 472724,
+          "head": 1654,
+          "tail": 217465
+        },
+        "throughput_examples_per_second": 24315.56507510065,
+        "unique_computation_nodes": 2480433,
+        "unique_selected_context_nodes": 2283006,
+        "unique_training_edges_in_blocks": 3868654,
+        "wall_seconds": 159.10195655899997
+      },
+      {
+        "epoch": 2,
+        "examples": 3868654,
+        "layer_totals": [
+          {
+            "candidate_node_slots": 119937762,
+            "directed_block_entries": 35171195,
+            "layer": 1,
+            "requested_k_per_batch": 65536,
+            "selected_context_node_slots": 3932160
+          },
+          {
+            "candidate_node_slots": 120296132,
+            "directed_block_entries": 45721766,
+            "layer": 2,
+            "requested_k_per_batch": 65536,
+            "selected_context_node_slots": 3932160
+          },
+          {
+            "candidate_node_slots": 119395855,
+            "directed_block_entries": 44809596,
+            "layer": 3,
+            "requested_k_per_batch": 65536,
+            "selected_context_node_slots": 3932160
+          }
+        ],
+        "mean_loss": 0.1861751600595249,
+        "optimizer_steps": 60,
+        "propagation_and_update_seconds": 13.485016829999836,
+        "sampler_seconds": 130.69528407199948,
+        "selected_item_context_slots_by_cohort": {
+          "body": 472553,
+          "head": 1662,
+          "tail": 217691
+        },
+        "throughput_examples_per_second": 24586.1410019085,
+        "unique_computation_nodes": 2480433,
+        "unique_selected_context_nodes": 2282247,
+        "unique_training_edges_in_blocks": 3868654,
+        "wall_seconds": 157.35100443700003
+      },
+      {
+        "epoch": 3,
+        "examples": 3868654,
+        "layer_totals": [
+          {
+            "candidate_node_slots": 119912274,
+            "directed_block_entries": 35187458,
+            "layer": 1,
+            "requested_k_per_batch": 65536,
+            "selected_context_node_slots": 3932160
+          },
+          {
+            "candidate_node_slots": 120248685,
+            "directed_block_entries": 45741052,
+            "layer": 2,
+            "requested_k_per_batch": 65536,
+            "selected_context_node_slots": 3932160
+          },
+          {
+            "candidate_node_slots": 119433593,
+            "directed_block_entries": 44804563,
+            "layer": 3,
+            "requested_k_per_batch": 65536,
+            "selected_context_node_slots": 3932160
+          }
+        ],
+        "mean_loss": 0.13292225574277772,
+        "optimizer_steps": 60,
+        "propagation_and_update_seconds": 13.695322283999872,
+        "sampler_seconds": 137.92941415799964,
+        "selected_item_context_slots_by_cohort": {
+          "body": 472187,
+          "head": 1621,
+          "tail": 217437
+        },
+        "throughput_examples_per_second": 23383.39763872139,
+        "unique_computation_nodes": 2480433,
+        "unique_selected_context_nodes": 2282391,
+        "unique_training_edges_in_blocks": 3868654,
+        "wall_seconds": 165.44447627
+      },
+      {
+        "epoch": 4,
+        "examples": 3868654,
+        "layer_totals": [
+          {
+            "candidate_node_slots": 119925152,
+            "directed_block_entries": 35173088,
+            "layer": 1,
+            "requested_k_per_batch": 65536,
+            "selected_context_node_slots": 3932160
+          },
+          {
+            "candidate_node_slots": 120269211,
+            "directed_block_entries": 45726603,
+            "layer": 2,
+            "requested_k_per_batch": 65536,
+            "selected_context_node_slots": 3932160
+          },
+          {
+            "candidate_node_slots": 119415629,
+            "directed_block_entries": 44799045,
+            "layer": 3,
+            "requested_k_per_batch": 65536,
+            "selected_context_node_slots": 3932160
+          }
+        ],
+        "mean_loss": 0.10538102322954615,
+        "optimizer_steps": 60,
+        "propagation_and_update_seconds": 13.43361146199959,
+        "sampler_seconds": 129.94664543800036,
+        "selected_item_context_slots_by_cohort": {
+          "body": 471464,
+          "head": 1655,
+          "tail": 217284
+        },
+        "throughput_examples_per_second": 24723.551435817506,
+        "unique_computation_nodes": 2480433,
+        "unique_selected_context_nodes": 2282933,
+        "unique_training_edges_in_blocks": 3868654,
+        "wall_seconds": 156.47646710000004
+      },
+      {
+        "epoch": 5,
+        "examples": 3868654,
+        "layer_totals": [
+          {
+            "candidate_node_slots": 119916446,
+            "directed_block_entries": 35176047,
+            "layer": 1,
+            "requested_k_per_batch": 65536,
+            "selected_context_node_slots": 3932160
+          },
+          {
+            "candidate_node_slots": 120253594,
+            "directed_block_entries": 45720042,
+            "layer": 2,
+            "requested_k_per_batch": 65536,
+            "selected_context_node_slots": 3932160
+          },
+          {
+            "candidate_node_slots": 119418066,
+            "directed_block_entries": 44792295,
+            "layer": 3,
+            "requested_k_per_batch": 65536,
+            "selected_context_node_slots": 3932160
+          }
+        ],
+        "mean_loss": 0.08394823257752837,
+        "optimizer_steps": 60,
+        "propagation_and_update_seconds": 13.418199335999134,
+        "sampler_seconds": 129.4290811290009,
+        "selected_item_context_slots_by_cohort": {
+          "body": 471397,
+          "head": 1646,
+          "tail": 218058
+        },
+        "throughput_examples_per_second": 24842.93600152391,
+        "unique_computation_nodes": 2480433,
+        "unique_selected_context_nodes": 2282670,
+        "unique_training_edges_in_blocks": 3868654,
+        "wall_seconds": 155.72450776300002
+      }
+    ],
+    "negative_draws": 19343270,
+    "negative_resamples": 493,
+    "optimizer_steps": 300,
+    "peak_gpu_memory_mb": 2665.09521484375,
+    "wall_seconds": 795.10390311
+  },
+  "validation": {
+    "metrics": {
+      "hits_at_k": 1309,
+      "k": 20,
+      "ndcg_at_k": 0.006153296206536906,
+      "recall_at_k": 0.015988567380391103,
+      "rows": 81871
+    },
+    "peak_gpu_memory_mb": 3824.65625,
+    "recommendation_exposure": {
+      "catalog_coverage_at_k": 0.017782575173477255,
+      "item_cohort_share": {
+        "body": 0.03325353299703192,
+        "head": 0.9434323508934788,
+        "tail": 0.02331411610948932
+      },
+      "recommendation_slots": 1637420,
+      "unique_items_at_k": 2883
+    },
+    "target_item_cohorts": {
+      "body": {
+        "hits_at_k": 25,
+        "k": 20,
+        "ndcg_at_k": 0.00034222744467080415,
+        "recall_at_k": 0.0006259075659706575,
+        "rows": 39942,
+        "target_share": 0.487865056002736
+      },
+      "head": {
+        "hits_at_k": 1284,
+        "k": 20,
+        "ndcg_at_k": 0.01671352015858484,
+        "recall_at_k": 0.043786659391624606,
+        "rows": 29324,
+        "target_share": 0.3581732237300143
+      },
+      "tail": {
+        "hits_at_k": 0,
+        "k": 20,
+        "ndcg_at_k": 0.0,
+        "recall_at_k": 0.0,
+        "rows": 12605,
+        "target_share": 0.1539617202672497
+      }
+    },
+    "topk_boundary_tie_rows": 0,
+    "user_activity_cohorts": {
+      "active": {
+        "hits_at_k": 298,
+        "k": 20,
+        "ndcg_at_k": 0.005611160329381546,
+        "recall_at_k": 0.015023190159306312,
+        "rows": 19836,
+        "target_share": 0.24228359248085402
+      },
+      "repeat_light": {
+        "hits_at_k": 384,
+        "k": 20,
+        "ndcg_at_k": 0.005677144487816112,
+        "recall_at_k": 0.016146665545370448,
+        "rows": 23782,
+        "target_share": 0.2904813670286182
+      },
+      "singleton": {
+        "hits_at_k": 627,
+        "k": 20,
+        "ndcg_at_k": 0.006730444336980834,
+        "recall_at_k": 0.016390871304211435,
+        "rows": 38253,
+        "target_share": 0.4672350404905278
+      }
+    },
+    "wall_seconds": 7.684564565999835
+  }
+}

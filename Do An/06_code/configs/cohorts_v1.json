@@ -1,0 +1,60 @@
+{
+  "decision_date": "2026-09-13",
+  "decision_status": "FROZEN_BEFORE_MODEL_RESULTS",
+  "source": {
+    "artifact": "results/data_story/data_story_summary.json",
+    "artifact_sha256": "195de2dcb4013c8b0b95e0d34347b8519cec3335ade83cdf297e7c66131f655d",
+    "training_graph_edges": 3868654,
+    "training_graph_items": 162125,
+    "training_graph_users": 2318308
+  },
+  "item_popularity_cohorts": {
+    "basis": "Frozen training item degree only; thresholds use tie-safe boundaries near the top 1% and bottom 80% of items.",
+    "head": {
+      "rule": "degree >= 397",
+      "items": 1628,
+      "item_fraction": 0.010041634541249036,
+      "training_edges": 1708232,
+      "training_edge_fraction": 0.4415571927600659
+    },
+    "body": {
+      "rule": "13 <= degree <= 396",
+      "items": 30677,
+      "item_fraction": 0.18921819583654587,
+      "training_edges": 1758406,
+      "training_edge_fraction": 0.45452656143454545
+    },
+    "tail": {
+      "rule": "1 <= degree <= 12",
+      "items": 129820,
+      "item_fraction": 0.8007401696222051,
+      "training_edges": 402016,
+      "training_edge_fraction": 0.10391624580538865
+    }
+  },
+  "user_activity_cohorts": {
+    "basis": "Frozen training user degree only; boundaries separate singletons, users through the 90th-percentile degree, and more active users.",
+    "singleton": {
+      "rule": "degree == 1",
+      "users": 1663697,
+      "user_fraction": 0.7176341538742911,
+      "training_edges": 1663697,
+      "training_edge_fraction": 0.4300454369917806
+    },
+    "repeat_light": {
+      "rule": "2 <= degree <= 3",
+      "users": 483497,
+      "user_fraction": 0.2085559813450154,
+      "training_edges": 1099851,
+      "training_edge_fraction": 0.2842981047154902
+    },
+    "active": {
+      "rule": "degree >= 4",
+      "users": 171114,
+      "user_fraction": 0.07380986478069351,
+      "training_edges": 1105106,
+      "training_edge_fraction": 0.2856564582927292
+    }
+  },
+  "use": "Report NDCG@20, Recall@20, target count, and recommendation exposure by these cohorts. Do not retune thresholds after viewing model scores."
+}

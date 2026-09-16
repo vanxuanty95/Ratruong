@@ -1,0 +1,100 @@
+{
+  "additional_run_environment_rule": "All additional runs must match Python/Torch/CUDA/GPU/NumPy/SciPy environment fingerprint; resume rejects a different runtime fingerprint.",
+  "additional_seeds": [
+    {
+      "method_order": [
+        "M0",
+        "M1",
+        "M2"
+      ],
+      "sampler_seed": 20271013,
+      "seed_id": "s1",
+      "training_seed": 20270913
+    },
+    {
+      "method_order": [
+        "M2",
+        "M0",
+        "M1"
+      ],
+      "sampler_seed": 20281013,
+      "seed_id": "s2",
+      "training_seed": 20280913
+    }
+  ],
+  "checkpoint_rule": "fixed_last_epoch",
+  "claim_boundary": "Hai seed validation bổ sung ở cùng 5 epoch/300 optimizer step. M2 giữ nguyên công thức đã chọn sau khi xem s0; đây là kiểm chứng sau thiết kế, không phải holdout độc lập của quá trình chọn phương pháp. Báo cáo từng seed và quality mean/sample SD, không chọn best seed, không significance claim, không đổi objective, không đọc test và không tự promote M2. Ba seed không chứng minh hiệu quả ở budget huấn luyện khác hoặc dataset khác.",
+  "completion_publication": "Write/close/verify completion marker inside a unique attempt directory, then same-filesystem rename to COMPLETED.json; one runtime per output folder; no concurrent writers.",
+  "evaluation_split": "validation_only",
+  "expected_epochs": 5,
+  "expected_optimizer_steps": 300,
+  "failure_diagnostics": "Additional rank thresholds 100 and 1000 are descriptive only, not substituted for the registered top-20 objective.",
+  "legacy_quality_environment_policy": "Include s0 in quality mean/sample SD only when its recorded Python/Torch/CUDA/GPU fields match all additional runs. Otherwise display s0 separately; no mixed-runtime pooled quality statistics.",
+  "legacy_seed": {
+    "sampler_seed": 20261013,
+    "seed_id": "s0",
+    "training_seed": 20260913
+  },
+  "legacy_summary_sha256": {
+    "M0": "f29ed8f15d50a6d585ecb9cdcfc160232b64f9936e83fc8db6dac442bf941474",
+    "M1": "46d83f7e6938c94be3376a5e71387e6a1bf9e9db32043d4dbbd10378f9bd07da",
+    "M2": "26a1eb63db8d42582d955939623a0ef6a03082e22a1401b5255642d56021d0e3"
+  },
+  "matched_control_id": "static-controls-k65536-smoke-v1",
+  "methods": {
+    "M0": {
+      "base_config_file_sha256": "b2b91b78262b562ad937be8a6328ebcd42f80b6a3b8e1695a988877e93c1b884",
+      "base_config_semantic_sha256": "b2b91b78262b562ad937be8a6328ebcd42f80b6a3b8e1695a988877e93c1b884",
+      "method": "uniform",
+      "runner_source_sha256": {
+        "evaluation": "7e9f670e9c23fc59892d49df2ff6bf43a5715bf0851dbe36ca642b4bf6656a21",
+        "training": "69f98cda02d52e614724d40c536e41d193d98e0c903ca73a326f153fa48ce79e"
+      },
+      "source_notebook": "07_uniform_sampling_validation_sanity.ipynb",
+      "source_notebook_file_sha256": "249feddd98083c10d2fe19ef6b7fac944397529af84d47c180b936194bfee547"
+    },
+    "M1": {
+      "base_config_file_sha256": "fdc9b95930b4975eb17f8e4ab5325bd835cb619f2891587ab419625c24812d9f",
+      "base_config_semantic_sha256": "7d552ee2a536ab64346505008b69c0cef71343c215fe787b60065374f07f098c",
+      "method": "degree_proportional",
+      "runner_source_sha256": {
+        "evaluation": "0f537b31c34e23b9abf789fe681819ab069bdcacb7779e5011c6ea5935c656e7",
+        "training": "20345b01983f0232990aa0d35da6cc064430ea403707a8e567b8ec3bbb9cd517"
+      },
+      "source_notebook": "08_degree_aware_sampling_validation_sanity.ipynb",
+      "source_notebook_file_sha256": "a63a78fa14916f95c6ebe268cfdef31d48aaffc44dd2f3d81556a9b714bbe916"
+    },
+    "M2": {
+      "base_config_file_sha256": "b82651b29dd31a8eeaa279e2bc0c7612ee1daaa4c205f231dde39b65bef8563d",
+      "base_config_semantic_sha256": "1a9f44cd020c0a99708e77ea672da07915e55b8af9d9946eeb238572992d1221",
+      "method": "frontier_normalized",
+      "runner_source_sha256": {
+        "evaluation": "d9e878c18828faea9bf3de29c2d3487ed8c57e727f11cbaab5ef5f72a7483a6b",
+        "training": "a5b083a3c3b7ae6b12da1039be0dc043c187221d939563aebb846d5b6e5f4842"
+      },
+      "source_notebook": "09_frontier_normalized_sampling_validation_sanity.ipynb",
+      "source_notebook_file_sha256": "fd06174d12067c7cb297a0f4b6792c9a70e4795f960e7c28997903955977ee46"
+    }
+  },
+  "primary_comparison": "paired M2-minus-M1 NDCG@20 under fixed optimizer/node budget",
+  "protocol_id": "paired-sampling-validation-k65536-v1-2026-09-15",
+  "registration_stage": "registered_before_two_additional_seed_runs_after_inspecting_s0",
+  "required_gpu": "Tesla T4",
+  "resource_boundary": "Training wall time gồm các integrity/trace audit, fingerprint đầu vào mỗi epoch và CPU sampler; không gồm đọc dữ liệu, checksum embedding ban đầu, validation hoặc lưu kết quả. Sampled training peak GPU được reset riêng trước training, full-graph validation peak reset riêng sau khi dựng inference graph. So sánh resource ưu tiên paired run mới trong cùng seed/môi trường. Resource s0 chỉ là legacy context, không gộp mean/SD với run mới vì có instrumentation bổ sung; quality có thể tổng hợp ba seed nếu core/data/evaluator và các runtime field đã ghi giữ nguyên. Process peak RSS là lifetime high-water mark, không phải peak CPU riêng của từng run.",
+  "resume_policy": "skip_only_checksum_verified_completed_runs; retain_incomplete_attempts; restart_incomplete_training_from_epoch_1; no_model_checkpoint",
+  "secondary_comparisons": [
+    "paired M2-minus-M0",
+    "Recall@20",
+    "coverage",
+    "target-cohort hit transitions and rank diagnostics",
+    "sampler/training time and peak training GPU memory"
+  ],
+  "shared_source_sha256": {
+    "data": "69dac945c91e18ecd65a2ac49e7095a4e0465f7386de8a753fb8d8b848169426",
+    "foundation": "e2a5ca5e0d8622161c3bd19064e4e12eb5cdebe919faa1832cd1f82f56487a96"
+  },
+  "source_hashes": {
+    "train": "33abbd98b1d75b179bf45ef41ba3f5622d80005ad4aaf414320dbe48c17aeb72",
+    "validation": "fd807f68fd03787931546ac31d7c2fe8e7ffcc7c43d3b92c627dce98fa87afca"
+  }
+}

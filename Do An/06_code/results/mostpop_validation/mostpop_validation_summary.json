@@ -1,0 +1,110 @@
+{
+  "claim_boundary": "Validation-only MostPop sanity baseline. No test metric, trained recommender, sampler comparison, GPU profile, or scalability claim.",
+  "integrity_assertions": {
+    "candidate_count_matches_every_target": true,
+    "every_validation_target_evaluated": true,
+    "item_degree_mass_matches_train_rows": true,
+    "test_targets_not_read": true,
+    "train_rows_match_manifest": true,
+    "train_sha256_matches_manifest": true,
+    "validation_rows_match_manifest": true,
+    "validation_sha256_matches_manifest": true
+  },
+  "metrics": {
+    "hits_at_k": 1195,
+    "k": 20,
+    "ndcg_at_k": 0.005872550223853306,
+    "recall_at_k": 0.014596132940845965,
+    "rows": 81871
+  },
+  "protocol": {
+    "candidate_universe": "all frozen training items minus strict prior mapped positives",
+    "k": 20,
+    "score": "training_item_degree",
+    "split": "validation_only",
+    "target_unit": "one relevant item per target row",
+    "tie_break": "item_idx_ascending",
+    "timestamp_rule": "events at the target timestamp are not prior history"
+  },
+  "recommendation_exposure": {
+    "catalog_coverage_at_k": 0.00015420200462606013,
+    "item_cohort_share": {
+      "head": 1.0
+    },
+    "recommendation_slots": 1637420,
+    "unique_items_at_k": 25
+  },
+  "runtime": {
+    "process_peak_rss_mb": 219.75390625,
+    "wall_seconds": 25.399090701999967
+  },
+  "source": {
+    "catalog_items": 162125,
+    "manifest_path": "/content/drive/MyDrive/Phase2_Amazon_Audit/g2c_baby_p4/baby_p4_g2c_manifest.json",
+    "manifest_status": "G2_C_ARTIFACTS_BUILT; G2_D_ENVIRONMENT_COMPLETION_EXECUTED; GATE_REVIEW_REQUIRED",
+    "train_edges": {
+      "path": "/content/drive/MyDrive/Phase2_Amazon_Audit/g2c_baby_p4/baby_p4_train_edges.csv.gz",
+      "rows": 3868654,
+      "sha256": "33abbd98b1d75b179bf45ef41ba3f5622d80005ad4aaf414320dbe48c17aeb72"
+    },
+    "validation_targets": {
+      "path": "/content/drive/MyDrive/Phase2_Amazon_Audit/g2c_baby_p4/baby_p4_validation_targets.csv.gz",
+      "rows": 81871,
+      "sha256": "fd807f68fd03787931546ac31d7c2fe8e7ffcc7c43d3b92c627dce98fa87afca"
+    },
+    "validation_users": 59327
+  },
+  "status": "MOSTPOP_VALIDATION_SANITY_EXECUTED",
+  "target_item_cohorts": {
+    "body": {
+      "hits_at_k": 0,
+      "k": 20,
+      "ndcg_at_k": 0.0,
+      "recall_at_k": 0.0,
+      "rows": 39942,
+      "target_share": 0.487865056002736
+    },
+    "head": {
+      "hits_at_k": 1195,
+      "k": 20,
+      "ndcg_at_k": 0.016395838200010025,
+      "recall_at_k": 0.04075160278270359,
+      "rows": 29324,
+      "target_share": 0.3581732237300143
+    },
+    "tail": {
+      "hits_at_k": 0,
+      "k": 20,
+      "ndcg_at_k": 0.0,
+      "recall_at_k": 0.0,
+      "rows": 12605,
+      "target_share": 0.1539617202672497
+    }
+  },
+  "user_activity_cohorts": {
+    "active": {
+      "hits_at_k": 232,
+      "k": 20,
+      "ndcg_at_k": 0.004746712306394744,
+      "recall_at_k": 0.011695906432748537,
+      "rows": 19836,
+      "target_share": 0.24228359248085402
+    },
+    "repeat_light": {
+      "hits_at_k": 323,
+      "k": 20,
+      "ndcg_at_k": 0.0051457764567877425,
+      "recall_at_k": 0.013581700445715246,
+      "rows": 23782,
+      "target_share": 0.2904813670286182
+    },
+    "singleton": {
+      "hits_at_k": 640,
+      "k": 20,
+      "ndcg_at_k": 0.006908188073409191,
+      "recall_at_k": 0.016730713930933522,
+      "rows": 38253,
+      "target_share": 0.4672350404905278
+    }
+  }
+}

@@ -1,0 +1,54 @@
+{
+  "claim_boundary": "One fixed validation-only M1 training-degree-aware sampled-training smoke run at the predeclared k_l=65536 layer budget. This is an implementation and resource-envelope probe, not the middle point of a tested budget grid. No test access, hyperparameter search, method selection, learned sampler, sampled-inference claim, or comparison to full LightGCN as a budget-matched method.",
+  "config_id": "degree-aware-sampling-k65536-smoke-v1-2026-09-14",
+  "evaluation": {
+    "candidate_universe": "all frozen training items minus strict prior mapped positives",
+    "eval_batch_size": 128,
+    "inference_graph": "full_frozen_training_graph",
+    "k": 20,
+    "rank_tie_break": "item_idx_ascending",
+    "split": "validation_only",
+    "target_unit": "one relevant item per target row",
+    "timestamp_rule": "events at the target timestamp are not prior history"
+  },
+  "matched_control_id": "static-controls-k65536-smoke-v1",
+  "model": {
+    "aggregation": "unweighted_mean_of_ego_and_all_layers",
+    "bias": false,
+    "embedding_dim": 64,
+    "initialization_std": 0.01,
+    "layers": 3,
+    "name": "Sampled-LightGCN",
+    "recommender_self_loops": false
+  },
+  "sampler": {
+    "candidate_rule": "unique_neighbors_of_previous_K_excluding_previous_K",
+    "cross_layer_reentry": true,
+    "degree_exponent": 1.0,
+    "degree_source": "full_frozen_training_graph_only",
+    "exact_k_without_replacement": true,
+    "k_l": [
+      65536,
+      65536,
+      65536
+    ],
+    "k_l_interpretation": "global_context_node_budget_per_batch_and_layer_equal_to_training_batch_size_for_this_smoke_only",
+    "method": "degree_proportional",
+    "normalization": "rectangular_sampled_local_bi_normalization",
+    "positive_edge_policy": "retain",
+    "seed": 20261013,
+    "state_rule": "K_l_equals_V0_union_V_l_not_cumulative_union"
+  },
+  "training": {
+    "batch_size": 65536,
+    "epoch_selection": "fixed_last_epoch",
+    "epochs": 5,
+    "l2_coefficient": 1e-06,
+    "learning_rate": 0.01,
+    "mixed_precision": false,
+    "negative_sampling": "uniform_training_catalog_reject_all_training_positives",
+    "optimizer": "SparseAdam",
+    "seed": 20260913,
+    "training_pair_order": "seeded_epoch_permutation"
+  }
+}

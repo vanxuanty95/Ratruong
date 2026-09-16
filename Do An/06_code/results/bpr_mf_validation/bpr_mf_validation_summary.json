@@ -1,0 +1,212 @@
+{
+  "claim_boundary": "One fixed validation-only sanity run. No test access, hyperparameter search, final baseline, sampler comparison, or scalability claim.",
+  "environment": {
+    "cuda": "12.8",
+    "gpu": "Tesla T4",
+    "platform": "Linux-6.6.122+-x86_64-with-glibc2.39",
+    "process_peak_rss_mb": 1462.24609375,
+    "python": "3.13.15",
+    "torch": "2.11.0+cu128"
+  },
+  "integrity_assertions": {
+    "all_ranks_within_candidate_count": true,
+    "all_registered_epochs_completed": true,
+    "candidate_count_matches_every_target": true,
+    "catalog_coverage_reconciles": true,
+    "cuda_used": true,
+    "degree_mass_matches_train_rows": true,
+    "each_epoch_saw_all_training_edges": true,
+    "every_validation_target_ranked": true,
+    "fixed_last_epoch_used": true,
+    "item_parameters_changed": true,
+    "losses_finite": true,
+    "mostpop_control_integrity_passed": true,
+    "negative_sampler_policy_enforced": true,
+    "negative_sampler_preflight_has_no_positive_collision": true,
+    "rank_tie_break_applied": true,
+    "recommendation_slots_reconcile": true,
+    "same_validation_rows_as_mostpop": true,
+    "target_not_in_strict_prior_history": true,
+    "test_targets_not_read": true,
+    "topk_boundary_ties_resolved": true,
+    "train_rows_match_manifest": true,
+    "train_sha256_matches_manifest": true,
+    "training_pairs_unique": true,
+    "validation_rows_match_manifest": true,
+    "validation_sha256_matches_manifest": true
+  },
+  "mostpop_comparison": {
+    "bpr_mf_catalog_coverage_at_20": 0.03351734772552043,
+    "bpr_mf_ndcg_at_20": 0.0040535123936547065,
+    "bpr_mf_recall_at_20": 0.010418829622210551,
+    "coverage_difference": 0.03336314572089437,
+    "mostpop_catalog_coverage_at_20": 0.00015420200462606013,
+    "mostpop_ndcg_at_20": 0.005872550223853306,
+    "mostpop_recall_at_20": 0.014596132940845965,
+    "ndcg_difference": -0.0018190378301985999,
+    "recall_difference": -0.0041773033186354135
+  },
+  "registered_config": {
+    "claim_boundary": "One fixed validation-only sanity run. No test access, hyperparameter search, final baseline, sampler comparison, or scalability claim.",
+    "config_id": "bpr-mf-sanity-v1-2026-09-13",
+    "evaluation": {
+      "candidate_universe": "all frozen training items minus strict prior mapped positives",
+      "eval_batch_size": 128,
+      "k": 20,
+      "rank_tie_break": "item_idx_ascending",
+      "split": "validation_only",
+      "target_unit": "one relevant item per target row",
+      "timestamp_rule": "events at the target timestamp are not prior history"
+    },
+    "file_sha256": "f14ff370fbf669b774374fe263ddb63cedd2dd35a0fbc55194f87fd606b14900",
+    "model": {
+      "bias": false,
+      "embedding_dim": 64,
+      "initialization_std": 0.01,
+      "name": "BPR-MF"
+    },
+    "training": {
+      "batch_size": 65536,
+      "epoch_selection": "fixed_last_epoch",
+      "epochs": 5,
+      "l2_coefficient": 1e-06,
+      "learning_rate": 0.01,
+      "mixed_precision": false,
+      "negative_sampling": "uniform_training_catalog_reject_all_training_positives",
+      "optimizer": "SparseAdam",
+      "seed": 20260913
+    }
+  },
+  "source": {
+    "items": 162125,
+    "manifest_path": "/content/drive/MyDrive/Phase2_Amazon_Audit/g2c_baby_p4/baby_p4_g2c_manifest.json",
+    "mostpop_summary": {
+      "path": "/content/drive/MyDrive/Phase2_Amazon_Audit/mostpop_validation/mostpop_validation_summary.json",
+      "sha256": "00332090cae73a563a7fcafde895572fb06d574366ce37bf6f9d90208dfccf62"
+    },
+    "train_edges": {
+      "path": "/content/drive/MyDrive/Phase2_Amazon_Audit/g2c_baby_p4/baby_p4_train_edges.csv.gz",
+      "rows": 3868654,
+      "sha256": "33abbd98b1d75b179bf45ef41ba3f5622d80005ad4aaf414320dbe48c17aeb72"
+    },
+    "users": 2318308,
+    "validation_targets": {
+      "path": "/content/drive/MyDrive/Phase2_Amazon_Audit/g2c_baby_p4/baby_p4_validation_targets.csv.gz",
+      "rows": 81871,
+      "sha256": "fd807f68fd03787931546ac31d7c2fe8e7ffcc7c43d3b92c627dce98fa87afca"
+    }
+  },
+  "status": "BPR_MF_VALIDATION_SANITY_EXECUTED",
+  "training": {
+    "epochs": [
+      {
+        "epoch": 1,
+        "examples": 3868654,
+        "mean_loss": 0.693042079891557,
+        "wall_seconds": 8.197033662999957
+      },
+      {
+        "epoch": 2,
+        "examples": 3868654,
+        "mean_loss": 0.6501975404717133,
+        "wall_seconds": 4.755313407000131
+      },
+      {
+        "epoch": 3,
+        "examples": 3868654,
+        "mean_loss": 0.4352330029254605,
+        "wall_seconds": 3.830815324000014
+      },
+      {
+        "epoch": 4,
+        "examples": 3868654,
+        "mean_loss": 0.22942300222727816,
+        "wall_seconds": 4.215617854999891
+      },
+      {
+        "epoch": 5,
+        "examples": 3868654,
+        "mean_loss": 0.1256173445372123,
+        "wall_seconds": 3.8315333479999936
+      }
+    ],
+    "negative_draws": 19343270,
+    "negative_resamples": 499,
+    "peak_gpu_memory_mb": 2051.5185546875,
+    "wall_seconds": 24.831667046999883
+  },
+  "validation": {
+    "metrics": {
+      "hits_at_k": 853,
+      "k": 20,
+      "ndcg_at_k": 0.0040535123936547065,
+      "recall_at_k": 0.010418829622210551,
+      "rows": 81871
+    },
+    "peak_gpu_memory_mb": 876.9912109375,
+    "recommendation_exposure": {
+      "catalog_coverage_at_k": 0.03351734772552043,
+      "item_cohort_share": {
+        "body": 0.07032832138364012,
+        "head": 0.9295684674671129,
+        "tail": 0.0001032111492469861
+      },
+      "recommendation_slots": 1637420,
+      "unique_items_at_k": 5434
+    },
+    "target_item_cohorts": {
+      "body": {
+        "hits_at_k": 23,
+        "k": 20,
+        "ndcg_at_k": 0.00022497117894520468,
+        "recall_at_k": 0.0005758349606930049,
+        "rows": 39942,
+        "target_share": 0.487865056002736
+      },
+      "head": {
+        "hits_at_k": 830,
+        "k": 20,
+        "ndcg_at_k": 0.011010752774228453,
+        "recall_at_k": 0.028304460510162326,
+        "rows": 29324,
+        "target_share": 0.3581732237300143
+      },
+      "tail": {
+        "hits_at_k": 0,
+        "k": 20,
+        "ndcg_at_k": 0.0,
+        "recall_at_k": 0.0,
+        "rows": 12605,
+        "target_share": 0.1539617202672497
+      }
+    },
+    "topk_boundary_tie_rows": 0,
+    "user_activity_cohorts": {
+      "active": {
+        "hits_at_k": 245,
+        "k": 20,
+        "ndcg_at_k": 0.004697035027296997,
+        "recall_at_k": 0.012351280500100826,
+        "rows": 19836,
+        "target_share": 0.24228359248085402
+      },
+      "repeat_light": {
+        "hits_at_k": 244,
+        "k": 20,
+        "ndcg_at_k": 0.0038381278725744387,
+        "recall_at_k": 0.010259860398620806,
+        "rows": 23782,
+        "target_share": 0.2904813670286182
+      },
+      "singleton": {
+        "hits_at_k": 364,
+        "k": 20,
+        "ndcg_at_k": 0.0038537204745739168,
+        "recall_at_k": 0.00951559354821844,
+        "rows": 38253,
+        "target_share": 0.4672350404905278
+      }
+    },
+    "wall_seconds": 7.081752517000041
+  }
+}

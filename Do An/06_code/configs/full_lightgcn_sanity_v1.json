@@ -1,0 +1,36 @@
+{
+  "claim_boundary": "One fixed validation-only full-graph LightGCN sanity run. No test access, hyperparameter search, final baseline, sampled training, sampler comparison, or scalability claim.",
+  "config_id": "full-lightgcn-sanity-v1-2026-09-14",
+  "evaluation": {
+    "candidate_universe": "all frozen training items minus strict prior mapped positives",
+    "eval_batch_size": 128,
+    "k": 20,
+    "rank_tie_break": "item_idx_ascending",
+    "split": "validation_only",
+    "target_unit": "one relevant item per target row",
+    "timestamp_rule": "events at the target timestamp are not prior history"
+  },
+  "model": {
+    "aggregation": "unweighted_mean_of_ego_and_all_layers",
+    "bias": false,
+    "embedding_dim": 64,
+    "graph_scope": "full_frozen_training_graph",
+    "initialization_std": 0.01,
+    "layers": 3,
+    "name": "Full-LightGCN",
+    "normalization": "symmetric_bipartite_no_self_loop"
+  },
+  "training": {
+    "batch_size": 65536,
+    "epoch_selection": "fixed_last_epoch",
+    "epochs": 5,
+    "gradient_strategy": "exact_chunked_dloss_dpropagation_then_one_graph_backward",
+    "l2_coefficient": 0.000001,
+    "learning_rate": 0.01,
+    "mixed_precision": false,
+    "negative_sampling": "uniform_training_catalog_reject_all_training_positives",
+    "optimizer": "Adam",
+    "optimizer_steps_per_epoch": 1,
+    "seed": 20260913
+  }
+}

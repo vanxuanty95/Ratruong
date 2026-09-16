@@ -1,0 +1,450 @@
+{
+  "claim_boundary": "One fixed validation-only M0 uniform sampled-training smoke run at the predeclared k_l=65536 layer budget. This is an implementation and resource-envelope probe, not the middle point of a tested budget grid. No test access, hyperparameter search, method selection, learned sampler, sampled-inference claim, or comparison to full LightGCN as a budget-matched method.",
+  "environment": {
+    "cuda": "12.8",
+    "gpu": "Tesla T4",
+    "platform": "Linux-6.6.122+-x86_64-with-glibc2.39",
+    "process_peak_rss_mb": 3083.66796875,
+    "python": "3.13.15",
+    "torch": "2.11.0+cu128"
+  },
+  "integrity_assertions": {
+    "K_l_equals_V0_union_V_l": true,
+    "all_ranks_within_candidate_count": true,
+    "all_registered_epochs_completed": true,
+    "bpr_integrity_passed": true,
+    "bpr_sha256_matches": true,
+    "candidate_count_matches_every_target": true,
+    "catalog_coverage_reconciles": true,
+    "cuda_used": true,
+    "degree_mass_matches_train_rows": true,
+    "deterministic_first_batch_sampler_replay": true,
+    "each_epoch_saw_all_training_edges_as_positive_pairs": true,
+    "embedding_parameters_changed": true,
+    "every_validation_target_ranked": true,
+    "exact_k_every_layer": true,
+    "fixed_last_epoch_used": true,
+    "full_graph_inference_used": true,
+    "full_inference_adjacency_has_two_directions_per_edge": true,
+    "full_lightgcn_integrity_passed": true,
+    "full_lightgcn_sha256_matches": true,
+    "losses_finite": true,
+    "mostpop_integrity_passed": true,
+    "mostpop_sha256_matches": true,
+    "negative_sampler_policy_enforced": true,
+    "negative_sampler_preflight_has_no_positive_collision": true,
+    "optimizer_steps_match_batches": true,
+    "positive_edge_retain_policy_used": true,
+    "rank_tie_break_applied": true,
+    "recommendation_slots_reconcile": true,
+    "rectangular_sampled_local_normalization_used": true,
+    "same_validation_rows_as_all_references": true,
+    "sampled_block_weights_finite": true,
+    "sampled_blocks_have_no_self_loop": true,
+    "sampled_blocks_use_only_registered_training_edges": true,
+    "sampled_nodes_disjoint_from_previous_K": true,
+    "sampled_nodes_unique": true,
+    "sampled_training_used": true,
+    "target_not_in_strict_prior_history": true,
+    "test_targets_not_read": true,
+    "test_targets_not_read_during_evaluation": true,
+    "topk_boundary_ties_resolved": true,
+    "train_rows_match_manifest": true,
+    "train_sha256_matches_manifest": true,
+    "training_csr_has_two_directions_per_edge": true,
+    "training_pairs_unique": true,
+    "validation_rows_match_manifest": true,
+    "validation_sha256_matches_manifest": true
+  },
+  "reference_comparison": {
+    "bpr_mf": {
+      "ndcg_at_20": 0.0040535123936547065,
+      "recall_at_20": 0.010418829622210551
+    },
+    "comparison_boundary": "MostPop, BPR-MF and full LightGCN are context references. Only the future M1 degree-aware run with matched_control_id static-controls-k65536-smoke-v1 is budget matched to this M0 run.",
+    "full_lightgcn": {
+      "ndcg_at_20": 0.004931237897653004,
+      "recall_at_20": 0.012373123572449341
+    },
+    "mostpop": {
+      "ndcg_at_20": 0.005872550223853306,
+      "recall_at_20": 0.014596132940845965
+    },
+    "uniform_m0": {
+      "ndcg_at_20": 0.005727282991865788,
+      "recall_at_20": 0.014657204626790927
+    }
+  },
+  "registered_config": {
+    "claim_boundary": "One fixed validation-only M0 uniform sampled-training smoke run at the predeclared k_l=65536 layer budget. This is an implementation and resource-envelope probe, not the middle point of a tested budget grid. No test access, hyperparameter search, method selection, learned sampler, sampled-inference claim, or comparison to full LightGCN as a budget-matched method.",
+    "config_id": "uniform-sampling-k65536-smoke-v1-2026-09-14",
+    "evaluation": {
+      "candidate_universe": "all frozen training items minus strict prior mapped positives",
+      "eval_batch_size": 128,
+      "inference_graph": "full_frozen_training_graph",
+      "k": 20,
+      "rank_tie_break": "item_idx_ascending",
+      "split": "validation_only",
+      "target_unit": "one relevant item per target row",
+      "timestamp_rule": "events at the target timestamp are not prior history"
+    },
+    "file_sha256": "b2b91b78262b562ad937be8a6328ebcd42f80b6a3b8e1695a988877e93c1b884",
+    "matched_control_id": "static-controls-k65536-smoke-v1",
+    "model": {
+      "aggregation": "unweighted_mean_of_ego_and_all_layers",
+      "bias": false,
+      "embedding_dim": 64,
+      "initialization_std": 0.01,
+      "layers": 3,
+      "name": "Sampled-LightGCN",
+      "recommender_self_loops": false
+    },
+    "sampler": {
+      "candidate_rule": "unique_neighbors_of_previous_K_excluding_previous_K",
+      "cross_layer_reentry": true,
+      "exact_k_without_replacement": true,
+      "k_l": [
+        65536,
+        65536,
+        65536
+      ],
+      "k_l_interpretation": "global_context_node_budget_per_batch_and_layer_equal_to_training_batch_size_for_this_smoke_only",
+      "method": "uniform",
+      "normalization": "rectangular_sampled_local_bi_normalization",
+      "positive_edge_policy": "retain",
+      "seed": 20261013,
+      "state_rule": "K_l_equals_V0_union_V_l_not_cumulative_union"
+    },
+    "training": {
+      "batch_size": 65536,
+      "epoch_selection": "fixed_last_epoch",
+      "epochs": 5,
+      "l2_coefficient": 1e-06,
+      "learning_rate": 0.01,
+      "mixed_precision": false,
+      "negative_sampling": "uniform_training_catalog_reject_all_training_positives",
+      "optimizer": "SparseAdam",
+      "seed": 20260913,
+      "training_pair_order": "seeded_epoch_permutation"
+    }
+  },
+  "source": {
+    "bpr_mf_summary": {
+      "path": "/content/drive/MyDrive/Phase2_Amazon_Audit/bpr_mf_sanity_v1/bpr_mf_validation_summary.json",
+      "sha256": "611bd820c66c57ef7a06d18e52a36a61942bfaf55fc9a615ee6b4708ac5a1f74"
+    },
+    "directed_training_csr_entries": 7737308,
+    "full_lightgcn_summary": {
+      "path": "/content/drive/MyDrive/Phase2_Amazon_Audit/full_lightgcn_sanity_v1/full_lightgcn_validation_summary.json",
+      "sha256": "ebddb3ece87abc0098106dd2271b9134f641ca8e2582e35491b9f26b6fe0faa9"
+    },
+    "items": 162125,
+    "manifest_path": "/content/drive/MyDrive/Phase2_Amazon_Audit/g2c_baby_p4/baby_p4_g2c_manifest.json",
+    "mostpop_summary": {
+      "path": "/content/drive/MyDrive/Phase2_Amazon_Audit/mostpop_validation/mostpop_validation_summary.json",
+      "sha256": "00332090cae73a563a7fcafde895572fb06d574366ce37bf6f9d90208dfccf62"
+    },
+    "nodes": 2480433,
+    "train_edges": {
+      "path": "/content/drive/MyDrive/Phase2_Amazon_Audit/g2c_baby_p4/baby_p4_train_edges.csv.gz",
+      "rows": 3868654,
+      "sha256": "33abbd98b1d75b179bf45ef41ba3f5622d80005ad4aaf414320dbe48c17aeb72"
+    },
+    "users": 2318308,
+    "validation_targets": {
+      "path": "/content/drive/MyDrive/Phase2_Amazon_Audit/g2c_baby_p4/baby_p4_validation_targets.csv.gz",
+      "rows": 81871,
+      "sha256": "fd807f68fd03787931546ac31d7c2fe8e7ffcc7c43d3b92c627dce98fa87afca"
+    }
+  },
+  "status": "UNIFORM_SAMPLING_VALIDATION_SMOKE_EXECUTED",
+  "training": {
+    "deterministic_first_batch_trace_passed": true,
+    "epochs": [
+      {
+        "epoch": 1,
+        "examples": 3868654,
+        "layer_totals": [
+          {
+            "candidate_node_slots": 119916591,
+            "directed_block_entries": 30141217,
+            "layer": 1,
+            "requested_k_per_batch": 65536,
+            "selected_context_node_slots": 3932160
+          },
+          {
+            "candidate_node_slots": 116488348,
+            "directed_block_entries": 36234127,
+            "layer": 2,
+            "requested_k_per_batch": 65536,
+            "selected_context_node_slots": 3932160
+          },
+          {
+            "candidate_node_slots": 116601888,
+            "directed_block_entries": 36207102,
+            "layer": 3,
+            "requested_k_per_batch": 65536,
+            "selected_context_node_slots": 3932160
+          }
+        ],
+        "mean_loss": 0.6252392972755015,
+        "optimizer_steps": 60,
+        "propagation_and_update_seconds": 12.499085339999738,
+        "sampler_seconds": 121.05229964700084,
+        "selected_item_context_slots_by_cohort": {
+          "body": 43968,
+          "head": 177,
+          "tail": 67382
+        },
+        "throughput_examples_per_second": 26428.16270090231,
+        "unique_computation_nodes": 2480433,
+        "unique_selected_context_nodes": 2344455,
+        "unique_training_edges_in_blocks": 3868654,
+        "wall_seconds": 146.38376546500012
+      },
+      {
+        "epoch": 2,
+        "examples": 3868654,
+        "layer_totals": [
+          {
+            "candidate_node_slots": 119937762,
+            "directed_block_entries": 30145461,
+            "layer": 1,
+            "requested_k_per_batch": 65536,
+            "selected_context_node_slots": 3932160
+          },
+          {
+            "candidate_node_slots": 116518368,
+            "directed_block_entries": 36242299,
+            "layer": 2,
+            "requested_k_per_batch": 65536,
+            "selected_context_node_slots": 3932160
+          },
+          {
+            "candidate_node_slots": 116627857,
+            "directed_block_entries": 36216273,
+            "layer": 3,
+            "requested_k_per_batch": 65536,
+            "selected_context_node_slots": 3932160
+          }
+        ],
+        "mean_loss": 0.20446686600337557,
+        "optimizer_steps": 60,
+        "propagation_and_update_seconds": 12.434114126999475,
+        "sampler_seconds": 119.24368851999998,
+        "selected_item_context_slots_by_cohort": {
+          "body": 43334,
+          "head": 201,
+          "tail": 67270
+        },
+        "throughput_examples_per_second": 27384.703807190213,
+        "unique_computation_nodes": 2480433,
+        "unique_selected_context_nodes": 2344044,
+        "unique_training_edges_in_blocks": 3868654,
+        "wall_seconds": 141.27061589899995
+      },
+      {
+        "epoch": 3,
+        "examples": 3868654,
+        "layer_totals": [
+          {
+            "candidate_node_slots": 119912274,
+            "directed_block_entries": 30140311,
+            "layer": 1,
+            "requested_k_per_batch": 65536,
+            "selected_context_node_slots": 3932160
+          },
+          {
+            "candidate_node_slots": 116490064,
+            "directed_block_entries": 36236776,
+            "layer": 2,
+            "requested_k_per_batch": 65536,
+            "selected_context_node_slots": 3932160
+          },
+          {
+            "candidate_node_slots": 116593922,
+            "directed_block_entries": 36205893,
+            "layer": 3,
+            "requested_k_per_batch": 65536,
+            "selected_context_node_slots": 3932160
+          }
+        ],
+        "mean_loss": 0.11802159222561842,
+        "optimizer_steps": 60,
+        "propagation_and_update_seconds": 12.401888541000062,
+        "sampler_seconds": 117.8152789830001,
+        "selected_item_context_slots_by_cohort": {
+          "body": 43659,
+          "head": 184,
+          "tail": 67197
+        },
+        "throughput_examples_per_second": 27817.130285649877,
+        "unique_computation_nodes": 2480433,
+        "unique_selected_context_nodes": 2344221,
+        "unique_training_edges_in_blocks": 3868654,
+        "wall_seconds": 139.0745178310001
+      },
+      {
+        "epoch": 4,
+        "examples": 3868654,
+        "layer_totals": [
+          {
+            "candidate_node_slots": 119925152,
+            "directed_block_entries": 30136272,
+            "layer": 1,
+            "requested_k_per_batch": 65536,
+            "selected_context_node_slots": 3932160
+          },
+          {
+            "candidate_node_slots": 116500053,
+            "directed_block_entries": 36234786,
+            "layer": 2,
+            "requested_k_per_batch": 65536,
+            "selected_context_node_slots": 3932160
+          },
+          {
+            "candidate_node_slots": 116620457,
+            "directed_block_entries": 36210993,
+            "layer": 3,
+            "requested_k_per_batch": 65536,
+            "selected_context_node_slots": 3932160
+          }
+        ],
+        "mean_loss": 0.09009494229728393,
+        "optimizer_steps": 60,
+        "propagation_and_update_seconds": 12.375226607999366,
+        "sampler_seconds": 117.24487567900019,
+        "selected_item_context_slots_by_cohort": {
+          "body": 43532,
+          "head": 192,
+          "tail": 66591
+        },
+        "throughput_examples_per_second": 27912.96110911937,
+        "unique_computation_nodes": 2480433,
+        "unique_selected_context_nodes": 2343918,
+        "unique_training_edges_in_blocks": 3868654,
+        "wall_seconds": 138.59704645500005
+      },
+      {
+        "epoch": 5,
+        "examples": 3868654,
+        "layer_totals": [
+          {
+            "candidate_node_slots": 119916446,
+            "directed_block_entries": 30143440,
+            "layer": 1,
+            "requested_k_per_batch": 65536,
+            "selected_context_node_slots": 3932160
+          },
+          {
+            "candidate_node_slots": 116484721,
+            "directed_block_entries": 36242827,
+            "layer": 2,
+            "requested_k_per_batch": 65536,
+            "selected_context_node_slots": 3932160
+          },
+          {
+            "candidate_node_slots": 116614208,
+            "directed_block_entries": 36215314,
+            "layer": 3,
+            "requested_k_per_batch": 65536,
+            "selected_context_node_slots": 3932160
+          }
+        ],
+        "mean_loss": 0.06950061053112891,
+        "optimizer_steps": 60,
+        "propagation_and_update_seconds": 12.386179419000655,
+        "sampler_seconds": 117.43041211199898,
+        "selected_item_context_slots_by_cohort": {
+          "body": 43710,
+          "head": 185,
+          "tail": 67505
+        },
+        "throughput_examples_per_second": 27885.258854417265,
+        "unique_computation_nodes": 2480433,
+        "unique_selected_context_nodes": 2344583,
+        "unique_training_edges_in_blocks": 3868654,
+        "wall_seconds": 138.73473429499973
+      }
+    ],
+    "negative_draws": 19343270,
+    "negative_resamples": 493,
+    "optimizer_steps": 300,
+    "peak_gpu_memory_mb": 3482.896484375,
+    "wall_seconds": 705.3232816050001
+  },
+  "validation": {
+    "metrics": {
+      "hits_at_k": 1200,
+      "k": 20,
+      "ndcg_at_k": 0.005727282991865788,
+      "recall_at_k": 0.014657204626790927,
+      "rows": 81871
+    },
+    "peak_gpu_memory_mb": 4487.66357421875,
+    "recommendation_exposure": {
+      "catalog_coverage_at_k": 0.01848573631457209,
+      "item_cohort_share": {
+        "body": 0.022724774340120435,
+        "head": 0.9518425327649596,
+        "tail": 0.025432692894920058
+      },
+      "recommendation_slots": 1637420,
+      "unique_items_at_k": 2997
+    },
+    "target_item_cohorts": {
+      "body": {
+        "hits_at_k": 25,
+        "k": 20,
+        "ndcg_at_k": 0.0002639221173086892,
+        "recall_at_k": 0.0006259075659706575,
+        "rows": 39942,
+        "target_share": 0.487865056002736
+      },
+      "head": {
+        "hits_at_k": 1175,
+        "k": 20,
+        "ndcg_at_k": 0.0156307737217808,
+        "recall_at_k": 0.040069567589687625,
+        "rows": 29324,
+        "target_share": 0.3581732237300143
+      },
+      "tail": {
+        "hits_at_k": 0,
+        "k": 20,
+        "ndcg_at_k": 0.0,
+        "recall_at_k": 0.0,
+        "rows": 12605,
+        "target_share": 0.1539617202672497
+      }
+    },
+    "topk_boundary_tie_rows": 1,
+    "user_activity_cohorts": {
+      "active": {
+        "hits_at_k": 270,
+        "k": 20,
+        "ndcg_at_k": 0.005143424017257458,
+        "recall_at_k": 0.013611615245009074,
+        "rows": 19836,
+        "target_share": 0.24228359248085402
+      },
+      "repeat_light": {
+        "hits_at_k": 354,
+        "k": 20,
+        "ndcg_at_k": 0.0054267725870957685,
+        "recall_at_k": 0.014885207299638383,
+        "rows": 23782,
+        "target_share": 0.2904813670286182
+      },
+      "singleton": {
+        "hits_at_k": 576,
+        "k": 20,
+        "ndcg_at_k": 0.006216869823397207,
+        "recall_at_k": 0.01505764253784017,
+        "rows": 38253,
+        "target_share": 0.4672350404905278
+      }
+    },
+    "wall_seconds": 7.222888737000176
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "config_id": "bpr-mf-sanity-v1-2026-09-13",
+  "claim_boundary": "One fixed validation-only sanity run. No test access, hyperparameter search, final baseline, sampler comparison, or scalability claim.",
+  "data": {
+    "dataset": "Amazon Reviews 2023 Baby_Products",
+    "positive_policy": "P4",
+    "train_edges": 3868654,
+    "users": 2318308,
+    "items": 162125,
+    "validation_targets": 81871
+  },
+  "evaluation": {
+    "split": "validation_only",
+    "k": 20,
+    "candidate_universe": "all frozen training items minus strict prior mapped positives",
+    "timestamp_rule": "events at the target timestamp are not prior history",
+    "rank_tie_break": "item_idx_ascending",
+    "target_unit": "one relevant item per target row",
+    "eval_batch_size": 128
+  },
+  "model": {
+    "name": "BPR-MF",
+    "embedding_dim": 64,
+    "initialization_std": 0.01,
+    "bias": false
+  },
+  "training": {
+    "seed": 20260913,
+    "epochs": 5,
+    "batch_size": 65536,
+    "optimizer": "SparseAdam",
+    "learning_rate": 0.01,
+    "l2_coefficient": 1e-06,
+    "negative_sampling": "uniform_training_catalog_reject_all_training_positives",
+    "epoch_selection": "fixed_last_epoch",
+    "mixed_precision": false
+  }
+}
+

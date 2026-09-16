@@ -1,0 +1,621 @@
+{
+  "claim_boundary": "One fixed validation-only M2 frontier-normalized sampled-training smoke run at the predeclared k_l=65536 layer budget. This project-candidate probe tests one formula selected after reading the M0-M1 validation controls. No test access, hyperparameter search, learned policy, sampled-inference claim, or comparison to full LightGCN as a budget-matched method.",
+  "environment": {
+    "cuda": "12.8",
+    "gpu": "Tesla T4",
+    "platform": "Linux-6.6.122+-x86_64-with-glibc2.39",
+    "process_peak_rss_mb": 2579.671875,
+    "python": "3.13.15",
+    "torch": "2.11.0+cu128"
+  },
+  "integrity_assertions": {
+    "K_l_equals_V0_union_V_l": true,
+    "all_ranks_within_candidate_count": true,
+    "all_registered_epochs_completed": true,
+    "bpr_integrity_passed": true,
+    "bpr_sha256_matches": true,
+    "candidate_count_matches_every_target": true,
+    "catalog_coverage_reconciles": true,
+    "cuda_used": true,
+    "degree_integrity_passed": true,
+    "degree_mass_matches_train_rows": true,
+    "degree_method_is_degree_proportional": true,
+    "degree_sha256_matches": true,
+    "deterministic_first_batch_sampler_replay": true,
+    "each_epoch_saw_all_training_edges_as_positive_pairs": true,
+    "embedding_parameters_changed": true,
+    "every_validation_target_ranked": true,
+    "exact_k_every_layer": true,
+    "fixed_last_epoch_used": true,
+    "frontier_method_is_frontier_normalized": true,
+    "frontier_proposal_weights_positive": true,
+    "frontier_support_positive": true,
+    "full_graph_inference_used": true,
+    "full_inference_adjacency_has_two_directions_per_edge": true,
+    "full_lightgcn_integrity_passed": true,
+    "full_lightgcn_sha256_matches": true,
+    "losses_finite": true,
+    "matched_evaluation_equal": true,
+    "matched_model_equal": true,
+    "matched_sampler_core_equal_except_proposal": true,
+    "matched_training_equal": true,
+    "mostpop_integrity_passed": true,
+    "mostpop_sha256_matches": true,
+    "negative_sampler_policy_enforced": true,
+    "negative_sampler_preflight_has_no_positive_collision": true,
+    "optimizer_steps_match_batches": true,
+    "positive_edge_retain_policy_used": true,
+    "rank_tie_break_applied": true,
+    "recommendation_slots_reconcile": true,
+    "rectangular_sampled_local_normalization_used": true,
+    "same_gpu_as_degree_control": true,
+    "same_gpu_as_uniform_control": true,
+    "same_validation_rows_as_all_references": true,
+    "sampled_block_weights_finite": true,
+    "sampled_blocks_have_no_self_loop": true,
+    "sampled_blocks_use_only_registered_training_edges": true,
+    "sampled_nodes_disjoint_from_previous_K": true,
+    "sampled_nodes_unique": true,
+    "sampled_training_used": true,
+    "target_not_in_strict_prior_history": true,
+    "test_targets_not_read": true,
+    "test_targets_not_read_during_evaluation": true,
+    "topk_boundary_ties_resolved": true,
+    "train_rows_match_manifest": true,
+    "train_sha256_matches_manifest": true,
+    "training_csr_has_two_directions_per_edge": true,
+    "training_pairs_unique": true,
+    "uniform_degree_frontier_matched_control_id": true,
+    "uniform_integrity_passed": true,
+    "uniform_method_is_uniform": true,
+    "uniform_sha256_matches": true,
+    "validation_rows_match_manifest": true,
+    "validation_sha256_matches_manifest": true
+  },
+  "matched_comparison": {
+    "comparison_boundary": "M0 uniform and M1 degree-aware are the budget-matched controls for M2. Deltas are descriptive for one fixed validation seed; no significance or test-set claim.",
+    "degree_m1": {
+      "catalog_coverage_at_20": 0.017782575173477255,
+      "hits_at_20": 1309,
+      "ndcg_at_20": 0.006153296206536906,
+      "recall_at_20": 0.015988567380391103,
+      "training_peak_gpu_memory_mb": 2665.09521484375,
+      "training_wall_seconds": 795.10390311
+    },
+    "frontier_m2": {
+      "catalog_coverage_at_20": 0.017862760215882807,
+      "hits_at_20": 1254,
+      "ndcg_at_20": 0.005920696088904841,
+      "recall_at_20": 0.01531677883499652,
+      "training_peak_gpu_memory_mb": 2669.0576171875,
+      "training_wall_seconds": 868.62958349
+    },
+    "frontier_minus_degree": {
+      "catalog_coverage_at_20": 8.018504240555127e-05,
+      "hits_at_20": -55,
+      "ndcg_at_20": -0.00023260011763206415,
+      "recall_at_20": -0.0006717885453945832,
+      "training_peak_gpu_memory_mb": 3.96240234375,
+      "training_wall_seconds": 73.52568037999993
+    },
+    "frontier_minus_uniform": {
+      "catalog_coverage_at_20": -0.0006229760986892832,
+      "hits_at_20": 54,
+      "ndcg_at_20": 0.0001934130970390538,
+      "recall_at_20": 0.000659574208205593,
+      "training_peak_gpu_memory_mb": -813.8388671875,
+      "training_wall_seconds": 163.3063018849998
+    },
+    "uniform_m0": {
+      "catalog_coverage_at_20": 0.01848573631457209,
+      "hits_at_20": 1200,
+      "ndcg_at_20": 0.005727282991865788,
+      "recall_at_20": 0.014657204626790927,
+      "training_peak_gpu_memory_mb": 3482.896484375,
+      "training_wall_seconds": 705.3232816050001
+    }
+  },
+  "reference_comparison": {
+    "bpr_mf": {
+      "ndcg_at_20": 0.0040535123936547065,
+      "recall_at_20": 0.010418829622210551
+    },
+    "comparison_boundary": "MostPop, BPR-MF and full LightGCN are context references, not budget-matched controls.",
+    "degree_m1": {
+      "ndcg_at_20": 0.006153296206536906,
+      "recall_at_20": 0.015988567380391103
+    },
+    "frontier_m2": {
+      "ndcg_at_20": 0.005920696088904841,
+      "recall_at_20": 0.01531677883499652
+    },
+    "full_lightgcn": {
+      "ndcg_at_20": 0.004931237897653004,
+      "recall_at_20": 0.012373123572449341
+    },
+    "mostpop": {
+      "ndcg_at_20": 0.005872550223853306,
+      "recall_at_20": 0.014596132940845965
+    },
+    "uniform_m0": {
+      "ndcg_at_20": 0.005727282991865788,
+      "recall_at_20": 0.014657204626790927
+    }
+  },
+  "registered_config": {
+    "claim_boundary": "One fixed validation-only M2 frontier-normalized sampled-training smoke run at the predeclared k_l=65536 layer budget. This project-candidate probe tests one formula selected after reading the M0-M1 validation controls. No test access, hyperparameter search, learned policy, sampled-inference claim, or comparison to full LightGCN as a budget-matched method.",
+    "config_id": "frontier-normalized-sampling-k65536-smoke-v1-2026-09-15",
+    "evaluation": {
+      "candidate_universe": "all frozen training items minus strict prior mapped positives",
+      "eval_batch_size": 128,
+      "inference_graph": "full_frozen_training_graph",
+      "k": 20,
+      "rank_tie_break": "item_idx_ascending",
+      "split": "validation_only",
+      "target_unit": "one relevant item per target row",
+      "timestamp_rule": "events at the target timestamp are not prior history"
+    },
+    "file_sha256": "b82651b29dd31a8eeaa279e2bc0c7612ee1daaa4c205f231dde39b65bef8563d",
+    "matched_control_id": "static-controls-k65536-smoke-v1",
+    "method_role": "single_project_candidate_after_static_controls",
+    "model": {
+      "aggregation": "unweighted_mean_of_ego_and_all_layers",
+      "bias": false,
+      "embedding_dim": 64,
+      "initialization_std": 0.01,
+      "layers": 3,
+      "name": "Sampled-LightGCN",
+      "recommender_self_loops": false
+    },
+    "sampler": {
+      "candidate_rule": "unique_neighbors_of_previous_K_excluding_previous_K",
+      "cross_layer_reentry": true,
+      "degree_exponent": -0.5,
+      "degree_source": "full_frozen_training_graph_only",
+      "exact_k_without_replacement": true,
+      "frontier_support_source": "count_training_edges_from_candidate_to_previous_K",
+      "k_l": [
+        65536,
+        65536,
+        65536
+      ],
+      "k_l_interpretation": "global_context_node_budget_per_batch_and_layer_equal_to_training_batch_size_for_this_smoke_only",
+      "method": "frontier_normalized",
+      "normalization": "rectangular_sampled_local_bi_normalization",
+      "positive_edge_policy": "retain",
+      "priority_formula": "log(frontier_support) - 0.5*log(training_degree) + gumbel",
+      "seed": 20261013,
+      "state_rule": "K_l_equals_V0_union_V_l_not_cumulative_union",
+      "support_exponent": 1.0
+    },
+    "training": {
+      "batch_size": 65536,
+      "epoch_selection": "fixed_last_epoch",
+      "epochs": 5,
+      "l2_coefficient": 1e-06,
+      "learning_rate": 0.01,
+      "mixed_precision": false,
+      "negative_sampling": "uniform_training_catalog_reject_all_training_positives",
+      "optimizer": "SparseAdam",
+      "seed": 20260913,
+      "training_pair_order": "seeded_epoch_permutation"
+    }
+  },
+  "source": {
+    "bpr_mf_summary": {
+      "path": "/content/drive/MyDrive/Phase2_Amazon_Audit/bpr_mf_sanity_v1/bpr_mf_validation_summary.json",
+      "sha256": "611bd820c66c57ef7a06d18e52a36a61942bfaf55fc9a615ee6b4708ac5a1f74"
+    },
+    "degree_m1_summary": {
+      "path": "/content/drive/MyDrive/Phase2_Amazon_Audit/degree_aware_sampling_k65536_smoke_v1/degree_aware_sampling_validation_summary.json",
+      "sha256": "46d83f7e6938c94be3376a5e71387e6a1bf9e9db32043d4dbbd10378f9bd07da"
+    },
+    "directed_training_csr_entries": 7737308,
+    "full_lightgcn_summary": {
+      "path": "/content/drive/MyDrive/Phase2_Amazon_Audit/full_lightgcn_sanity_v1/full_lightgcn_validation_summary.json",
+      "sha256": "ebddb3ece87abc0098106dd2271b9134f641ca8e2582e35491b9f26b6fe0faa9"
+    },
+    "items": 162125,
+    "manifest_path": "/content/drive/MyDrive/Phase2_Amazon_Audit/g2c_baby_p4/baby_p4_g2c_manifest.json",
+    "mostpop_summary": {
+      "path": "/content/drive/MyDrive/Phase2_Amazon_Audit/mostpop_validation/mostpop_validation_summary.json",
+      "sha256": "00332090cae73a563a7fcafde895572fb06d574366ce37bf6f9d90208dfccf62"
+    },
+    "nodes": 2480433,
+    "train_edges": {
+      "path": "/content/drive/MyDrive/Phase2_Amazon_Audit/g2c_baby_p4/baby_p4_train_edges.csv.gz",
+      "rows": 3868654,
+      "sha256": "33abbd98b1d75b179bf45ef41ba3f5622d80005ad4aaf414320dbe48c17aeb72"
+    },
+    "uniform_m0_summary": {
+      "path": "/content/drive/MyDrive/Phase2_Amazon_Audit/uniform_sampling_k65536_smoke_v1/uniform_sampling_validation_summary.json",
+      "sha256": "f29ed8f15d50a6d585ecb9cdcfc160232b64f9936e83fc8db6dac442bf941474"
+    },
+    "users": 2318308,
+    "validation_targets": {
+      "path": "/content/drive/MyDrive/Phase2_Amazon_Audit/g2c_baby_p4/baby_p4_validation_targets.csv.gz",
+      "rows": 81871,
+      "sha256": "fd807f68fd03787931546ac31d7c2fe8e7ffcc7c43d3b92c627dce98fa87afca"
+    }
+  },
+  "status": "FRONTIER_NORMALIZED_SAMPLING_VALIDATION_SMOKE_EXECUTED",
+  "training": {
+    "deterministic_first_batch_trace_passed": true,
+    "epochs": [
+      {
+        "epoch": 1,
+        "examples": 3868654,
+        "layer_totals": [
+          {
+            "candidate_degree_mass": 217828027,
+            "candidate_node_slots": 119916591,
+            "candidate_support_mass": 185935391,
+            "candidate_weight_mass": 137463325.03401566,
+            "directed_block_entries": 31825089,
+            "layer": 1,
+            "requested_k_per_batch": 65536,
+            "selected_context_node_slots": 3932160,
+            "selected_degree_mass": 8624202,
+            "selected_support_mass": 7770741,
+            "selected_weight_mass": 4974180.1816865625
+          },
+          {
+            "candidate_degree_mass": 213196307,
+            "candidate_node_slots": 116341829,
+            "candidate_support_mass": 179009155,
+            "candidate_weight_mass": 132813517.57248062,
+            "directed_block_entries": 39477054,
+            "layer": 2,
+            "requested_k_per_batch": 65536,
+            "selected_context_node_slots": 3932160,
+            "selected_degree_mass": 8641592,
+            "selected_support_mass": 7651965,
+            "selected_weight_mass": 4941733.37345596
+          },
+          {
+            "candidate_degree_mass": 213303719,
+            "candidate_node_slots": 116428585,
+            "candidate_support_mass": 179302307,
+            "candidate_weight_mass": 132966018.3659492,
+            "directed_block_entries": 39355574,
+            "layer": 3,
+            "requested_k_per_batch": 65536,
+            "selected_context_node_slots": 3932160,
+            "selected_degree_mass": 8657521,
+            "selected_support_mass": 7672223,
+            "selected_weight_mass": 4946853.52550823
+          }
+        ],
+        "mean_loss": 0.6167290887804495,
+        "optimizer_steps": 60,
+        "propagation_and_update_seconds": 13.255673752999826,
+        "sampler_seconds": 139.2968832210002,
+        "selected_item_context_slots_by_cohort": {
+          "body": 18223,
+          "head": 101,
+          "tail": 40139
+        },
+        "throughput_examples_per_second": 22138.834253557536,
+        "unique_computation_nodes": 2480433,
+        "unique_selected_context_nodes": 2307804,
+        "unique_training_edges_in_blocks": 3868654,
+        "wall_seconds": 174.74515278999996
+      },
+      {
+        "epoch": 2,
+        "examples": 3868654,
+        "layer_totals": [
+          {
+            "candidate_degree_mass": 217813080,
+            "candidate_node_slots": 119937762,
+            "candidate_support_mass": 185972223,
+            "candidate_weight_mass": 137494818.68599787,
+            "directed_block_entries": 31818599,
+            "layer": 1,
+            "requested_k_per_batch": 65536,
+            "selected_context_node_slots": 3932160,
+            "selected_degree_mass": 8614573,
+            "selected_support_mass": 7759037,
+            "selected_weight_mass": 4971991.116652822
+          },
+          {
+            "candidate_degree_mass": 213186569,
+            "candidate_node_slots": 116364923,
+            "candidate_support_mass": 179059404,
+            "candidate_weight_mass": 132849788.2377486,
+            "directed_block_entries": 39475093,
+            "layer": 2,
+            "requested_k_per_batch": 65536,
+            "selected_context_node_slots": 3932160,
+            "selected_degree_mass": 8644237,
+            "selected_support_mass": 7656494,
+            "selected_weight_mass": 4943773.925870872
+          },
+          {
+            "candidate_degree_mass": 213267583,
+            "candidate_node_slots": 116450135,
+            "candidate_support_mass": 179333542,
+            "candidate_weight_mass": 132995491.37124266,
+            "directed_block_entries": 39363666,
+            "layer": 3,
+            "requested_k_per_batch": 65536,
+            "selected_context_node_slots": 3932160,
+            "selected_degree_mass": 8631387,
+            "selected_support_mass": 7671089,
+            "selected_weight_mass": 4947209.21266742
+          }
+        ],
+        "mean_loss": 0.19904163586722615,
+        "optimizer_steps": 60,
+        "propagation_and_update_seconds": 12.802508234000129,
+        "sampler_seconds": 139.24828301800022,
+        "selected_item_context_slots_by_cohort": {
+          "body": 18134,
+          "head": 116,
+          "tail": 39680
+        },
+        "throughput_examples_per_second": 22557.29143243505,
+        "unique_computation_nodes": 2480433,
+        "unique_selected_context_nodes": 2306989,
+        "unique_training_edges_in_blocks": 3868654,
+        "wall_seconds": 171.50348018299997
+      },
+      {
+        "epoch": 3,
+        "examples": 3868654,
+        "layer_totals": [
+          {
+            "candidate_degree_mass": 217738543,
+            "candidate_node_slots": 119912274,
+            "candidate_support_mass": 185919745,
+            "candidate_weight_mass": 137458850.9983407,
+            "directed_block_entries": 31816675,
+            "layer": 1,
+            "requested_k_per_batch": 65536,
+            "selected_context_node_slots": 3932160,
+            "selected_degree_mass": 8613107,
+            "selected_support_mass": 7762005,
+            "selected_weight_mass": 4972287.468166549
+          },
+          {
+            "candidate_degree_mass": 213195709,
+            "candidate_node_slots": 116337984,
+            "candidate_support_mass": 178999710,
+            "candidate_weight_mass": 132810043.49243541,
+            "directed_block_entries": 39469001,
+            "layer": 2,
+            "requested_k_per_batch": 65536,
+            "selected_context_node_slots": 3932160,
+            "selected_degree_mass": 8653708,
+            "selected_support_mass": 7652326,
+            "selected_weight_mass": 4942286.655580037
+          },
+          {
+            "candidate_degree_mass": 213296161,
+            "candidate_node_slots": 116432006,
+            "candidate_support_mass": 179298453,
+            "candidate_weight_mass": 132968932.05379851,
+            "directed_block_entries": 39352358,
+            "layer": 3,
+            "requested_k_per_batch": 65536,
+            "selected_context_node_slots": 3932160,
+            "selected_degree_mass": 8650309,
+            "selected_support_mass": 7668849,
+            "selected_weight_mass": 4946477.488974068
+          }
+        ],
+        "mean_loss": 0.12459477168664444,
+        "optimizer_steps": 60,
+        "propagation_and_update_seconds": 12.76892787599968,
+        "sampler_seconds": 140.5762753049995,
+        "selected_item_context_slots_by_cohort": {
+          "body": 18246,
+          "head": 132,
+          "tail": 39842
+        },
+        "throughput_examples_per_second": 22390.68206939477,
+        "unique_computation_nodes": 2480433,
+        "unique_selected_context_nodes": 2308173,
+        "unique_training_edges_in_blocks": 3868654,
+        "wall_seconds": 172.77963999999997
+      },
+      {
+        "epoch": 4,
+        "examples": 3868654,
+        "layer_totals": [
+          {
+            "candidate_degree_mass": 217720716,
+            "candidate_node_slots": 119925152,
+            "candidate_support_mass": 185962515,
+            "candidate_weight_mass": 137487827.11883953,
+            "directed_block_entries": 31817859,
+            "layer": 1,
+            "requested_k_per_batch": 65536,
+            "selected_context_node_slots": 3932160,
+            "selected_degree_mass": 8610400,
+            "selected_support_mass": 7762889,
+            "selected_weight_mass": 4972374.094802473
+          },
+          {
+            "candidate_degree_mass": 213159933,
+            "candidate_node_slots": 116349172,
+            "candidate_support_mass": 179038255,
+            "candidate_weight_mass": 132836297.35569127,
+            "directed_block_entries": 39473250,
+            "layer": 2,
+            "requested_k_per_batch": 65536,
+            "selected_context_node_slots": 3932160,
+            "selected_degree_mass": 8647245,
+            "selected_support_mass": 7655391,
+            "selected_weight_mass": 4942751.231791871
+          },
+          {
+            "candidate_degree_mass": 213262991,
+            "candidate_node_slots": 116442201,
+            "candidate_support_mass": 179328084,
+            "candidate_weight_mass": 132992297.72684449,
+            "directed_block_entries": 39354944,
+            "layer": 3,
+            "requested_k_per_batch": 65536,
+            "selected_context_node_slots": 3932160,
+            "selected_degree_mass": 8651160,
+            "selected_support_mass": 7667632,
+            "selected_weight_mass": 4946807.267033712
+          }
+        ],
+        "mean_loss": 0.09581927824245957,
+        "optimizer_steps": 60,
+        "propagation_and_update_seconds": 12.773781110999266,
+        "sampler_seconds": 143.22137314600002,
+        "selected_item_context_slots_by_cohort": {
+          "body": 17985,
+          "head": 121,
+          "tail": 39804
+        },
+        "throughput_examples_per_second": 21990.237904598984,
+        "unique_computation_nodes": 2480433,
+        "unique_selected_context_nodes": 2307238,
+        "unique_training_edges_in_blocks": 3868654,
+        "wall_seconds": 175.92597242299996
+      },
+      {
+        "epoch": 5,
+        "examples": 3868654,
+        "layer_totals": [
+          {
+            "candidate_degree_mass": 217760962,
+            "candidate_node_slots": 119916446,
+            "candidate_support_mass": 185935262,
+            "candidate_weight_mass": 137467153.12752315,
+            "directed_block_entries": 31822940,
+            "layer": 1,
+            "requested_k_per_batch": 65536,
+            "selected_context_node_slots": 3932160,
+            "selected_degree_mass": 8621023,
+            "selected_support_mass": 7767698,
+            "selected_weight_mass": 4973263.200096692
+          },
+          {
+            "candidate_degree_mass": 213182165,
+            "candidate_node_slots": 116343588,
+            "candidate_support_mass": 179011751,
+            "candidate_weight_mass": 132818978.09217037,
+            "directed_block_entries": 39483292,
+            "layer": 2,
+            "requested_k_per_batch": 65536,
+            "selected_context_node_slots": 3932160,
+            "selected_degree_mass": 8674069,
+            "selected_support_mass": 7660352,
+            "selected_weight_mass": 4943491.453892755
+          },
+          {
+            "candidate_degree_mass": 213295657,
+            "candidate_node_slots": 116445133,
+            "candidate_support_mass": 179318271,
+            "candidate_weight_mass": 132985135.9695629,
+            "directed_block_entries": 39362026,
+            "layer": 3,
+            "requested_k_per_batch": 65536,
+            "selected_context_node_slots": 3932160,
+            "selected_degree_mass": 8631339,
+            "selected_support_mass": 7670217,
+            "selected_weight_mass": 4947294.19863034
+          }
+        ],
+        "mean_loss": 0.07421797139447725,
+        "optimizer_steps": 60,
+        "propagation_and_update_seconds": 12.810179795999943,
+        "sampler_seconds": 140.3807246450001,
+        "selected_item_context_slots_by_cohort": {
+          "body": 18080,
+          "head": 121,
+          "tail": 39882
+        },
+        "throughput_examples_per_second": 22402.390647859975,
+        "unique_computation_nodes": 2480433,
+        "unique_selected_context_nodes": 2307275,
+        "unique_training_edges_in_blocks": 3868654,
+        "wall_seconds": 172.68933681500005
+      }
+    ],
+    "negative_draws": 19343270,
+    "negative_resamples": 493,
+    "optimizer_steps": 300,
+    "peak_gpu_memory_mb": 2669.0576171875,
+    "wall_seconds": 868.62958349
+  },
+  "validation": {
+    "metrics": {
+      "hits_at_k": 1254,
+      "k": 20,
+      "ndcg_at_k": 0.005920696088904841,
+      "recall_at_k": 0.01531677883499652,
+      "rows": 81871
+    },
+    "peak_gpu_memory_mb": 3824.65625,
+    "recommendation_exposure": {
+      "catalog_coverage_at_k": 0.017862760215882807,
+      "item_cohort_share": {
+        "body": 0.026376250442769724,
+        "head": 0.9489672777906707,
+        "tail": 0.02465647176655959
+      },
+      "recommendation_slots": 1637420,
+      "unique_items_at_k": 2896
+    },
+    "target_item_cohorts": {
+      "body": {
+        "hits_at_k": 25,
+        "k": 20,
+        "ndcg_at_k": 0.00030968042198861354,
+        "recall_at_k": 0.0006259075659706575,
+        "rows": 39942,
+        "target_share": 0.487865056002736
+      },
+      "head": {
+        "hits_at_k": 1229,
+        "k": 20,
+        "ndcg_at_k": 0.016108445439901076,
+        "recall_at_k": 0.04191106261083072,
+        "rows": 29324,
+        "target_share": 0.3581732237300143
+      },
+      "tail": {
+        "hits_at_k": 0,
+        "k": 20,
+        "ndcg_at_k": 0.0,
+        "recall_at_k": 0.0,
+        "rows": 12605,
+        "target_share": 0.1539617202672497
+      }
+    },
+    "topk_boundary_tie_rows": 0,
+    "user_activity_cohorts": {
+      "active": {
+        "hits_at_k": 293,
+        "k": 20,
+        "ndcg_at_k": 0.005458582231191185,
+        "recall_at_k": 0.014771123210324663,
+        "rows": 19836,
+        "target_share": 0.24228359248085402
+      },
+      "repeat_light": {
+        "hits_at_k": 359,
+        "k": 20,
+        "ndcg_at_k": 0.005448214858034107,
+        "recall_at_k": 0.015095450340593727,
+        "rows": 23782,
+        "target_share": 0.2904813670286182
+      },
+      "singleton": {
+        "hits_at_k": 602,
+        "k": 20,
+        "ndcg_at_k": 0.0064540670431875394,
+        "recall_at_k": 0.015737327791284342,
+        "rows": 38253,
+        "target_share": 0.4672350404905278
+      }
+    },
+    "wall_seconds": 7.237757054999975
+  }
+}
