@@ -16,6 +16,8 @@ Một phương pháp chỉ được gọi là biến thể GRAPES khi có đủ 
 
 ## Đọc theo thứ tự
 
+0. [`00_project/HANDOFF_STATUS_vn.md`](./00_project/HANDOFF_STATUS_vn.md) — trạng thái bàn giao: đang ở gate nào, chờ gì, làm gì tiếp.
+
 1. [`00_project/DECISION_LOG_vn.md`](./00_project/DECISION_LOG_vn.md) — vì sao Phase 2 bị reset, guardrail chống lặp lại.
 2. [`00_project/PHASE2_GRAPES_GFN_REC_SPEC_vn.md`](./00_project/PHASE2_GRAPES_GFN_REC_SPEC_vn.md) — spec chuẩn: RQ, adaptation, split, comparator, metric, gate.
 3. [`02_protocol/GRAPES_RECOMMENDATION_SPEC_vn.md`](./02_protocol/GRAPES_RECOMMENDATION_SPEC_vn.md) — hợp đồng thành phần D1–D11 và oracle T01–T25 (normative).

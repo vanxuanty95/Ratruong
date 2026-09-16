@@ -57,14 +57,21 @@ Steps:
 - [x] Mutation check (cloud, torch 2.14 CPU): removing TB detach, dropping unselected terms from `log q`, cumulative-union state, wrong RL sign → each killed by the suite.
 - [ ] Remaining for R2 close: T04 negative validity in batch sampler; T23 + D9 transient positive-edge mask; D6 legacy target+neighbour `log Z` ablation; sparse/partitioned sampler embedding option for 2.48M nodes on T4 (R-5).
 
-### Task R1: Development split (Colab)
+### Task R1: Development split + deep data analysis (Colab)
 
-**Files:** `configs/grapes_gfn_rec_development_protocol_v1.json`, `notebooks/11_grapes_gfn_rec_development_graph.ipynb`, `tests/test_grapes_gfn_rec_protocol.py`
+**Files (done, `0c8d724`):** `notebooks/11_dataset_deep_analysis_and_dev_split.ipynb`, `scripts/deep_dataset_analysis.py`, `tests/test_deep_analysis_notebook.py`
 
-- [ ] Register rule of spec §3.1 in config (t0 = t1 − (t2 − t1); fallback 80% edge quantile; thresholds 20.000 targets / 50% edges).
-- [ ] Contract test: notebook never opens `baby_p4_validation_targets` / `baby_p4_test_targets`; reads raw P4 only with `timestamp < t1`.
-- [ ] Notebook outputs `dev_train_edges.csv.gz`, `dev_user_mapping`, `dev_item_mapping`, `dev_targets.csv.gz`, `development_graph_manifest.json` (counts, degree stats, retention, SHA-256, which rule fired).
-- [ ] Copy manifest to `results/grapes_gfn_rec_development/`; test asserts timestamp ordering and isolation fields.
+- [x] Rule of spec §3.1 implemented (t0 = t1 − (t2 − t1); fallback 80% edge quantile; thresholds 20.000 targets / 50% edges).
+- [x] Contract test: notebook never references validation/test target files; embedded source equals script; structural stats restricted before t1.
+- [x] Script tested end-to-end on synthetic data (cloud workspace).
+- [ ] **Ty runs notebook 11 on Colab** → `deep_analysis_bundle.zip`.
+- [ ] Copy summary/figures to `results/dataset_deep_analysis/`, manifest to `results/grapes_gfn_rec_development/`; add `tests/test_grapes_gfn_rec_protocol.py` reading the saved manifest.
+- [ ] Fill "ĐANG CHỜ notebook 11" in living deck/report (v0.4).
+
+### Task LD: Living thesis documents (DL-002) — ongoing
+
+- [x] v0.3 deck `05_slides/THESIS_vn.pptx` (builder `build_thesis_vn.js`) and report `04_thesis/THESIS_vn.tex/.pdf`, chapter structure of final thesis, pending boxes, supervisor-feedback chapter.
+- [ ] After every gate: fill chapter, bump version, add changelog line in both, rebuild, render check, run checker, update `Do An/00_project/HANDOFF_STATUS_vn.md`, commit.
 
 ### Task R3: Development experiments (Colab)
 

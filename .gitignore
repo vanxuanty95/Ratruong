@@ -7,3 +7,5 @@ __pycache__/
 .pytest_cache/
 Do An/05_slides/rendered*/
 Do An/05_slides/*.validation.json
+Claude outputs/
+*.~lock.*#
