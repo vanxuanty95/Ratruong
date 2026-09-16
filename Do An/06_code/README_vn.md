@@ -99,3 +99,26 @@ Dữ liệu cần còn trên Drive:
 - Resource s0 là context cũ; so sánh resource ưu tiên các run cùng instrumentation trong từng seed.
 - Không claim cold-start, semantic relevance hoặc semantic diversity.
 - Không gọi M2 là learned sampler.
+
+## 8. Handoff để tiếp tục sau này
+
+Tại commit `bea2422`, evidence được trình bày qua cùng một narrative trong:
+
+- `../05_slides/THESIS_PRESENTATION_vn.pptx`: deck 21 slide; có slide riêng giải thích context, frontier và M0/M1/M2.
+- `../04_thesis/THESIS_REPORT_vn.tex` và `../04_thesis/THESIS_REPORT_vn.pdf`: report tổng hợp về nguồn, schema, P4, temporal split, long tail, metric, result và giới hạn.
+- `../04_thesis/THESIS_REFERENCES.bib`: nguồn ngoài dự án của report.
+
+Trước khi thay đổi code hoặc chạy Colab, đọc lại `../PROJECT_CONTEXT_AND_RESEARCH_RULES_vn.md` và `../00_project/PHASE2_RESEARCH_PLAN_vn.md`. Việc cần làm kế tiếp không phải chạy lại toàn bộ pipeline: chọn một claim mới, đăng ký protocol riêng và chỉ chạy artifact tối thiểu để trả lời claim đó.
+
+Các nhánh hợp lệ là final test của quyết định đã khóa; benchmark graph-CF ngoài Amazon; nghiên cứu semantic trên data có metadata; hoặc bounded scale test. Không dùng test target, extra seed, dataset mới hay M3--M5 để cứu M2 sau khi đã thấy validation.
+
+## 9. Kiểm tra lại trước khi bàn giao
+
+Ở máy có `pytest` và `numpy`, từ thư mục `06_code` chạy:
+
+```bash
+PYTHONPATH=src python3 -m pytest -q
+PYTHONPATH=src python3 scripts/verify_research_consistency.py
+```
+
+Kết quả đã kiểm tra tại handoff này là `96 passed`; checker không có `violations`. Không cài dependency hay ghi output test vào repository chỉ để chạy hai lệnh trên.

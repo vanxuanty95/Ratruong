@@ -60,3 +60,18 @@ If reproduction is required, keep the same Drive root, artifact hashes, configs,
 - M1 has the best mean quality but does not beat M0 on every seed.
 - Three seeds do not establish significance or universal superiority.
 - Semantic relevance, semantic diversity, and cold-start are not evaluated.
+
+## Continuation handoff
+
+At commit `bea2422`, the current deliverables are `../05_slides/THESIS_PRESENTATION_vn.pptx` (the 21-slide deck), `../04_thesis/THESIS_REPORT_vn.tex` / `.pdf` (the LaTeX report), and `../04_thesis/THESIS_REFERENCES.bib`. They share the same locked validation narrative: M0/M1/M2 are sampler policies within one LightGCN setup; context and frontier are technical sampling concepts, not metrics.
+
+Do not rerun Colab merely to find a favorable seed or rescue M2. A future run must first register one new question: final test of the locked decision; graph-CF generalization on a separate benchmark; semantic diversity on a metadata-rich dataset; or a bounded Home\_and\_Kitchen scale test. Keep its protocol, metrics, output directory, and claim boundary separate from the Baby validation evidence.
+
+From `06_code`, a local verification environment with `pytest` and `numpy` can run:
+
+```bash
+PYTHONPATH=src python3 -m pytest -q
+PYTHONPATH=src python3 scripts/verify_research_consistency.py
+```
+
+The handoff verification recorded 96 passing tests and no consistency-checker violations.

@@ -23,8 +23,8 @@ Test target chưa được đọc. Chưa có claim về significance, hiệu qu�
 
 1. [`00_project/PHASE2_RESEARCH_PLAN_vn.md`](./00_project/PHASE2_RESEARCH_PLAN_vn.md) ghi lại nghiên cứu theo timeline và quyết định ở từng giai đoạn.
 2. [`03_reports/REPORT_TEACHER_vn.md`](./03_reports/REPORT_TEACHER_vn.md) là bản giải thích dùng khi trình bày hoặc trao đổi với giảng viên.
-3. [`04_thesis/THESIS_REPORT_vn.md`](./04_thesis/THESIS_REPORT_vn.md) là bản viết ở độ sâu luận văn.
-4. [`05_slides/THESIS_PRESENTATION_vn.pptx`](./05_slides/THESIS_PRESENTATION_vn.pptx) là slide duy nhất đang có hiệu lực.
+3. [`04_thesis/THESIS_REPORT_vn.tex`](./04_thesis/THESIS_REPORT_vn.tex) và [`THESIS_REPORT_vn.pdf`](./04_thesis/THESIS_REPORT_vn.pdf) là báo cáo LaTeX/PDF hiện hành; bản Markdown giữ vai trò narrative nguồn.
+4. [`05_slides/THESIS_PRESENTATION_vn.pptx`](./05_slides/THESIS_PRESENTATION_vn.pptx) là deck 21 slide duy nhất đang có hiệu lực. Nó giải thích riêng context, frontier và ý nghĩa của nhãn M0--M2.
 5. [`06_code/README_vn.md`](./06_code/README_vn.md) mô tả notebook, config, output và cách tái tạo khi thật sự cần.
 6. [`PROJECT_CONTEXT_AND_RESEARCH_RULES_vn.md`](./PROJECT_CONTEXT_AND_RESEARCH_RULES_vn.md) khóa câu hỏi, trạng thái và ranh giới phát biểu.
 
@@ -64,4 +64,14 @@ File ghi chú phản hồi ban đầu `cô dặn 3:09` được giữ nguyên l�
 
 ## Bước tiếp theo
 
-Hoàn thiện slide và bản viết từ bằng chứng validation đã khóa. Chỉ mở thêm một dataset hoặc chạy test khi yêu cầu đầu ra của luận văn thực sự cần một claim mới; không dùng test để sửa hoặc cứu M2.
+Trạng thái bàn giao ở commit `bea2422`: deck và report đã đồng bộ với evidence validation, 96 test code đã pass và checker consistency không báo vi phạm. Hai ghi chú chưa track (`cô dặn 3:09` và ghi chú trong `ThucTap2/`) là nguồn lịch sử, không được tự động đưa vào artifact hay commit.
+
+Nếu tiếp tục sau này, chọn đúng một nhánh dưới đây trước khi chạy Colab:
+
+1. **Chốt kết quả hiện tại:** chỉ rà soát/trình bày; không chạy lại notebook để tìm seed đẹp hơn.
+2. **Final test:** chỉ chạy khi quyết định giữa M0/M1/M2 đã khóa; không dùng test để đổi sampler hay tune lại.
+3. **Generalization graph-CF:** đăng ký trước một dataset như Yelp2018 hoặc Gowalla, tạo audit/protocol riêng và không gộp score đó với Baby.
+4. **Semantic diversity:** chuyển sang dataset có content/metadata như MovieLens hoặc MIND, định nghĩa metric semantic trước khi chạy.
+5. **Scale:** chỉ khi claim về quy mô là mục tiêu mới, tạo bounded stress test riêng cho Home\_and\_Kitchen.
+
+Không mở M3--M5 chỉ để cải thiện validation score. Mọi nhánh mới phải ghi rõ câu hỏi, dataset, metric, budget, seed và claim boundary trước khi chạy.
