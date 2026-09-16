@@ -1,122 +1,163 @@
-# Báo cáo tiến độ khoảng 10 phút với giảng viên hướng dẫn
+# Nội dung trình bày nghiên cứu
 
-> **Đề tài:** *Phát triển phương pháp lấy mẫu đồ thị cho hệ thống gợi ý quy mô lớn sử dụng mạng nơ-ron đồ thị GNN*
-> **Cập nhật:** 2026-09-03
-> **Trạng thái:** G1, E0-MIN và Dataset Gate G2 đã pass. Project có thể bắt đầu baseline/evaluator G3. Chưa train model và chưa có kết quả Recall/NDCG.
+> Bản này dùng để nói và trả lời câu hỏi. Chi tiết kỹ thuật đầy đủ nằm trong thesis và thư mục kết quả.
 
-## 1. Mở đầu — khoảng 1 phút
+## 1. Bài toán em đang làm
 
-Phase 2 được xác định là một luận văn Thạc sĩ độc lập về graph sampling cho GNN recommendation. Công việc Phase 1 về GRAPES được giữ làm nền tảng khoa học, comparator và nguồn candidate mechanism, nhưng GRAPES không mặc định là phương pháp cuối của luận văn.
+Em nghiên cứu cách lấy mẫu node khi huấn luyện LightGCN cho recommendation. Khi graph lớn, mô hình không nhất thiết phải đưa toàn bộ hàng xóm vào mỗi lần tính. Sampler quyết định phần graph nào được dùng làm ngữ cảnh cho batch hiện tại.
 
-Mục tiêu nghiên cứu là phát triển một phương pháp lấy mẫu đồ thị, sau đó so sánh công bằng với các baseline trên hai mặt: chất lượng xếp hạng gợi ý và chi phí tính toán. Trước khi xây model, project phải chốt dataset và protocol chống leakage; phần này được quản lý bằng Dataset Gate G2.
+Câu hỏi của em không phải “sampler nào cho điểm cao nhất” theo nghĩa chung. Em giữ nguyên dữ liệu, model, số bước huấn luyện, sampling budget, seed, evaluator và GPU, sau đó chỉ thay quy tắc chọn node. Em muốn biết sự thay đổi đó có cải thiện được chất lượng xếp hạng mà không làm chi phí tăng quá nhiều hay không.
 
-## 2. Thiết kế nghiên cứu G1 — khoảng 1,5 phút
+## 2. Dataset nào thường được dùng cho recommendation
 
-G1 trả lời sẽ kiểm tra điều gì và chọn phương pháp như thế nào trước khi có model result. Câu hỏi chính là: ở cùng ngân sách từng lớp và dưới cùng dữ liệu Baby P4, backbone kiểu LightGCN, BPR batch, negative, seed, evaluator và hardware, task-conditioned sampling có cải thiện exact full-catalog NDCG@20–resource trade-off so với uniform và degree-aware sampling không?
+Ngoài Amazon còn có nhiều benchmark đáng tin cậy:
 
-Closest-work review cho thấy luận văn không được claim learned sampler đầu tiên cho recommendation: PinSage đã dùng sampling riêng cho recommender, còn DSKReG học sampling cho knowledge-graph recommendation. Đóng góp tiềm năng hẹp hơn là controlled evidence cho sampler task-conditioned do đồ án phát triển trên plain implicit user–item graph.
+- **MovieLens 25M** có 25 triệu rating cùng tag và metadata phim. Nó phù hợp cho collaborative filtering và phân tích ngữ nghĩa, nhưng user đã được lọc để có ít nhất 20 rating nên không thể hiện rõ tình trạng user rất ít lịch sử.
+- **Gowalla** và **Yelp2018** được dùng trong nghiên cứu LightGCN. Đây là hai đối chứng gần nhất cho graph recommendation, nhưng bản phổ biến đã được lọc và chia ngẫu nhiên thay vì temporal split từ raw data.
+- **MIND** là dữ liệu news recommendation có title, abstract và impression log. Nó phù hợp với content-aware recommendation hơn bài toán pure-ID sản phẩm.
+- **KuaiRec** gần fully observed, phù hợp để nghiên cứu exposure bias. Catalog nhỏ và rất dày nên không tạo cùng áp lực sampling trên sparse graph.
 
-Sáu vai trò cơ chế được đăng ký: uniform, degree-aware, layer-dependent structural importance, learned heuristic mixture, task-conditioned exact-k policy và biến thể RL/GFlowNet theo GRAPES tùy chọn. Uniform và degree-aware là matched control bắt buộc. Chỉ validation được dùng để chọn: learned candidate chỉ đi tiếp nếu vào Pareto set NDCG–memory–time và cải thiện ít nhất một trục so với cả hai static control ở cùng budget. Nếu không, kết luận hợp lệ là không chọn learned method. Không được dùng test result để thay phương pháp.
+Những dataset này giúp đặt bài toán vào bối cảnh. Em chưa chạy thực nghiệm trên chúng, vì thêm một dataset sau khi đã thấy kết quả sẽ làm thay đổi phạm vi bằng chứng. Nếu cần kiểm tra tính khái quát ngoài Amazon, Yelp2018 là lựa chọn gần phương pháp nhất và phải có protocol riêng.
 
-## 3. Tổng quan toàn bộ research gate — khoảng 1 phút
+## 3. Vì sao chọn `Baby_Products`
 
-Các gate ngăn project chuyển sang bước tốn tài nguyên hoặc tạo claim khi prerequisite chưa đủ vững.
+Em đã kiểm toán ba tập Amazon Reviews’23 bằng cùng protocol:
 
-| Gate | Câu hỏi gate trả lời | Bằng chứng cần có để đi tiếp | Trạng thái hiện tại |
-|---|---|---|---|
-| G0 — Governance | Phạm vi luận văn, cấu trúc artifact, quy tắc song ngữ và claim boundary đã rõ chưa? | Canonical plan, constraint, ownership và evidence rule | `PASS` |
-| G1 — Thiết kế nghiên cứu | Chính xác sẽ kiểm tra gì, so với gì và chọn phương pháp bằng cách nào? | Research question, giả thuyết bác bỏ được, closest work, cơ chế ứng viên, matched comparison và selection rule đăng ký trước | `PASS` |
-| G2 — Dataset và protocol | Dữ liệu, split, graph, evaluation population, negative và candidate có hợp lệ, chống leakage không? | Provenance, semantics, temporal training-only graph, OOV ledger, exact candidate và bounded feasibility | `PASS` |
-| G3 — Shared baseline path | Mọi phương pháp về sau có dùng chung training, evaluation và resource-measurement path đáng tin không? | Deterministic evaluator, sanity check, MostPop/BPR/LightGCN, uniform và degree-aware control cùng resource logging | `NOT STARTED` — gate tiếp theo |
-| G4 — Proposed-sampler readiness | Candidate được chọn đã implement đúng và đủ ổn định để chạy final experiment chưa? | Unit/integration test, exact-k sample hợp lệ, finite loss, diagnostic và controlled development run | `NOT STARTED` |
-| G5 — Final evidence | Phương pháp có thực sự cải thiện quality–resource trade-off đã tuyên bố không? | Frozen experiment matrix, paired seed, uncertainty, ablation, resource trace, failure, limitation và conditional Home scale stress | `NOT STARTED` |
-| G6 — Reproducibility và submission | Có thể tái tạo representative result và nộp đủ hồ sơ truy vết không? | Clean rerun, manifest/configuration, bảng/hình regenerate, luận văn, slide và source chạy được | `NOT STARTED` |
-
-Riêng G2 có bốn gate con: G2-A xác minh exact source bytes/schema; G2-B khóa positive, anomaly, duplicate và negative semantics; G2-C khóa temporal graph chỉ từ training cùng warm/OOV evaluation cohort; G2-D kiểm tra bounded execution mà không so sánh model.
-
-Hai prerequisite môi trường chạy song song với các gate. `E0-MIN` ghi environment development/bounded có thể chạy lại và hiện đã `PASS`. `E0-FINAL` khóa final GPU, CUDA/software và profiling procedure trước resource claim G5, hiện `NOT STARTED`.
-
-Dependency có thể nói ngắn gọn: G0 quản trị toàn bộ; G1 và G2 định nghĩa nghiên cứu; G3 tạo đường baseline chung; G4 xác minh sampler được chọn; G5 tạo final evidence; G6 chứng minh reproducibility. Nếu một gate fail thì phải sửa, thu hẹp claim hoặc ghi negative result—không được bỏ qua control.
-
-## 4. Dataset đã chọn và vai trò — khoảng 0,5 phút
-
-- `Baby_Products` là primary dataset: đủ lớn, vẫn có thể chạy lặp lại và có retained warm-start cohort.
-- `All_Beauty` là development/diagnostic: cùng schema nhưng quá nhiều user chỉ có một interaction, nên cohort warm-start quá hẹp để làm bằng chứng chính.
-- `Home_and_Kitchen` là conditional scale stress: 66,623,880 row, lớn khoảng 11.19 lần Baby; chỉ full-run ở G5-S nếu luận văn giữ large-scale claim.
-
-Vai trò được phân loại theo semantic fit, retained graph scale, warm-start coverage, compute/reproducibility và loại claim cần hỗ trợ; không phân loại theo dataset nào cho model score cao hơn.
-
-## 5. Audit dữ liệu đã làm — khoảng 1,5 phút
-
-Project xây notebook Colab self-contained để một lần chạy có thể tải hoặc dùng lại raw file, tính checksum, kiểm tra schema, rating, timestamp, duplicate, degree, temporal coverage, OOV và negative-pool feasibility. Kết quả được ghi thành JSON manifest trên Google Drive và mirror trong source project.
-
-- `All_Beauty`: 693,929 event; exact duplicate pair bằng 0; raw user singleton rate 93.22%. Dataset phù hợp để debug nhưng không phù hợp làm primary warm-start evidence.
-- `Baby_Products`: 5,953,891 raw row; một rating `0.0` bị quarantine; exact duplicate pair bằng 0.
-- So sánh all-observed, P4 và P5 cho thấy policy càng nghiêm thì graph và warm cohort càng nhỏ. Project chọn P4 (`rating >= 4`) vì rating 4–5 biểu thị affinity hợp lý, trong khi P5 loại quá nhiều positive hợp lệ và all-observed xem cả rating thấp là positive.
-- `Home_and_Kitchen`: exact compressed artifact 1,420,416,432 byte, 66,623,880 row, schema đúng và checksum đã lưu. Đây mới là provenance/scale evidence, chưa phải scalability result.
-
-Audit chứng minh byte identity, data quality, sparsity, long tail và cohort coverage. Nó không chứng minh model tốt, sampler tốt hoặc hệ thống scale tốt.
-
-## 6. Temporal graph Baby đã hoàn tất — khoảng 1,5 phút
-
-Notebook G2-C/G2-D thứ hai đã chạy trên toàn bộ Baby P4. Graph chỉ dùng interaction trước `t1`; validation nằm trong `[t1,t2)` và test từ `t2` trở đi. Mapping user/item, degree và component đều chỉ sinh từ training positive.
-
-| Chỉ số | Kết quả | Ý nghĩa ngắn |
+| Dataset | Số dòng raw | Cách dùng |
 |---|---:|---|
-| Training edge | 3,868,654 | Quy mô graph model được phép thấy |
-| Training user / item | 2,318,308 / 162,125 | User side rất lớn và thưa |
-| User degree p50 / p90 / p99 | 1 / 3 / 9 | Long tail mạnh; 71.76% user singleton |
-| Item degree p50 / p90 / p99 | 3 / 32 / 397 | Popularity tập trung, có head–tail imbalance |
-| Largest component | 96.50% node | Phần lớn graph liên thông cho message passing |
-| Validation warm target | 81,871 / 373,776 = 21.90% | Chỉ đánh giá user/item đã xuất hiện trong training |
-| Test warm target | 40,587 / 413,413 = 9.82% | Primary claim phải ghi rõ là warm-start cohort hẹp |
+| `All_Beauty` | 693.929 | Kiểm tra pipeline trên quy mô nhỏ |
+| `Baby_Products` | 5.953.891 | Dataset chính |
+| `Home_and_Kitchen` | 66.623.880 | Tham chiếu scale, chưa chạy full experiment |
 
-Mọi target bị loại đều được đối soát theo ba lý do: unseen user, unseen item hoặc cả hai. Vì còn 40,587 test target và exclusion được công khai, cutoff được chấp nhận; G2-C `PASS`.
+All Beauty chạy nhanh nhưng warm-start population nhỏ và user singleton quá nhiều. Home and Kitchen lớn gấp khoảng 11,19 lần Baby, phù hợp cho scale stress nhưng không phù hợp với ma trận paired experiment hiện tại trên Colab. Baby nằm ở giữa: graph đủ lớn, rất thưa, có long-tail rõ, nhưng vẫn chạy được toàn bộ M0–M2 trên Tesla T4.
 
-## 7. Feasibility và ranh giới kết luận — khoảng 1 phút
+Đây là lựa chọn dựa trên data audit và khả năng thực thi trước khi xem model result, không phải chọn dataset vì nó cho score đẹp.
 
-Manifest Drive mới đã được đọc lại ngày 2026-09-03. Byte size và SHA-256 của cả năm artifact đều khớp. Bounded evaluator chạy 100 target trên 162,125 item, tương đương 16,212,500 comparison và 16,209,544 eligible candidate. Hai kiểm tra gốc và cả bốn replay invariant đều đúng.
+## 4. Nguồn và đặc trưng dữ liệu
 
-Environment được ghi là CPython 3.13.15 trên Linux 6.6.122, Intel Xeon với 2 logical CPU, RAM 12,975.53 MiB, không GPU, Google Colab 1.0.0 và ipykernel 6.17.1. Traversal gốc mất 1.667 giây với process peak RSS 158.24 MiB; count-only replay mất 0.00387 giây. Hai thời gian này không được so trực tiếp. Chúng chỉ chứng minh bounded CPU pipeline/evaluator feasibility—không phải model runtime, GPU profiling hoặc scalability. Vì vậy G2-D và E0-MIN pass, Dataset Gate G2 được đóng.
+Dữ liệu đến từ Amazon Reviews’23 do McAuley Lab công bố. Artifact dùng trong đồ án là `Baby_Products.csv.gz`, bản 0-core rating-only. SHA-256 và kích thước byte đã được lưu trong audit JSON.
 
-## 8. Hiện tại đã có và chưa có — khoảng 1 phút
+Mỗi dòng có bốn trường:
 
-Đã có:
+- `user_id`: mã người dùng ẩn danh;
+- `parent_asin`: mã sản phẩm cha, dùng làm item;
+- `rating`: điểm từ 1 đến 5;
+- `timestamp`: thời điểm rating.
 
-- Scope, gate và claim boundary song ngữ.
-- RQ, giả thuyết bác bỏ được, ranh giới closest work, họ cơ chế ứng viên, matched-comparison design và quy tắc Pareto chỉ dùng validation để chọn/không chọn của G1.
-- Literature/source anchor và GRAPES-informed reference design.
-- Portfolio audit có checksum và persistent manifest.
-- P4 semantics, anomaly/duplicate/negative rule.
-- Frozen Baby temporal graph, mapping, OOV ledger và exact-candidate rule.
-- 13/13 local pure-Python test pass.
+Dữ liệu này hỗ trợ collaborative filtering theo user–item interaction. Nó không có tên, mô tả, danh mục hoặc hình ảnh sản phẩm. Vì vậy em không dùng nó để kết luận hai sản phẩm có giống nhau về nghĩa hay danh sách gợi ý có đa dạng về nội dung.
 
-Chưa có:
+## 5. Rating, nhiễu và quyết định positive interaction
 
-- Final sampler được chọn.
-- PyTorch/PyG recommender và matched baseline hoàn chỉnh.
-- Recall@20, NDCG@20 hoặc comparative result.
-- Final GPU profiling, scalability hoặc novelty claim.
+Trong 5.953.891 dòng raw có đúng một rating `0.0` ngoài miền 1–5. Em quarantine dòng này. Exact audit không tìm thấy missing user ID, missing item ID, timestamp sai hoặc user-item pair trùng.
 
-## 9. Bước tiếp theo và nội dung xin ý kiến — khoảng 0,5 phút
+Rating 4 và 5 được xem là positive interaction. Chính sách P4 giữ 4.655.843 dòng, tương đương 78,20% raw data. Lý do là bài toán đang dự đoán sản phẩm người dùng thể hiện tín hiệu tích cực, thay vì coi mọi rating, kể cả rating 1, là sở thích.
 
-1. Bắt đầu G3: shared evaluator cùng MostPop/BPR, sau đó LightGCN và uniform/degree-aware control dưới cùng data/candidate rule.
-2. Sau khi G3 pass, áp dụng quy tắc G1 chỉ dùng validation để chọn một candidate—hoặc kết luận không chọn learned method—cho G4.
+Mức nhiễu theo các lỗi cấu trúc đã kiểm tra là thấp. Tuy nhiên rating vẫn là feedback quan sát được, không phải sở thích hoàn hảo. Em không xóa thêm các dòng “trông lạ” nếu không có quy tắc đăng ký trước, vì như vậy có thể làm đẹp dữ liệu theo cảm tính.
 
-Các điểm cần xin ý kiến giảng viên:
+## 6. Dữ liệu được chia như thế nào
 
-- Warm-start primary cohort với 40,587 test target có phù hợp phạm vi luận văn không?
-- Evidence boundary Baby primary, All Beauty diagnostic và Home conditional scale stress có hợp lý không?
-- GPU cuối cùng, template báo cáo và yêu cầu bảo vệ của trường là gì?
+Em dùng temporal split:
 
-## Bản nói cực ngắn nếu bị giới hạn thời gian
+1. Tương tác trước `t1` tạo training graph.
+2. Khoảng `[t1, t2)` tạo validation candidate.
+3. Tương tác từ `t2` trở đi tạo test candidate.
 
-> Em đã khóa cả thiết kế nghiên cứu lẫn bài toán dữ liệu trước khi train. G1 định nghĩa phép thử matched giữa task-conditioned sampling với uniform và degree-aware control, đồng thời cho phép kết luận không chọn learned method. Với Baby P4, temporal training graph có 3.87 triệu edge, 2.32 triệu user và 162 nghìn item; warm-start test cohort có 40,587 target. Manifest mới verify mọi artifact và ghi bounded CPU replay tái lập được, nên G2 và E0-MIN đã pass. Bước tiếp theo là shared evaluator và baseline G3. Hiện chưa có Recall, NDCG, model comparison, GPU profiling hoặc scalability result.
+User/item mapping, degree và popularity cohort chỉ được tính từ training graph. Một target chỉ được giữ nếu user và item đều đã xuất hiện trong training. Đây là warm-start evaluation.
 
-## Hồ sơ hỗ trợ
+Training graph có 3.868.654 cạnh, 2.318.308 user và 162.125 item. Validation giữ 81.871 warm target trên 373.776 candidate row, tức 21,90%. Test giữ 40.587 trên 413.413 row, tức 9,82%. Retention thấp cho thấy pure-ID model chỉ bao phủ một phần population tương lai; nó không tự động có khả năng cold-start.
 
-- [`DATASET_PORTFOLIO_AND_ANALYSIS_PROTOCOL_vn.md`](../00_project/DATASET_PORTFOLIO_AND_ANALYSIS_PROTOCOL_vn.md)
-- [`G1_RESEARCH_DESIGN_vn.md`](../00_project/G1_RESEARCH_DESIGN_vn.md)
-- [`THESIS_REPORT_vn.md`](../04_thesis/THESIS_REPORT_vn.md)
-- [`baby_p4_g2c_manifest.json`](../06_code/results/baby_p4_g2c_manifest.json)
-- [`G2C_TEMPORAL_GRAPH_vn.md`](../06_code/docs/G2C_TEMPORAL_GRAPH_vn.md)
+## 7. Mất cân bằng và long-tail
+
+Phân phối interaction rất lệch:
+
+- 71,76% user training chỉ có một interaction;
+- 33,35% item training chỉ có một interaction;
+- user degree p50/p90/p99 là 1/3/9;
+- item degree p50/p90/p99 là 3/32/397;
+- item-degree Gini bằng 0,8584;
+- top 1% item giữ 44,09% training interaction.
+
+Không thể vẽ một histogram riêng cho 162.125 sản phẩm mà vẫn đọc được. Em dùng degree histogram theo thang log, CCDF, quantile và cumulative interaction share. Các biểu diễn này trả lời đúng hơn ba câu hỏi: phần lớn item có bao nhiêu interaction, mức đuôi dài tới đâu và lượng tương tác dồn vào nhóm đầu lớn đến mức nào.
+
+Em khóa head/body/tail trước khi nhìn model result. Head chiếm khoảng 1% item nhưng giữ 44,16% cạnh; tail chiếm khoảng 80,07% item nhưng chỉ giữ 10,39% cạnh.
+
+## 8. M0, M1 và M2 là gì
+
+### M0: chọn đều
+
+M0 cho mọi candidate node cơ hội như nhau. Nó là đối chứng trung lập và cho biết sampling tự thân ảnh hưởng đến kết quả như thế nào khi không thêm thiên kiến.
+
+### M1: ưu tiên node có nhiều liên kết
+
+M1 tăng xác suất của node có training degree lớn. Lý do là node có nhiều quan sát thường mang tín hiệu collaborative ổn định hơn. Mặt trái là sampler có thể tiếp tục tập trung vào phần phổ biến của graph.
+
+### M2: ưu tiên liên kết với frontier nhưng giảm lợi thế của hub
+
+Frontier là tập node đang cần thêm hàng xóm ở một layer. M2 ưu tiên candidate có nhiều training edge nối vào frontier, rồi chia bớt trọng số theo căn degree. Ý tưởng là chọn node có ích cho batch hiện tại thay vì node nổi tiếng nói chung.
+
+Cả ba dùng cùng số node được chọn ở mỗi layer. M0, M1 và M2 không phải ba model khác nhau; chúng là ba cách dựng computation graph cho cùng model.
+
+## 9. Tại sao dùng NDCG, Recall, coverage và cohort
+
+**NDCG@20** là metric chính vì recommendation là danh sách có thứ tự. Nếu target ở rank 1, hệ thống hữu ích hơn khi target chỉ xuất hiện ở rank 20.
+
+**Recall@20** trả lời câu hỏi đơn giản hơn: target có nằm trong 20 item đầu không? Mỗi dòng validation có một target, nên Recall@20 chính là tỷ lệ dòng có hit.
+
+**Catalog Coverage@20** đo phần training catalog từng xuất hiện trong recommendation. Nó cho biết model có dồn mọi người vào vài item hay không. Coverage cao không đảm bảo recommendation đúng và cũng không có nghĩa sản phẩm khác nhau về ngữ nghĩa.
+
+**Exposure theo head/body/tail** cho biết các recommendation slot được phân bổ vào nhóm phổ biến nào. **Recall và hit theo cohort** kiểm tra exposure đó có tạo đúng target hay không.
+
+**Training time và peak GPU memory** cần thiết vì mục tiêu là trade-off. Một sampler có NDCG tăng rất ít nhưng training chậm hơn nhiều chưa chắc là lựa chọn tốt.
+
+## 10. Baseline cho thấy gì
+
+| Model | NDCG@20 | Recall@20 | Coverage@20 |
+|---|---:|---:|---:|
+| MostPop | 0,005873 | 0,014596 | 0,000154 |
+| BPR-MF | 0,004054 | 0,010419 | 0,033517 |
+| Full LightGCN | 0,004931 | 0,012373 | 0,006365 |
+
+MostPop có accuracy cao nhất trong ba sanity baseline nhưng chỉ recommend 25 item và 100% exposure thuộc head. BPR-MF mở rộng coverage lên 5.434 item nhưng accuracy giảm. Full LightGCN tốt hơn BPR-MF về aggregate score, song exposure trở lại 99,36% head. Kết quả này cho thấy accuracy và độ rộng catalog không di chuyển cùng nhau.
+
+## 11. Kết quả M0–M2
+
+Ở seed thiết kế ban đầu, M1 có NDCG/Recall cao nhất. Tuy nhiên 109 hit tăng thêm so với M0 đều thuộc head, body không tăng và tail vẫn bằng 0. M2 làm item-context nghiêng về tail nhiều hơn, nhưng tail hit vẫn bằng 0. Chi phí tính `frontier_support` làm M2 chậm hơn M1.
+
+Mean trên ba validation seed:
+
+| Phương pháp | NDCG@20 | Recall@20 | Coverage@20 |
+|---|---:|---:|---:|
+| M0 | 0,005706 | 0,014869 | **0,018132** |
+| M1 | **0,005866** | **0,015296** | 0,017534 |
+| M2 | 0,005721 | 0,014873 | 0,017513 |
+
+M2 thấp hơn M1 về NDCG và Recall ở cả ba seed. M2 vẫn tạo nhiều gained hit, lost hit và rank change, nên sampler đã ảnh hưởng đến computation. Nhưng ảnh hưởng đó không chuyển thành top-20 gain ổn định. Trong hai repeat mới, M2 chậm hơn M1 trung bình 114,88 giây; peak GPU gần như bằng nhau.
+
+## 12. Kết luận có thể bảo vệ
+
+M2 không tạo trade-off chất lượng–chi phí tốt hơn M1 trong protocol hiện tại. Kết quả âm này có ý nghĩa vì nó cho thấy “chọn context gần frontier” và “đưa sampling về phía tail” chưa đủ để cải thiện recommendation trên graph rất thưa. Signal cấu trúc phải chuyển thành target relevance, và trong dữ liệu này điều đó không xảy ra.
+
+M1 có mean validation cao nhất nhưng không thắng M0 trong mọi seed. Vì vậy em không nói M1 luôn tốt hơn uniform và không suy ra significance từ ba seed.
+
+## 13. Những gì chưa đo được
+
+- Chưa đo semantic match giữa sản phẩm và sở thích người dùng.
+- Chưa đo intra-list semantic diversity.
+- Chưa đánh giá cold-start user/item.
+- Chưa chạy test split.
+- Chưa kiểm tra dataset ngoài Amazon hoặc budget khác.
+- Chưa chứng minh scalability chỉ từ row count và một Tesla T4.
+
+Nếu cần semantic diversity, phải thêm metadata hoặc chuyển sang dataset như MovieLens/MIND. Nếu cần tính khái quát của graph sampling, phải đăng ký và chạy một dataset thứ hai như Yelp2018. Hai hướng này trả lời hai câu hỏi khác nhau.
+
+## 14. Bước tiếp theo
+
+Trước mắt, em khóa narrative và artifact cho kết quả validation hiện tại. Không mở sampler mới. Một bước thực nghiệm mới chỉ được thêm khi nó tạo một claim cần thiết cho luận văn:
+
+- final test đã đăng ký trước cho quyết định hiện tại;
+- một dataset ngoài Amazon để kiểm tra tính khái quát;
+- hoặc một nhánh metadata riêng để đo semantic diversity.
+
+## Bản nói ngắn
+
+Em dùng Amazon Baby Products vì dataset này đủ lớn để tạo sparse user–item graph có long-tail rõ, nhưng vẫn chạy được paired experiment trên Colab. Em kiểm toán gần 5,95 triệu dòng và chỉ loại một rating ngoài miền. Sau temporal split, training graph có 3,87 triệu cạnh với mất cân bằng rất mạnh. Em so sánh ba sampler trong cùng một LightGCN: M0 chọn đều, M1 ưu tiên node nhiều liên kết, M2 ưu tiên node nối tốt vào frontier nhưng giảm lợi thế của hub. Em đánh giá bằng NDCG và Recall cho chất lượng, coverage và cohort cho phân bổ, cùng thời gian và bộ nhớ cho chi phí. Qua ba seed, M2 thấp hơn M1 về NDCG và Recall, chậm hơn, và không tạo tail hit dù đã thay đổi sampled graph. Vì vậy kết luận của em là M2 không cải thiện trade-off trong protocol này; đây là negative result có bằng chứng, không phải thất bại cần che đi.

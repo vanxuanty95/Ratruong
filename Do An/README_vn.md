@@ -1,6 +1,6 @@
 # Đồ án: bắt đầu từ đây
 
-> Cập nhật: 16/09/2026  
+> Cập nhật: 16/09/2026
 > Đề tài: **Lấy mẫu đồ thị cho hệ thống gợi ý sử dụng GNN**
 
 ## Câu hỏi nghiên cứu

@@ -1,85 +1,101 @@
-# Code Scaffold cho Thesis Graph-Sampling
+# Mã nguồn và bằng chứng thực nghiệm
 
-> **Trạng thái:** `DATASET GATE G2 PASS — BABY G2-C/G2-D ĐÃ EXECUTE VÀ REVIEW`
-> **Mục đích:** tạo nơi executable đầu tiên cho reference contract, dataset control và graph sampler do project phát triển trong Phase 2.  
-> **Chưa có:** PyTorch/PyG implementation, final profiling environment đã khóa, benchmark runner hoặc recommendation-quality result.
+> Trạng thái: 6/6 paired repeat đã hoàn thành; cùng với seed thiết kế s0 tạo ba validation seed cho M0–M2. Test target chưa được đọc.
 
-Package này cố ý chưa có dependency ngoài ở giai đoạn đầu để các contract test nhỏ có thể chạy trên local machine và clean Colab Python runtime. Đây chưa phải model implementation cuối cùng. E0-MIN, G1 và G2 nay đã pass nên có thể execute shared evaluator/baseline G3. Sampler implementation vẫn chờ G3. E0-FINAL được yêu cầu sau đó cho final resource evidence.
+## 1. Không cần chạy lại Colab để hoàn thiện bản trình bày
 
-## Phạm vi hiện tại
+Các notebook 03–10 đã chạy và output cần thiết đã được lưu trong `results/`. Slide, báo cáo và thesis phải đọc các output này. Chỉ chạy lại notebook khi cần kiểm tra khả năng tái lập hoặc khi artifact gốc bị thiếu; không chạy lại để chọn seed đẹp hơn hoặc thay đổi M2 sau khi đã xem kết quả.
 
-Scaffold hiện encode các GRAPES-informed reference contract từ `02_protocol/GRAPES_RECOMMENDATION_SPEC_vn.md`; đây là comparator và verification candidate, không phải phương pháp luận văn đã cố định:
+## 2. Thứ tự notebook
 
-- user/item ID disjoint và ordered BPR triplet;
-- initial target set `V⁰` được deduplicate nhưng không thay đổi triplet order;
-- bipartite neighborhood và candidate construction không cumulative;
-- exact-cardinality selection và full-Bernoulli log-likelihood hữu hạn;
-- sampled block theo source-to-target và primitive prefix propagation tường minh;
-- helper cho rectangular normalization;
-- BPR loss, two-action REINFORCE gradient oracle và TB loss helper;
-- tạm thời loại bỏ cả hai storage direction của current positive edge;
-- truy vết từ decision đã freeze và test đã đăng ký tới source module.
-- streaming audit bằng standard library cho official Amazon Reviews'23 pure-ID 0-core artifact, gồm checksum, schema, duplicate, rating, timestamp, degree, split coverage và negative-pool diagnostic.
+| Notebook | Vai trò | Trạng thái |
+|---|---|---|
+| `00_colab_setup_and_oracles_*` | Toy oracle cho graph, sampling và objective | Hoàn thành |
+| `01_amazon_dataset_audit_*` | Exact audit All Beauty và Baby Products | Hoàn thành |
+| `02_baby_p4_temporal_graph_*` | Temporal graph, mapping và warm-start target | Hoàn thành |
+| `03_data_story_eda.ipynb` | Full-data EDA và biểu đồ | Hoàn thành |
+| `04_mostpop_validation_sanity.ipynb` | Popularity baseline | Hoàn thành |
+| `05_bpr_mf_validation_sanity.ipynb` | Matrix-factorization baseline | Hoàn thành |
+| `06_full_lightgcn_validation_sanity.ipynb` | Full-graph LightGCN | Hoàn thành |
+| `07_uniform_sampling_validation_sanity.ipynb` | M0 uniform | Hoàn thành |
+| `08_degree_aware_sampling_validation_sanity.ipynb` | M1 degree-aware | Hoàn thành |
+| `09_frontier_normalized_sampling_validation_sanity.ipynb` | M2 frontier-normalized | Hoàn thành |
+| `10_paired_sampling_validation.ipynb` | Hai seed bổ sung, resume-safe | Hoàn thành 6/6 run |
 
-## Ranh giới maturity
+## 3. Các artifact chính
 
-| Khu vực | Trạng thái hiện tại |
-|---|---|
-| Semantic contract | `SCAFFOLDED` |
-| Toy correctness test | `IMPLEMENTED VÀ EXECUTED: 13/13 PASS TRÊN CPU` |
-| Amazon acquisition/preprocessing | `FULL BABY G2-C/G2-D ĐÃ EXECUTE, READBACK VÀ PASS` |
-| Amazon dataset audit | `PORTFOLIO AUDIT ĐÃ EXECUTE; BABY G2-A/G2-B PASS` |
-| PyTorch/PyG recommender | `NOT STARTED` |
-| Các learned reference variant có thông tin từ GRAPES | `NOT STARTED` |
-| Colab launcher | `THIN SKELETON` |
-| Environment lock | `E0-MIN PASS; E0-FINAL OPEN` |
-| Recommendation metric và resource result | `NOT STARTED` |
+- Data audit: `results/All_Beauty_protocol_audit.json`, `Baby_Products_protocol_audit.json`, `Home_and_Kitchen_raw_audit.json`
+- Temporal graph: `results/baby_p4_g2c_manifest.json`
+- EDA: `results/data_story/`
+- Baselines: `results/mostpop_validation/`, `bpr_mf_validation/`, `full_lightgcn_validation/`
+- M0–M2: `results/uniform_sampling_validation/`, `degree_aware_sampling_validation/`, `frontier_normalized_sampling_validation/`
+- Paired validation: `results/paired_sampling_validation/`
 
-## Cấu trúc
+Mỗi thư mục kết quả có summary JSON và báo cáo đọc được. Bundle ZIP trong thư mục kết quả là bản chuyển giao gốc. Rank vector `.npz` được giữ để tính lại metric và transition. Không lưu model checkpoint vì mục tiêu là validation evidence và bundle đã đăng ký không chứa checkpoint.
 
-```text
-06_code/
-├── README_en.md / README_vn.md
-├── pyproject.toml
-├── environment/ENVIRONMENT_LOCK_PENDING.txt
-├── notebooks/00_colab_setup_and_oracles_en.ipynb / _vn.ipynb
-├── notebooks/01_amazon_dataset_audit_en.ipynb / _vn.ipynb
-├── notebooks/02_baby_p4_temporal_graph_en.ipynb / _vn.ipynb
-├── configs/toy_oracles.yaml
-├── manifests/data_manifest.schema.json
-├── src/grapes_rec/
-│   ├── contracts.py
-│   ├── sampling.py
-│   ├── blocks.py
-│   ├── objectives.py
-│   ├── data_protocol.py
-│   └── models.py
-├── tests/test_week1_oracles.py / test_dataset_audit.py / test_g2c_notebook.py
-├── scripts/analyze_amazon_dataset.py
-└── docs/TRACEABILITY_* / DATASET_AUDIT_* / G2C_TEMPORAL_GRAPH_*
-```
+## 4. Kết quả M0–M2
 
-Notebook `01_amazon_dataset_audit_*` là ngoại lệ của trạng thái thin-launcher tổng quát: mỗi bản ngôn ngữ chứa toàn bộ audit implementation và chạy độc lập, không phụ thuộc `scripts/analyze_amazon_dataset.py`. Script local chỉ là source mirror có thể test; nó không phải dependency của Colab.
+### Seed thiết kế s0
 
-## Lệnh smoke local hoặc Colab
+| Chỉ số | M0 | M1 | M2 |
+|---|---:|---:|---:|
+| NDCG@20 | 0,005727 | **0,006153** | 0,005921 |
+| Recall@20 | 0,014657 | **0,015989** | 0,015317 |
+| Catalog Coverage@20 | **0,018486** | 0,017783 | 0,017863 |
+| Training wall time | 705,32 s | 795,11 s | 868,63 s |
+| Peak GPU memory | 3.482,90 MiB | 2.665,10 MiB | 2.669,06 MiB |
 
-Từ thư mục `06_code`:
+M1 tăng 109 hit so với M0, nhưng tất cả đều là head target. M2 thấp hơn M1 55 hit, body/tail không tăng và coverage chỉ hơn M1 13 item. M2 có ít directed block entry hơn M1 nhưng chậm hơn vì phải tính frontier support.
+
+### Ba validation seed
+
+| Phương pháp | NDCG@20 mean ± SD | Recall@20 mean ± SD | Coverage@20 mean ± SD |
+|---|---:|---:|---:|
+| M0 | 0,00570640 ± 0,00007324 | 0,01486892 ± 0,00048771 | **0,01813210 ± 0,00031820** |
+| M1 | **0,00586598 ± 0,00024947** | **0,01529642 ± 0,00062009** | 0,01753380 ± 0,00062722 |
+| M2 | 0,00572092 ± 0,00017933 | 0,01487299 ± 0,00057942 | 0,01751324 ± 0,00031838 |
+
+M2 trừ M1 âm về NDCG và Recall trong s0, s1 và s2. Trong hai repeat mới, M2 chậm hơn M1 trung bình 114,88 giây, tương đương 14,36%. Peak GPU chỉ lệch khoảng 4,11 MiB. Tail hit bằng 0 cho mọi sampler và seed.
+
+## 5. Kiểm tra local
+
+Dùng Python đóng gói có NumPy:
 
 ```bash
-python -m unittest discover -s tests -v
+/Users/tyvan/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3 \
+  -m unittest discover -s tests -p 'test_*.py' -v
 ```
 
-Lệnh hiện chạy 13 pure-Python test: mười reference-contract test, hai audit test và một end-to-end toy test cho notebook G2-C/G2-D. Full Baby preprocessing đã execute riêng và được mirror tại `results/baby_p4_g2c_manifest.json`; cả hai nguồn vẫn không phải PyTorch/PyG model hoặc recommender result đã validate.
+Kiểm tra narrative và số liệu:
 
-## Bước implementation dự kiến tiếp theo
+```bash
+/Users/tyvan/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3 \
+  scripts/verify_research_consistency.py \
+  --repo-root ../../
+```
 
-1. Implement shared exact evaluator G3 và sanity baseline đơn giản nhất.
-2. Thêm full-graph LightGCN reference cùng matched uniform/degree-aware control.
-3. Dùng reviewed frozen artifact làm shared data interface; không dựng lại ID hoặc graph statistic từ validation/test data.
-4. Ghi model environment riêng với bounded CPU/Colab E0-MIN record đã hoàn tất.
-5. Freeze final PyTorch/PyG/CUDA profiling environment sau khi xác nhận target GPU.
-6. Chỉ áp dụng quy tắc chọn phương pháp bằng validation của G1 sau khi G3 pass.
+Checker đọc JSON kết quả, kiểm tra con số chính, tìm phát biểu vượt claim boundary, đọc text trong PPTX và phát hiện bản slide cũ còn sót.
 
-## Governance của source
+## 6. Tái tạo trên Colab khi thật sự cần
 
-Phase 2 implementation phải ghi rõ là port hay reimplement code từ pinned official GRAPES reference commit `71ecebeaac896800aa4dd1d0f38c57ec222ef396`. Phase 1 local snapshot là historical evidence và chỉ đọc.
+Nếu cần chạy lại, thực hiện theo thứ tự notebook và dùng cùng thư mục Drive, config, data hash, seed, Tesla T4 và output name đã ghi. Với notebook 10, các run hợp lệ sẽ được nhận diện và `SKIP_VERIFIED`; không xóa thư mục paired result trước khi resume.
+
+Không chạy nhiều bản notebook 10 đồng thời vào cùng output folder. Không sửa proposal, budget, negative draw, evaluator hoặc seed rồi gộp kết quả mới với summary hiện tại.
+
+Dữ liệu cần còn trên Drive:
+
+- raw `Baby_Products.csv.gz` đúng SHA-256;
+- graph artifact và manifest trong `g2c_baby_p4/`;
+- baseline summaries;
+- M0, M1, M2 summaries;
+- paired run folders và rank vectors.
+
+## 7. Ranh giới kết luận
+
+- Kết quả hiện tại là validation-only.
+- M2 không được promote.
+- M1 có mean cao nhất nhưng không thắng M0 ở mọi seed.
+- Ba seed không đủ cho significance hoặc universal claim.
+- Resource s0 là context cũ; so sánh resource ưu tiên các run cùng instrumentation trong từng seed.
+- Không claim cold-start, semantic relevance hoặc semantic diversity.
+- Không gọi M2 là learned sampler.

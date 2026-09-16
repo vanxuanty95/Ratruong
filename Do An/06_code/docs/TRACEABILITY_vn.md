@@ -1,5 +1,7 @@
 # Truy vết GRAPES-informed Reference Design
 
+> **Trạng thái hiện hành:** hồ sơ tham khảo cho toy contract ban đầu. Nó không mô tả pipeline M0–M2 cuối cùng và không phải hướng thực nghiệm đang mở.
+
 Bảng này ánh xạ các quyết định của reference design và các toy test executable đầu tiên. Các quyết định và test là verification candidate, không khóa phương pháp luận văn cuối cùng. Test được liệt kê không phải evidence rằng PyTorch/PyG implementation tương lai đã đúng; đây là contract boundary ban đầu cho một implementation có thể có.
 
 | Decision / contract | Module | Test ban đầu | Maturity |
@@ -17,6 +19,6 @@ Bảng này ánh xạ các quyết định của reference design và các toy t
 | T01–T03: target và graph ID | `src/grapes_rec/contracts.py` | T01–T03 | `TOY TEST EXECUTED` |
 | T05–T08: candidate và exact-k semantic | `src/grapes_rec/sampling.py` | T05–T08 | `TOY TEST EXECUTED` |
 
-## Cố ý chưa có
+## Quan hệ với thực nghiệm hiện tại
 
-Project hiện có full Baby temporal artifact đã review, G2-C decision đã freeze và bounded G2-D environment/replay record hoàn chỉnh. Vẫn chưa có model-training negative draw, PyTorch/PyG message passing, sampler policy training, checkpointed experiment, scored full-catalog evaluation hoặc recommendation result nào.
+Sau hồ sơ toy này, project đã hoàn thành MostPop, BPR-MF, Full LightGCN, M0, M1, M2 và paired validation. Các kết quả đó nằm trong `results/` và được mô tả tại [`../README_vn.md`](../README_vn.md). RL/GFlowNet sampler trong reference design không được implement và không tham gia kết luận luận văn.

@@ -94,18 +94,18 @@ Corrected rerun đã hoàn tất cả ba governed job và ghi portfolio index. P
 | G5-S: conditional scale evidence | Chỉ execute stress trên `Home_and_Kitchen` sau G3/G4 nếu giữ claim large-scale; hiện tại chỉ làm provenance/size/planning |
 | Optional expansion | Chỉ xét MovieLens hoặc Yelp sau khi các gate Amazon core pass |
 
-## 6. Protocol này không xác lập điều gì
+## 6. Protocol audit tự nó không xác lập điều gì
 
-- Không freeze `Baby_Products` làm final benchmark.
+- Bản audit không tự freeze `Baby_Products`; quyết định primary benchmark được ghi sau đó trong portfolio protocol.
 - Không xác lập rằng mọi Amazon rating là implicit positive.
 - Không xác lập cold-start capability cho pure-ID model.
 - Không xác lập model quality, efficiency, scalability, novelty hay superiority.
-- Không chọn GRAPES, LightGCN, BPR, RL hay GFlowNet làm final thesis method.
+- Bản audit không chọn model hoặc sampler; quyết định M0–M2 được đưa ra ở giai đoạn thực nghiệm sau.
 
 ## 7. Scientific anchor
 
 Temporal/training-only control được thúc đẩy bởi [Ji et al., *A Critical Study on Data Leakage in Recommender System Offline Evaluation*](https://arxiv.org/abs/2010.11060). Headline ranking không được thay exact full-catalog ranking bằng sampled candidate mà không công bố, theo [Rendle, *Evaluation Metrics for Item Recommendation under Sampling*](https://arxiv.org/abs/1912.02263). Pairwise-ranking control dự kiến là [BPR](https://arxiv.org/abs/1205.2618); mọi GNN backbone hoặc sampler vẫn thuộc final method-design process.
 
-## 8. Hành động tiếp theo
+## 8. Trạng thái sau audit
 
-Baby P4 temporal graph cùng bounded environment replay về sau đã hoàn tất các bước này; G2-A đến G2-D nay đều pass. Tiếp tục shared evaluator/baseline G3 mà không xem measurement G2 là model benchmark.
+Baby P4 temporal graph và bounded replay đã hoàn tất; G2-A đến G2-D đều pass. Các baseline và M0–M2 cũng đã chạy validation-only. Audit vẫn chỉ là bằng chứng dữ liệu, không được dùng thay model benchmark.

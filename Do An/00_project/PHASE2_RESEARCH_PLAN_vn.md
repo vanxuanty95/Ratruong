@@ -1,130 +1,149 @@
-# Kế hoạch nghiên cứu Phase 2 chính thức
+# Kế hoạch nghiên cứu theo timeline
 
-> **Trạng thái:** Đang hiệu lực; đây là nguồn kế hoạch duy nhất của Phase 2.  
-> **Thời lượng dự án:** 12 tuần.  
-> **Cập nhật lần cuối:** 2026-09-03.
-> **Cặp ngôn ngữ:** Bản tiếng Anh: [`PHASE2_RESEARCH_PLAN_en.md`](./PHASE2_RESEARCH_PLAN_en.md).
+> Trạng thái: paired validation đã hoàn thành, nhánh thiết kế sampler dừng ở M2
+>
+> Cập nhật: 16/09/2026
 
-## 1. Mục đích và cách quản trị
+## 1. Câu hỏi xuyên suốt
 
-Đây là file kế hoạch chuẩn duy nhất của Phase 2. File xác định trình tự nghiên cứu, cổng quyết định, phụ thuộc và tiến độ 12 tuần. Những project record khác chỉ liên kết đến file này, không sao chép lại kế hoạch.
+Đồ án kiểm tra một thay đổi duy nhất: **cách chọn node ngữ cảnh để dựng computation graph khi huấn luyện LightGCN**.
 
-Đây không phải báo cáo luận văn theo tuần. Thesis report, slide bảo vệ và source Colab/Python là các deliverable tích lũy; chúng được cập nhật tại chỗ khi có bằng chứng đã kiểm chứng làm thay đổi nội dung.
+> Ở cùng dataset, model, sampling budget, số bước huấn luyện, seed, evaluator và GPU, sampler sử dụng frontier của batch có tạo được trade-off tốt hơn giữa exact full-catalog NDCG@20 và chi phí tính toán so với uniform và degree-aware sampling hay không?
 
-Khi kế hoạch thay đổi, phải cập nhật cả hai bản ngôn ngữ và thêm một record/pointer ngắn vào hai file continuity. Không được nâng mức maturity khoa học nếu chưa có bằng chứng.
+Nếu câu trả lời là không, nghiên cứu vẫn hoàn thành khi chỉ ra được sampler đã thay đổi điều gì, vì sao thay đổi không tạo gain và giới hạn của bằng chứng nằm ở đâu.
 
-## 2. Phạm vi luận văn và ranh giới đã xác định
+## 2. Timeline thực tế
 
-- **Tên đề tài làm việc:** *Phát triển phương pháp lấy mẫu đồ thị cho hệ thống gợi ý quy mô lớn sử dụng mạng nơ-ron đồ thị GNN.*
-- **Quan hệ giữa các phase:** Phase 2 là luận văn Thạc sĩ độc lập. Phase 1 là quá trình khám phá đề tài và nghiên cứu GRAPES trong lịch sử, chỉ được đọc để tham khảo.
-- **Mục tiêu nghiên cứu:** Phát triển và đánh giá một phương pháp lấy mẫu đồ thị cho hệ gợi ý dùng GNN, với đánh giá có kiểm soát về chất lượng xếp hạng và chi phí tính toán.
-- **Vai trò của GRAPES:** Nền tảng khoa học, comparator và nguồn ý tưởng cho các thành phần ứng viên; không phải phương pháp cuối cùng đã được chọn.
-- **Các mục còn mở:** Sampler cuối cùng, cấu hình mô hình cuối cùng, ý nghĩa interaction, việc chốt dataset/protocol và mọi kết quả về hiệu quả/khả năng mở rộng đều còn mở.
-- **Ngoài phạm vi:** Claim rằng luận văn chỉ chuyển GRAPES sang recommendation, claim về tính vượt trội khi chưa có kết quả, hoặc bất cứ việc đưa thông tin validation/test vào training graph.
-
-## 3. Điểm xuất phát đã được kiểm chứng
-
-| Hạng mục | Trạng thái hiện tại | Ranh giới |
-|---|---|---|
-| Định hướng luận văn và các deliverable đang phát triển | Đã thiết lập | Chưa claim phương pháp cuối cùng hoặc kết quả thực nghiệm. |
-| Source scaffold và toy test | 13 pure-Python test đã pass local; path Baby G2-C/G2-D self-contained đã implement, full-data execute và readback | Đây không phải recommender PyTorch/PyG hoặc benchmark. |
-| Amazon data và protocol | Baby G2-A đến G2-D pass; Dataset Gate G2 đã đóng | Điều này khóa primary pre-model task, không khóa sampler hoặc kết quả performance. |
-| Danh mục dataset | `Baby_Products` là primary; `All_Beauty` là diagnostic; `Home_and_Kitchen` là scale stress có điều kiện | Vai trò primary đã khóa; full Home execution vẫn thuộc conditional G5-S. |
-| Environment và compute | Có Python và Google Colab | Chưa khóa cấu hình environment/GPU cuối. |
-
-## 4. Registry gate chuẩn và dependency
-
-Cặp kế hoạch song ngữ này là **registry gate có thẩm quyền duy nhất**. Artifact khác có thể liên kết đến gate hoặc nêu snapshot ngắn, nhưng không được định nghĩa lại định danh, trạng thái, tiêu chí thoát hay dependency của gate.
-
-Trạng thái gate và maturity của bằng chứng là hai trục riêng. Trạng thái gate dùng `NOT_STARTED`, `IN_PROGRESS`, `READY_FOR_REVIEW`, `PASS`, `CORRECTIVE_LOOP`, `STOP`, `REOPENED` hoặc `WAIVED`. Maturity của bằng chứng tiếp tục dùng `planned -> specified -> implemented -> executed -> validated`; gate `PASS` không có nghĩa mọi artifact liên kết đều đã validated.
-
-### 4.1 Prerequisite về environment thực thi
-
-| ID | Trạng thái hiện tại | Tiêu chí thoát | Việc bị chặn |
+| Giai đoạn | Câu hỏi cần trả lời | Bằng chứng | Kết quả |
 |---|---|---|---|
-| E0-MIN — thực thi development | `PASS` | Environment local/Colab được ghi version chính xác, có thể chạy lại data-audit và bounded test path | Phần thực thi G2-D và việc execute G3/G4 |
-| E0-FINAL — thực thi profiling cuối | `NOT_STARTED` | GPU cuối, software/CUDA lock, profiling procedure và nơi lưu output lâu dài đã được xác nhận và smoke-test | Resource claim ở G5 và representative rerun G6 |
+| Phản hồi 03/09 | Dữ liệu có bao nhiêu user, item, rating; có nhiễu, mất cân bằng và long-tail không? | Exact audit, histogram, degree và concentration | Hoàn thành |
+| Chọn dữ liệu | Vì sao dùng Baby Products thay vì dataset nhỏ hơn, lớn hơn hoặc ngoài Amazon? | Portfolio audit và benchmark comparison | Hoàn thành ở mức thiết kế |
+| Dựng bài toán | Dùng quá khứ để train và tương lai để đánh giá như thế nào mà không leakage? | Temporal graph manifest, warm-start ledger | Hoàn thành |
+| Sanity baseline | Evaluator và training pipeline có cho kết quả hợp lý không? | MostPop, BPR-MF và Full LightGCN | Hoàn thành |
+| M0 | Uniform sampling thay full graph như thế nào? | Một smoke run có integrity checks | Hoàn thành |
+| M1 | Ưu tiên node nhiều liên kết có hơn uniform không? | Matched M1 trừ M0 | Hoàn thành |
+| M2 | Frontier-conditioned proposal có sửa nhược điểm của M1 không? | Matched M2 trừ M0/M1 | Không vượt M1 |
+| Paired validation | Kết luận có giữ qua seed không? | s0, s1, s2; rank vector và summary | M2 thấp hơn M1 trong 3/3 seed |
+| Tổng hợp | Đâu là kết luận đủ mạnh nhưng không vượt bằng chứng? | Slide, report, thesis và consistency gate | Đang hoàn thiện |
 
-E0 không chặn literature work hoặc phần không cần thực thi của G2-A đến G2-C. Hai mức này ngăn việc chưa xác nhận GPU mượn cuối cùng làm chặn governance, literature review hoặc thiết kế protocol.
+## 3. Lựa chọn dataset
 
-### 4.2 Định nghĩa gate
+### 3.1 Các benchmark ngoài Amazon đã cân nhắc
 
-| Cổng | Quyết định cần có | Bằng chứng cần có trước khi đóng | Việc bị chặn khi chưa đóng |
-|---|---|---|---|
-| G0 — Governance | Phạm vi, artifact song ngữ và ranh giới bằng chứng | Kế hoạch chính thức này và continuity pointer đã đồng bộ | Không có; hoàn tất cho mục đích lập kế hoạch |
-| G1 — Lý do thiết kế nghiên cứu | Các cơ chế lấy mẫu ứng viên và thiết kế so sánh có kiểm soát | RQ chính và hypothesis có thể bác bỏ; định vị closest work; cơ chế ứng viên; thiết kế matched comparison; quy tắc chọn phương pháp đăng ký trước | Chọn và implement sampler được đề xuất |
-| G2 — Dataset và evaluation protocol | Dataset chính và protocol chống leakage | G2-A provenance; G2-B interaction/duplicate/negative semantics; G2-C temporal, warm-start/OOV và exact-candidate rule; G2-D retained-graph statistic và bounded feasibility evidence | Huấn luyện baseline khoa học và headline evaluation |
-| G3 — Shared baseline path | Data pipeline, exact evaluator và các baseline tương ứng | Run xác định, sanity check và resource logging | Thí nghiệm sampler được đề xuất |
-| G4 — Proposed-sampler readiness | Phương pháp ứng viên đã implement và có diagnostic | Unit/integration test, loss hữu hạn, sample hợp lệ và development run có kiểm soát | So sánh cuối |
-| G5 — Final evidence | Experiment matrix và evidence package đã freeze | Paired seed, phân tích uncertainty, resource trace, failure và limitation; G5-S bounded scale evidence nếu luận văn giữ claim large-scale | Claim ở phần Results/Conclusion |
-| G6 — Reproducibility và submission | Representative run tái lập được và artifact đầy đủ | Manifest/configuration, table/figure tái tạo, report, slide và source Colab chạy được | Nộp bài |
+- **MovieLens 25M** là benchmark ổn định với 25 triệu rating, metadata phim, tag và tag genome. Nó phù hợp cho collaborative filtering và semantic diversity, nhưng mỗi user có ít nhất 20 rating nên không giữ tình trạng user singleton rất mạnh của dữ liệu hiện tại.
+- **Gowalla** và **Yelp2018** là đối chứng gần nhất về phương pháp vì nghiên cứu LightGCN dùng chúng với Recall@20 và NDCG@20. Tuy nhiên các bản phổ biến đã được lọc và chia train/test ngẫu nhiên, khác protocol temporal từ raw data của đồ án.
+- **MIND** có impression log và nội dung văn bản, phù hợp cho news recommendation và semantic relevance. Nó thay đổi cả miền bài toán lẫn cách hiểu item.
+- **KuaiRec** gần fully observed nên rất tốt để nghiên cứu exposure bias. Catalog nhỏ và ma trận dày khiến nó không tạo cùng bài toán sparse-graph sampling.
 
-Không đạt một gate không cho phép kết luận không có bằng chứng hoặc chuyển sang đề tài không liên quan. Cần chẩn đoán, ghi quyết định và sửa phần kế hoạch còn lại sao cho phù hợp bằng chứng.
+Các dataset này chỉ đặt nghiên cứu vào bối cảnh. Đồ án chưa chạy thực nghiệm trên chúng.
 
-G2-D là ranh giới feasibility, không phải kết quả baseline. Có thể dùng bounded subset, non-GNN control hoặc fixed tiny baseline để kiểm tra pipeline/evaluator và resource envelope thô. Phải ghi scale và hardware; không được tune model, so sánh sampler, báo headline metric hoặc khái quát sang final run. Phần execute scale stress từng gọi là G2-E nay là `G5-S`; trước G5, công việc `Home_and_Kitchen` chỉ gồm provenance, size và lập kế hoạch feasibility.
+### 3.2 Ba dataset Amazon đã kiểm toán
 
-### 4.3 Trạng thái gate hiện tại
+| Dataset | Raw rows | Vai trò |
+|---|---:|---|
+| `All_Beauty` | 693.929 | Kiểm tra pipeline và protocol trên dữ liệu nhỏ |
+| `Baby_Products` | 5.953.891 | Dataset chính |
+| `Home_and_Kitchen` | 66.623.880 | Scale reference, khoảng 11,19 lần Baby; chưa chạy full experiment |
 
-| ID | Trạng thái | Prerequisite | Bằng chứng/khoảng trống hiện tại | Ngày quyết định | Lần review tiếp |
-|---|---|---|---|---|---|
-| G0 | `PASS` | Không | Scope, quản trị song ngữ, ranh giới bằng chứng và kế hoạch này đã được ghi. Mở lại nếu scope/title/deliverable rule thay đổi. | 2026-08-30 | Khi governance thay đổi |
-| G1 | `PASS` | Không; chạy song song với G2 | RQ/estimand chính, giả thuyết bác bỏ được, bản đồ closest work đại diện, cơ chế ứng viên, matched comparison và quy tắc Pareto chỉ dùng validation để chọn/không chọn đã được khóa trong [biên bản G1](./G1_RESEARCH_DESIGN_vn.md). Điều này chưa chọn sampler cuối. | 2026-09-03 | Mở lại nếu RQ, biến can thiệp, matched control hoặc selection rule thay đổi |
-| G2 | `PASS` | Chỉ phần thực thi G2-D cần E0-MIN | Baby G2-A/G2-B/G2-C/G2-D đều pass. Drive manifest đã bổ sung xác minh hash/size của năm artifact, ghi exact CPU/Colab environment và replay bounded traversal 100 target với mọi invariant đã đăng ký đều đúng. Full scale Home vẫn là conditional G5-S. | 2026-09-03 | Chỉ mở lại nếu data byte, semantics, split, graph, cohort, candidate hoặc bounded-path contract thay đổi |
-| G3 | `NOT_STARTED` | G2 `PASS`; E0-MIN `PASS` | Chưa có baseline/evaluator/resource path end-to-end deterministic. | — | Sau khi prerequisite pass |
-| G4 | `NOT_STARTED` | G1 `PASS`; G2 `PASS`; G3 `PASS` | Chưa chọn hoặc implement sampler cuối. Toy test của reference design không thỏa gate này. | — | Sau khi prerequisite pass |
-| G5 | `NOT_STARTED` | G4 `PASS`; đã freeze experiment matrix/configuration/seed; resource claim cần E0-FINAL | Chưa có matched final experiment evidence. | — | Sau G4 readiness review |
-| G6 | `NOT_STARTED` | G5 `PASS`; E0-FINAL `PASS` | Chưa có clean representative rerun hoặc final evidence package được tái tạo. | — | Sau quyết định G5 |
+Baby Products được chọn vì đủ lớn để bộc lộ chi phí graph sampling, có sparsity và long-tail mạnh, nhưng vẫn cho phép chạy ma trận thí nghiệm M0–M2 trên Colab/Tesla T4. All Beauty quá nhỏ và warm-start retention thấp để làm bằng chứng chính. Home and Kitchen phù hợp cho một scale stress riêng, nhưng chạy toàn bộ ma trận hiện tại sẽ mở rộng chi phí và claim vượt quá câu hỏi đã đăng ký.
 
-### 4.4 Quy tắc go, corrective loop, stop, waiver và reopen
+## 4. Dữ liệu sau xử lý
 
-- Chỉ `GO` sang G3 khi G2 và E0-MIN pass; chỉ `GO` sang G4 khi G1, G2 và G3 pass; chỉ `GO` sang final experiment khi G4 pass và matrix đã freeze.
-- Dùng `CORRECTIVE_LOOP` khi evidence chưa đủ nhưng có cách sửa trong phạm vi. `STOP` ghi nhận impasse và cần quyết định rescope tường minh; không trạng thái nào tự cho phép đổi đề tài hoặc đưa positive claim.
-- Mở lại G2 khi interaction semantics, split, negative eligibility hoặc training graph thay đổi; invalidate hoặc mở lại evidence G3–G6 bị ảnh hưởng. Mở lại G3 và gate sau nó khi backbone, evaluator, budget hoặc resource logger thay đổi đáng kể. Mở lại G1/G4 và gate sau nó khi phương pháp được chọn thay đổi.
-- Chỉ cho `WAIVED` với phạm vi tùy chọn/hành chính, có authority, rationale, expiry và impact statement. Không được waive provenance, leakage control, train/test separation, matched comparison, raw-result traceability, uncertainty disclosure hay representative reproducibility. Thiếu evidence `G5-S` phải làm hẹp claim large-scale, không được silent waiver.
+- Raw: 5.953.891 dòng; 3.386.206 user; 217.654 item.
+- Có một rating `0.0` ngoài miền 1–5. Dòng này bị quarantine.
+- Không có user ID hoặc item ID bị thiếu, timestamp sai hay user-item pair trùng trong exact audit.
+- P4 giữ rating 4 và 5: 4.655.843 interaction, bằng 78,20% raw rows.
+- Training graph: 3.868.654 cạnh; 2.318.308 user; 162.125 item.
+- Validation: 81.871 warm target trên 373.776 candidate row, retention 21,90%.
+- Test: 40.587 warm target trên 413.413 candidate row, retention 9,82%. Test chưa được đọc khi chọn phương pháp.
 
-## 5. Tiến độ nghiên cứu 12 tuần
+Ba con số item không được trộn lẫn: 217.654 item ở raw data, 194.722 item trong P4, và 162.125 item trong training catalog. Coverage dùng 162.125 làm mẫu số.
 
-| Tuần | Công việc chính | Artifact hoặc quyết định khi kết thúc |
-|---|---|---|
-| 1 | Hợp nhất scope, evidence record và điểm xuất phát của dataset audit; lập kế hoạch chính thức này. | Record G0; trạng thái và rủi ro đang mở được nêu rõ. |
-| 2 | Thực hiện Amazon provenance/audit có thể lưu lâu dài trên Colab; pre-register interaction semantics, cách xử lý duplicate, temporal split ứng viên, xử lý warm-start/OOV và negative eligibility. | Gói bằng chứng G2 sẵn sàng để review; chưa huấn luyện mô hình. |
-| 3 | Đóng G1 và G2 từ evidence đã review; bắt đầu shared exact evaluator và simple non-GNN control. | Biên bản quyết định G1/G2; initial implementation path G3. |
-| 4 | Thiết lập GNN recommender baseline dùng chung, configuration xác định, logging và đường đo resource. | Baseline path G3 vượt sanity check cần thiết. |
-| 5 | Implement và kiểm thử các sampling control có giới hạn (ví dụ uniform và degree-aware) trong cùng task và budget. | So sánh sampling control tương ứng có thể chạy. |
-| 6 | Chỉ sau khi G1 và G3 pass, implement cơ chế lấy mẫu được chọn, không claim thành công. | Review mức sẵn sàng G4. |
-| 7 | Chẩn đoán proposed sampler bằng development run có kiểm soát; chỉ sửa các vấn đề có bằng chứng. | Configuration ứng viên, diagnostic và ablation dự kiến được freeze cho development. |
-| 8 | Chạy development comparison và ablation thiết yếu với task/budget cố định; chỉ thay thiết kế khi có lý do được ghi lại. | Final experiment matrix, seed và analysis plan được freeze. |
-| 9 | Chạy primary matched experiment và ghi quality, resource, failure trace. | Gói bằng chứng cuối một phần. |
-| 10 | Hoàn tất primary evidence và chỉ khi G2/G3 hợp lệ thì chạy scale-stress `Home_and_Kitchen` có giới hạn. | Gói bằng chứng G5 hoặc negative/insufficient result đã ghi. |
-| 11 | Phân tích uncertainty, kiểm tra failure case và chạy lại một representative run sạch từ configuration đã ghi. | Gói reproducibility G6. |
-| 12 | Hoàn thiện và đối chiếu thesis report, slide bảo vệ, source Colab, appendix và các chỉnh sửa theo giảng viên. | Artifact song ngữ sẵn sàng nộp cùng source chạy được. |
+## 5. Phân phối và long-tail
 
-Viết báo cáo, quản lý citation, experiment log và reproducibility metadata là việc liên tục trong toàn bộ 12 tuần. Nếu thiếu thời gian hoặc compute, giảm dataset tùy chọn và ablation phụ trước khi làm yếu leakage control, matched comparison, uncertainty reporting hoặc representative rerun.
+- 71,76% user training chỉ có một interaction; user degree p50/p90/p99 là 1/3/9.
+- 33,35% item training chỉ có một interaction; item degree p50/p90/p99 là 3/32/397.
+- Item-degree Gini bằng 0,8584.
+- Top 1% item giữ 44,09% training interaction; top 20% giữ 89,65%.
+- Theo cohort khóa trước model result, head chiếm khoảng 1% item nhưng 44,16% cạnh; tail chiếm 80,07% item nhưng chỉ 10,39% cạnh.
 
-## 6. Quy tắc cập nhật deliverable tích lũy
+Vì vậy score tổng có thể tăng chỉ bằng cách phục vụ tốt hơn item phổ biến. Mọi kết quả phải đọc cùng exposure và hit theo head/body/tail.
 
-Sau mỗi gate được đóng hoặc experiment đã được kiểm chứng, cập nhật tại chỗ các artifact bị ảnh hưởng:
+## 6. Ba phương pháp lấy mẫu
 
-| Deliverable | Cập nhật khi |
-|---|---|
-| Thesis report | Scope, literature positioning, method rationale, protocol, result hoặc limitation thay đổi. |
-| Slide bảo vệ | Report có thay đổi có thể bảo vệ và cần được giải thích trực quan, ngắn gọn. |
-| Source Colab/Python | Protocol, implementation, configuration, test, manifest hoặc executable result thay đổi. |
-| Briefing cho giảng viên | Quyết định, rủi ro, evidence boundary hoặc câu hỏi dành cho giảng viên thay đổi. |
+### M0: uniform
 
-Mọi artifact lâu dài có nội dung ngôn ngữ phải đồng bộ cặp `_en` và `_vn`. Source code kỹ thuật giữ trung lập về ngôn ngữ, kèm tài liệu tiếng Anh và tiếng Việt đồng bộ.
+M0 chọn đúng `k` candidate node ở mỗi layer mà không hoàn lại, mọi candidate có cơ hội như nhau. Đây là câu trả lời cho câu hỏi: nếu sampler không có thiên kiến popularity hoặc frontier thì kết quả ra sao?
 
-## 7. Chỉ mục các record chính thức
+### M1: degree-aware
 
-- [Project constraints](./PHASE2_CONSTRAINTS_vn.md): constraint vận hành do người dùng cung cấp và compute assumption.
-- [Danh mục dataset và protocol phân tích](./DATASET_PORTFOLIO_AND_ANALYSIS_PROTOCOL_vn.md): vai trò dataset và các protocol candidate chi tiết.
-- [Quyết định thiết kế nghiên cứu G1](./G1_RESEARCH_DESIGN_vn.md): RQ, ranh giới closest work, họ ứng viên, matched comparison và quy tắc chọn phương pháp đã khóa.
-- [Continuity rules song ngữ](../PROJECT_CONTEXT_AND_RESEARCH_RULES_vn.md): quy tắc làm việc và log thay đổi theo ngày; file này chỉ được liên kết ở đó, không bị sao chép.
-- [Thesis report](../04_thesis/THESIS_REPORT_vn.md): narrative học thuật tích lũy.
-- [GRAPES-informed reference specification](../02_protocol/GRAPES_RECOMMENDATION_SPEC_vn.md): reference design, không phải phương pháp luận văn chính thức.
-- [Python/Colab README](../06_code/README_vn.md): scaffold chạy được, environment và hướng dẫn sử dụng.
-- [Briefing hiện tại cho giảng viên](../03_reports/REPORT_TEACHER_vn.md): record thảo luận hiện tại với giảng viên.
+M1 dùng priority `log(training_degree) + Gumbel`. Node nhiều liên kết có cơ hội cao hơn. Lý do dùng M1 là collaborative signal thường ổn định hơn ở node có nhiều quan sát, nhưng cơ chế này có thể làm đồ thị tính toán nghiêng về item phổ biến.
 
-## 8. Planning record đã được thay thế
+### M2: frontier-normalized
 
-`PHASE2_DIRECTION_REVIEW_vn.md` chỉ được giữ lại như một redirect lịch sử ngắn. Kế hoạch direct-GRAPES-adaptation cũ trong file đó đã bị thay thế và không được dùng để dẫn hướng công việc Phase 2.
+M2 dùng priority:
+
+```text
+log(frontier_support) - 0,5 × log(training_degree) + Gumbel
+```
+
+`frontier_support` là số training edge nối candidate node vào frontier của layer trước. M2 ưu tiên liên kết có ích cho batch hiện tại, đồng thời dùng căn degree để giảm lợi thế của hub. Đây là một project candidate cố định, không phải learned sampler.
+
+## 7. Vì sao dùng các metric này
+
+- **NDCG@20:** metric chính vì vị trí trong top 20 có ý nghĩa. Hit ở rank 1 được tính cao hơn rank 20.
+- **Recall@20:** cho biết target có nằm trong top 20 hay không. Với một target mỗi dòng, đây là tỷ lệ user-target được hit.
+- **Catalog Coverage@20:** cho biết phần catalog từng được xuất hiện trong recommendation. Nó phát hiện collapse nhưng không đo semantic diversity.
+- **Exposure head/body/tail:** cho biết recommendation slot dồn vào nhóm nào.
+- **Recall và hit theo cohort:** cho biết exposure có chuyển thành gợi ý đúng cho item ít phổ biến hay không.
+- **Training time và peak GPU memory:** hai trục chi phí cần thiết để đánh giá trade-off.
+- **Rank transition:** giải thích sampler đã thay đổi ranking ra sao, nhất là khi top-20 score không tăng.
+
+Không đo semantic relevance hoặc intra-list semantic diversity vì artifact không có nội dung sản phẩm.
+
+## 8. Kết quả chính
+
+### 8.1 Sanity baselines
+
+| Model | NDCG@20 | Recall@20 | Coverage@20 | Diễn giải |
+|---|---:|---:|---:|---|
+| MostPop | 0,005873 | 0,014596 | 0,000154 | Chỉ recommend 25 item, 100% exposure ở head |
+| BPR-MF | 0,004054 | 0,010419 | 0,033517 | Coverage rộng hơn nhưng accuracy thấp hơn |
+| Full LightGCN | 0,004931 | 0,012373 | 0,006365 | Message passing tăng so với BPR-MF, gain lại tập trung vào head |
+
+Các baseline xác nhận evaluator và cho thấy accuracy–coverage tension đã tồn tại trước khi thay sampler.
+
+### 8.2 Smoke seed s0
+
+| Phương pháp | NDCG@20 | Recall@20 | Coverage@20 | Training time |
+|---|---:|---:|---:|---:|
+| M0 | 0,005727 | 0,014657 | 0,018486 | 705,32 s |
+| M1 | **0,006153** | **0,015989** | 0,017783 | 795,11 s |
+| M2 | 0,005921 | 0,015317 | 0,017863 | 868,63 s |
+
+M1 tăng quality so với M0 ở s0 nhưng toàn bộ 109 hit tăng thêm thuộc head. M2 đưa item-context về phía tail nhiều hơn M1, nhưng tail hit vẫn bằng 0 và chi phí đếm frontier support làm sampler chậm hơn.
+
+### 8.3 Paired validation ba seed
+
+| Phương pháp | NDCG@20 mean ± SD | Recall@20 mean ± SD | Coverage@20 mean ± SD |
+|---|---:|---:|---:|
+| M0 | 0,005706 ± 0,000073 | 0,014869 ± 0,000488 | **0,018132 ± 0,000318** |
+| M1 | **0,005866 ± 0,000249** | **0,015296 ± 0,000620** | 0,017534 ± 0,000627 |
+| M2 | 0,005721 ± 0,000179 | 0,014873 ± 0,000579 | 0,017513 ± 0,000318 |
+
+M2 trừ M1 âm về NDCG và Recall trong cả ba seed. M2 vẫn tạo hàng trăm gained/lost hit và thay đổi rank rộng, nên implementation không phải “không có tác dụng”. Vấn đề là thay đổi không tạo top-20 gain ổn định và phải trả thêm CPU sampler time.
+
+## 9. Quyết định
+
+1. Không promote M2.
+2. Không mở M3 sau khi đã nhìn validation result.
+3. Không dùng test để chọn lại phương pháp.
+4. Giữ M2 như negative result: local frontier relevance cùng degree penalty chưa đủ để cải thiện ranking trong dữ liệu rất thưa và popularity-dominated này.
+5. Nếu luận văn cần thêm bằng chứng, chỉ mở một nhánh đăng ký trước: Yelp2018/Gowalla để kiểm tra tính khái quát của graph sampling, hoặc metadata dataset để đo semantic diversity. Hai mục tiêu này không được trộn vào cùng một thí nghiệm.
+
+## 10. Việc còn lại
+
+- Hoàn thiện slide, báo cáo và thesis từ số liệu đã khóa.
+- Giữ một deck chuẩn, một timeline và một bộ tài liệu hiện hành.
+- Chạy consistency gate và toàn bộ test trước khi commit vào `main`.
+- Chỉ chạy test split nếu deliverable chính thức đòi hỏi một final-test result đã đăng ký trước.

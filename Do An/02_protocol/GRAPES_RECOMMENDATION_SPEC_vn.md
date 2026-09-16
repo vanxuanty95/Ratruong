@@ -4,6 +4,8 @@
 > **Ngày ghi nhận:** 2026-08-26  
 > **Vai trò:** candidate mechanism và verification idea có nền tảng từ GRAPES; không phải phương pháp luận văn cuối cùng.
 
+> **Lưu ý hiện hành 16/09/2026:** nghiên cứu thực tế đã dừng ở M2 frontier-normalized, một heuristic cố định. Các phần RL, GFlowNet và learned policy bên dưới không được implement, không tham gia paired validation và không còn nằm trong kế hoạch đang mở. Phương pháp thực tế xem tại [`../04_thesis/THESIS_REPORT_vn.md`](../04_thesis/THESIS_REPORT_vn.md).
+
 ## 1. Mục đích và quy tắc quản trị nguồn
 
 Tài liệu này ghi nhận một candidate technical reference design. Nó có thể hướng dẫn baseline hoặc ablation path ban đầu, nhưng phương pháp luận văn cuối phải được xác định và kiểm chứng từ research problem, literature gap, data constraint và controlled experiment. Các nhãn lịch sử `ĐÃ KHÓA`, `GIỮ` và `THAY THẾ` bên dưới không ràng buộc phương pháp cuối trừ khi được chọn lại tường minh với rationale và verification.

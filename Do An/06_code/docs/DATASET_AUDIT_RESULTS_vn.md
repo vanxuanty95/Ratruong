@@ -113,11 +113,11 @@ Diagnostic này không freeze negative policy. Negative validity phải check v�
 ## 7. Kết luận và quyết định mở
 
 1. `All_Beauty` phù hợp validate pipeline và schema, nhưng singleton rate và temporal OOV khiến nó không phù hợp làm primary recommendation evidence theo warm-start design hiện tại.
-2. `Baby_Products` là primary benchmark candidate; exact duplicate-pair audit đã đóng (`VERIFIED 0`) và P4 (`rating >= 4`) là primary interaction policy được chọn. Warm-start OOV vẫn cao và phải được đối soát trong G2-C.
+2. `Baby_Products` đã được chọn làm primary benchmark; exact duplicate-pair audit đã đóng (`VERIFIED 0`) và P4 (`rating >= 4`) là primary interaction policy. Warm-start OOV đã được đối soát trong G2-C và được giữ như giới hạn population.
 3. Official absolute split chưa thể adopt làm primary warm-start split nếu chưa revision protocol có ghi nhận.
 4. P4, quarantine một row `rating = 0.0`, deterministic duplicate fallback và negative rule là các quyết định đã ghi. Full temporal-graph và bounded-environment evidence về sau đã đóng Baby G2-A đến G2-D ngày 2026-09-03; xem G2-C/G2-D execution guide và manifest.
 5. Provenance `Home_and_Kitchen` đã execute: 1,420,416,432 compressed bytes, 66,623,880 row, schema bốn cột hợp lệ và SHA-256 `9be4e2dc8b3dc513c02521644b2ae55f722b2941767e539dcfe518f6bdd4f70b`. Full protocol và scale stress vẫn chưa execute.
-6. Chưa train model và audit này không tạo ra claim về recommendation quality, memory, runtime hoặc scalability.
+6. Bản audit này tự nó không tạo claim về recommendation quality, memory, runtime hoặc scalability. Các model result chạy sau đó nằm trong các thư mục validation riêng.
 
 ## 8. Evidence source
 
