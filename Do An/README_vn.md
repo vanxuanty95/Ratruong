@@ -2,7 +2,7 @@
 
 > **Cập nhật:** 16/09/2026
 > **Đề tài:** Lấy mẫu đồ thị cho hệ thống gợi ý quy mô lớn sử dụng GNN
-> **Trạng thái:** `RESET (DL-001)` — Phase 2 đang xây **GRAPES-GFN-Rec**; chưa có kết quả method.
+> **Trạng thái:** `RESET (DL-001)`, `LIVING DOCS (DL-002)` — Phase 2 đang xây **GRAPES-GFN-Rec**; chưa có kết quả method. Hạn nộp 30/11/2026.
 
 ## Phase 2 làm gì
 
@@ -22,7 +22,7 @@ Một phương pháp chỉ được gọi là biến thể GRAPES khi có đủ 
 4. [`00_project/PHASE2_RESEARCH_PLAN_vn.md`](./00_project/PHASE2_RESEARCH_PLAN_vn.md) — gate R0–R7 và khối lượng công việc.
 5. [`PROJECT_CONTEXT_AND_RESEARCH_RULES_vn.md`](./PROJECT_CONTEXT_AND_RESEARCH_RULES_vn.md) — quy tắc thực nghiệm và ranh giới claim.
 6. [`06_code/README_vn.md`](./06_code/README_vn.md) — code, notebook, artifact, cách kiểm tra.
-7. Đề xuất Phase 2 cho giảng viên: [`05_slides/PHASE2_PROPOSAL_GRAPES_GFN_REC_vn.pptx`](./05_slides/PHASE2_PROPOSAL_GRAPES_GFN_REC_vn.pptx) và [`04_thesis/PHASE2_PROPOSAL_GRAPES_GFN_REC_vn.pdf`](./04_thesis/PHASE2_PROPOSAL_GRAPES_GFN_REC_vn.pdf).
+7. **Slide và luận văn sống (DL-002):** [`05_slides/THESIS_vn.pptx`](./05_slides/THESIS_vn.pptx) và [`04_thesis/THESIS_vn.pdf`](./04_thesis/THESIS_vn.pdf) — bồi đắp theo từng gate đến hạn nộp 30/11/2026.
 
 Bản tiếng Việt là bản chuẩn. Các file `_en` chưa đồng bộ sau DL-001 và mang banner `SUPERSEDED`.
 

@@ -49,6 +49,25 @@ Giai đoạn 1 (ThucTap2) đã tái hiện GRAPES trên node classification. Hư
 
 ---
 
+## DL-002 — Tài liệu sống, hạn nộp tháng 11, kế hoạch nén
+
+- **Ngày:** 16/09/2026
+- **Người quyết định:** Ty (chủ đề tài).
+- **Trạng thái:** `ACCEPTED`
+
+### Bối cảnh
+Đồ án đã trễ tiến độ; hạn nộp trong tháng 11/2026 (tạm lấy **30/11/2026** cho kế hoạch, chỉnh nếu có mốc sớm hơn). Bản đề xuất riêng lẻ (deck + report) tách khỏi luận văn cuối gây làm lại nhiều lần.
+
+### Quyết định
+1. **Một slide và một report duy nhất, bồi đắp dần**: `05_slides/THESIS_vn.pptx` (build: `build_thesis_vn.js`) và `04_thesis/THESIS_vn.tex/.pdf`. Cấu trúc theo luận văn cuối; phần chưa có số đánh dấu `ĐANG CHỜ` kèm gate/nguồn sẽ điền. Mỗi gate xong: điền chương tương ứng, tăng số phiên bản, ghi nhật ký.
+2. Bản đề xuất `PHASE2_PROPOSAL_GRAPES_GFN_REC_vn.*` bị thay thế và xóa khỏi repo (còn trong lịch sử git `bce6392`).
+3. Chương dữ liệu mở rộng; thêm chương trả lời từng góp ý của giảng viên (3/9).
+4. Phân tích sâu dataset chạy trên Colab bằng notebook 11 (môi trường Claude bị chặn tải dữ liệu); notebook 11 đồng thời tạo development split (R1). Phân tích phía target chỉ dùng cửa sổ development.
+5. Kế hoạch nén: R1 tuần 16/9; R3 23/9–10/10; R4 freeze + gặp giảng viên 10–13/10; R5 14–27/10; R6 28/10–3/11; R7 4–17/11; dự phòng 18–30/11. Viết song song từ tuần đầu.
+6. OD-2 (metadata cho đo ngữ nghĩa/đa dạng) chuyển thành **khuyến nghị có**, vì giảng viên hỏi trực tiếp; chờ giảng viên duyệt ở R4. Metadata không vào huấn luyện.
+
+---
+
 ## Mẫu cho mục mới
 
 ```text

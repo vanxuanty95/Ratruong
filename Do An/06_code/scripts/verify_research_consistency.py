@@ -35,7 +35,7 @@ ACTIVE_MARKDOWN = (
     "Do An/06_code/README_en.md",
 )
 
-CANONICAL_SLIDE = "Do An/05_slides/THESIS_PRESENTATION_vn.pptx"
+CANONICAL_SLIDE = "Do An/05_slides/THESIS_vn.pptx"  # living deck (DL-002)
 
 # Central documents that define the current Phase 2 scope (DL-001). Each must
 # name the learned GRAPES variant so a future edit cannot silently fall back to
@@ -60,7 +60,7 @@ REQUIRED_PHRASES = {
         "D_dev",
         "GRAPES-RL-Rec",
     ),
-    "Do An/00_project/DECISION_LOG_vn.md": ("GRAPES-GFN-Rec", "DL-001"),
+    "Do An/00_project/DECISION_LOG_vn.md": ("GRAPES-GFN-Rec", "DL-001", "DL-002"),
     "Do An/06_code/README_vn.md": ("GRAPES-GFN-Rec", "ARCHIVED PILOT"),
     "Do An/03_reports/REPORT_TEACHER_vn.md": (
         "NDCG@20",
@@ -90,10 +90,9 @@ SLIDE_REQUIRED_PHRASES = (
     "Home_and_Kitchen",
     "NDCG@20",
     "Recall@20",
-    "Catalog Coverage@20",
-    "M0",
-    "M1",
-    "M2",
+    "Coverage@20",
+    "GRAPES-GFN-Rec",
+    "ĐANG CHỜ",
 )
 
 

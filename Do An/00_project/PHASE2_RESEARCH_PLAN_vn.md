@@ -1,7 +1,7 @@
 # Kế hoạch Phase 2: GRAPES-GFN-Rec
 
 > **Cập nhật:** 16/09/2026
-> **Trạng thái:** `RESET (DL-001)` — Phase 2 chưa có kết quả method. Gate hiện tại: **R2** (core xong) → R1 (cần Colab).
+> **Trạng thái:** `RESET (DL-001)`, `LIVING DOCS + HẠN 30/11 (DL-002)`. Gate hiện tại: **R1** (notebook 11 trên Colab) song song hoàn tất R2.
 > **Spec chuẩn:** [`PHASE2_GRAPES_GFN_REC_SPEC_vn.md`](./PHASE2_GRAPES_GFN_REC_SPEC_vn.md) · **Vì sao reset:** [`DECISION_LOG_vn.md`](./DECISION_LOG_vn.md) · **Plan thao tác:** [`../../docs/superpowers/plans/2026-09-16-grapes-gfn-rec-rebuild.md`](../../docs/superpowers/plans/2026-09-16-grapes-gfn-rec-rebuild.md)
 
 ## 1. Mục tiêu
@@ -25,25 +25,25 @@ RQ phụ: TB vs REINFORCE (RQ2), hành vi sampler và popularity bias (RQ3), đ�
 
 ## 3. Gate
 
-| Gate | Việc | Điều kiện qua | Nơi chạy | Tuần (ước lượng) | Trạng thái |
+| Gate | Việc | Điều kiện qua | Nơi chạy | Lịch (DL-002) | Trạng thái |
 |---|---|---|---|---|---|
-| R0 | Spec, decision log, docs trung tâm, archive pilot, checker | Checker pass; không file trung tâm gọi M2 là method | Local | 0,5 | Xong (`b122d1d`) |
-| R1 | Development split theo spec §3.1 | Manifest + hash; isolation test pass | Colab | 0,5 | Chưa |
-| R2 | Primitive + oracle GRAPES-GFN-Rec (G1–G7) | Oracle test pass trên CPU | Local | 1 | Đang làm: core 28 oracle pass; còn T04, T23/D9, D6 legacy, embedding cho scale |
-| R3 | Development: backbone adequacy, budget regime, sweep `α`/`log_z_init`/lr, feasibility T4, sampler học thật | Full LightGCN > MostPop trên `D_dev`; loss hữu hạn; replay xác định | Colab | 3 | Chưa |
-| R4 | Freeze config/seed/budget/evaluator/analysis; chốt OD-1..OD-4 | `current_validation_read=false` khi tạo | Local+Colab | 0,5 | Chưa |
-| R5 | Holdout paired matrix tầng A+B | Hash khớp; metric tính lại được | Colab | 2 | Chưa |
-| R6 | Phân tích RQ1–RQ4, ablation D9/D6 | Bảng truy về JSON | Local | 1 | Chưa |
-| R7 | Rebuild report/slide/README; pilot vào appendix | Checker pass | Local | 1,5 | Chưa |
+| R0 | Spec, decision log, docs trung tâm, archive pilot, checker | Checker pass; không file trung tâm gọi M2 là method | Local | 16/9 | Xong (`b122d1d`) |
+| R1 | Development split theo spec §3.1 | Manifest + hash; isolation test pass | Colab | 16–22/9 | Notebook 11 sẵn sàng, chờ chạy |
+| R2 | Primitive + oracle GRAPES-GFN-Rec (G1–G7) | Oracle test pass trên CPU | Local | 16–22/9 | Đang làm: core 28 oracle pass; còn T04, T23/D9, D6 legacy, embedding cho scale |
+| R3 | Development: backbone adequacy, budget regime, sweep `α`/`log_z_init`/lr, feasibility T4, sampler học thật | Full LightGCN > MostPop trên `D_dev`; loss hữu hạn; replay xác định | Colab | 23/9–10/10 | Chưa |
+| R4 | Freeze config/seed/budget/evaluator/analysis; chốt OD-1..OD-4 | `current_validation_read=false` khi tạo | Local+Colab | 10–13/10 | Chưa |
+| R5 | Holdout paired matrix tầng A+B | Hash khớp; metric tính lại được | Colab | 14–27/10 | Chưa |
+| R6 | Phân tích RQ1–RQ4, ablation D9/D6 | Bảng truy về JSON | Local | 28/10–3/11 | Chưa |
+| R7 | Rebuild report/slide/README; pilot vào appendix | Checker pass | Local | 4–17/11 | Chưa |
 
-Tổng ~10 tuần; chỉnh lại sau R3 khi đo được thời gian chạy thực tế.
+Dự phòng 18–30/11; nộp 30/11/2026.
 
-**Bản trình bày cho giảng viên:** [`../05_slides/PHASE2_PROPOSAL_GRAPES_GFN_REC_vn.pptx`](../05_slides/PHASE2_PROPOSAL_GRAPES_GFN_REC_vn.pptx) (19 slide) và [`../04_thesis/PHASE2_PROPOSAL_GRAPES_GFN_REC_vn.pdf`](../04_thesis/PHASE2_PROPOSAL_GRAPES_GFN_REC_vn.pdf) (báo cáo đề xuất 10 trang). Hai file này là đề xuất, chưa có kết quả method.
+**Tài liệu sống (DL-002):** [`../05_slides/THESIS_vn.pptx`](../05_slides/THESIS_vn.pptx) và [`../04_thesis/THESIS_vn.pdf`](../04_thesis/THESIS_vn.pdf). Mỗi gate xong điền vào chương tương ứng, tăng phiên bản, ghi nhật ký.
 
 ## 4. Khối lượng công việc giai đoạn 2 (step by step)
 
 1. **R0** — khóa lại scope và guardrail (tài liệu này, spec, decision log, checker).
-2. **R1** — notebook `11_grapes_gfn_rec_development_graph.ipynb`: tạo `G_dev_train`, `D_dev`, manifest, hash.
+2. **R1** — notebook `11_dataset_deep_analysis_and_dev_split.ipynb`: phân tích sâu dataset + tạo `G_dev_train`, `D_dev`, manifest, hash.
 3. **R2** — `src/grapes_rec/gfn_sampler.py`, `sampled_lightgcn.py`, `trainer.py` + oracle test T01–T25 và G1–G7.
 4. **R3** — notebook `12_grapes_gfn_rec_development.ipynb`: (a) backbone adequacy Full LightGCN vs MostPop; (b) budget regime chung; (c) sweep sampler; (d) đo feasibility; (e) chứng minh sampler thay đổi phân phối chọn so với M0.
 5. **R4** — `configs/grapes_gfn_rec_holdout_matrix_v1.json` + freeze manifest.
