@@ -1,0 +1,55 @@
+{
+  "gate": "R1",
+  "spec": "PHASE2_GRAPES_GFN_REC_SPEC_vn.md \u00a73.1",
+  "rule_used": "t0 = t1 - (t2 - t1)",
+  "fallback_triggered": false,
+  "primary_rule_counts": {
+    "dev_train_edges": 3315497,
+    "dev_window_rows": 553157,
+    "dev_warm_targets": 105401
+  },
+  "t0_ms": 1599284098247,
+  "t1_ms": 1628643414042,
+  "t2_ms": 1658002729837,
+  "dev_train": {
+    "edges": 3315497,
+    "users": 1965541,
+    "items": 144011,
+    "share_of_current_train_edges": 0.8570156442007996
+  },
+  "dev_window": {
+    "rows": 553157,
+    "warm_targets": 105401,
+    "warm_retention": 0.19054445663708494,
+    "excluded_unseen_user": 426999,
+    "excluded_unseen_item_only": 20757
+  },
+  "isolation": {
+    "max_dev_train_ts_lt_min_dev_target_ts": true,
+    "all_dev_rows_before_t1": true,
+    "current_validation_or_test_rows_used": false
+  },
+  "user_mapping_note": "user_idx/item_idx are positions in sorted internal factor codes of this run; original IDs are written to dev_user_ids/dev_item_ids",
+  "files": {
+    "dev_train_edges.csv.gz": {
+      "rows": 3315497,
+      "sha256": "0b8b7090deda85288b57e1f7a53eb24cdb0969a975542098693bb491ab9323ee",
+      "bytes": 34427801
+    },
+    "dev_targets.csv.gz": {
+      "rows": 105401,
+      "sha256": "da321f19f4170b4f54cf2f07fcac50f76f28d434826950d565d606050f59f25c",
+      "bytes": 1160180
+    },
+    "dev_user_ids.csv.gz": {
+      "rows": 1965541,
+      "sha256": "bea7c924b050bf383c0fe23f9c7c1708d049090c404bf1974c7b1149108fe7d3",
+      "bytes": 9282028
+    },
+    "dev_item_ids.csv.gz": {
+      "rows": 144011,
+      "sha256": "39ec4770a87ce5046c8c2a724e15f78a05c8052e829c9a657dcd6ab11a7ec25c",
+      "bytes": 666825
+    }
+  }
+}

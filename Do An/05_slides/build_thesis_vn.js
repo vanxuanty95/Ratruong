@@ -57,7 +57,7 @@ function footnote(s, text) {
 }
 
 
-const VERSION = "0.3", UPDATED = "16/09/2026";
+const VERSION = "0.4", UPDATED = "16/09/2026";
 const REG = {};
 function pending(title, kicker, gate, items, note) {
   const s = base(title, kicker);
@@ -99,8 +99,8 @@ function pending(title, kicker, gate, items, note) {
   const rows = [
     [head("Chương"), head("Nội dung"), head("Trạng thái"), head("Gate điền tiếp")],
     ["1 Mở đầu", "Bùng nổ lân cận, sampling vs distributed, GRAPES, câu hỏi nghiên cứu", st("Có", C.tealMid), "—"],
-    ["2 Dữ liệu", "Chọn dataset, chất lượng, rating, histogram, long-tail, cold-start, thời gian, graph", st("Một phần", C.amber), "Notebook 11 (phân tích sâu, dev split)"],
-    ["3 Góp ý của cô", "Context, NDCG, coverage/conversion, ngữ nghĩa, đa dạng, quan hệ node, trade-off", st("Có · số ngữ nghĩa chờ", C.amber), "Notebook 11 (metadata), R5"],
+    ["2 Dữ liệu", "Chất lượng, rating, histogram, long-tail, cold-start, thời gian, bất thường, đồng mua, lân cận, metadata, dev split", st("Có (notebook 11)", C.tealMid), "—"],
+    ["3 Góp ý của cô", "Context, NDCG, coverage/conversion, ngữ nghĩa, đa dạng, quan hệ node, trade-off", st("Có · số theo mô hình chờ R5", C.amber), "R5, R6"],
     ["4 Phương pháp", "GRAPES-GFN-Rec, hàm mục tiêu, điểm riêng của gợi ý", st("Có", C.tealMid), "R2 hoàn tất"],
     ["5 Thiết kế thực nghiệm", "Phương pháp so sánh, chỉ số, tiêu chí", st("Có", C.tealMid), "R4 freeze"],
     ["6 Kết quả", "Development, holdout, hành vi sampler, budget, ngữ nghĩa", st("Đang chờ", C.coral), "R3, R5, R6"],
@@ -109,9 +109,10 @@ function pending(title, kicker, gate, items, note) {
   s.addTable(rows, { x: 0.6, y: 1.5, w: 12.1, colW: [2.2, 5.6, 2.3, 2.0], fontFace: BF, fontSize: 13, color: C.ink, border: { type: "solid", pt: 0.5, color: C.grayLight }, rowH: 0.5, fill: { color: C.white } });
   s.addText([
     { text: "Nhật ký", options: { bold: true, breakLine: true } },
-    { text: "0.3 (16/09) — chuyển sang bản sống; thêm chương dữ liệu chi tiết và chương trả lời góp ý 3/9; kế hoạch nén về 30/11.", options: { breakLine: true } },
-    { text: "0.2 (16/09) — bản đề xuất GRAPES-GFN-Rec, lõi code R2 và 28 oracle test.", options: { breakLine: true } },
-    { text: "0.1 (16/09) — reset scope (DL-001): pilot M0–M2 chuyển phụ lục.", options: {} },
+    { text: "0.4 (16/09) — điền kết quả notebook 11: rating theo độ phổ biến, thời gian, bất thường, đồng mua, bùng nổ lân cận thực đo, khả năng chạm target, metadata, development split (R1 xong).", options: { breakLine: true } },
+    { text: "0.3 (16/09) — chuyển sang bản sống; chương dữ liệu chi tiết; chương trả lời góp ý 3/9; kế hoạch nén về 30/11.", options: { breakLine: true } },
+    { text: "0.2 (16/09) — đề xuất GRAPES-GFN-Rec, lõi code R2, 28 oracle test. 0.1 — reset scope (DL-001).", options: {} },
+    
   ], { x: 0.6, y: 5.6, w: 12.1, h: 1.3, fontFace: BF, fontSize: 12.5, color: C.ink, margin: 0, isTextBox: true, valign: "top", paraSpaceAfter: 2 });
 }
 
@@ -154,7 +155,7 @@ let MAP_SLIDE;
     ["1 user có trung bình", "1,67 item", "bậc user trung bình trong graph train", C.teal],
     ["Đi theo 1 cạnh tới item", "≈ 1.009 user", "bậc item kỳ vọng theo cạnh (Σd²/Σd), không phải 23,9", C.tealMid],
     ["Item lớn nhất", "21.348 user", "một hàng xóm duy nhất ở bước 1", C.amber],
-    ["Nhiều triplet trong batch", "vùng lân cận hợp lại tăng rất nhanh", "kích thước thực tế sẽ đo ở R3", C.coral],
+    ["Batch 4.096 triplet", "46% graph sau 1 bước, 95% sau 3 bước", "đo thực tế trên graph train, không lấy mẫu (notebook 11)", C.coral],
   ];
   stats.forEach(([a, b, c, col], i) => {
     const y = 1.6 + i * 1.22;
@@ -163,7 +164,7 @@ let MAP_SLIDE;
     s.addText(c, { x: 8.15, y: y + 0.45, w: 4.6, h: 0.35, fontFace: BF, fontSize: 12, color: C.gray, margin: 0, isTextBox: true });
     if (i < 3) arrow(s, 7.675, y + 0.72, 7.675, y + 1.35, C.grayLight);
   });
-  footnote(s, "Số liệu tính từ training graph Baby P4: 3.868.654 cạnh, 2.318.308 user, 162.125 item (06_code/results/data_story/data_story_summary.json). Dòng cuối là ước lượng định tính.");
+  footnote(s, "Số liệu tính từ training graph Baby P4: 3.868.654 cạnh, 2.318.308 user, 162.125 item (06_code/results/data_story/data_story_summary.json). Dòng cuối: deep_analysis_summary.json (S4).");
   s.addNotes("Giải thích bùng nổ lân cận bằng số thật của dữ liệu. Σd²/Σd là bậc trung bình của item khi đi theo một cạnh ngẫu nhiên — đó là thứ lan truyền thực sự gặp phải, lớn hơn nhiều so với bậc trung bình 23,9.");
 }
 
@@ -306,7 +307,7 @@ let MAP_SLIDE;
     ["Trùng cặp, thiếu ID, sai timestamp", "0 dòng", tag("Không cần xử lý", C.tealMid), "Đã kiểm tra chính xác trên toàn file"],
     ["Rating thấp 1–3★", "1.298.047 dòng (21,8%)", tag("Không làm cạnh positive", C.amber), "Không phải lỗi mà là tín hiệu không thích / không chắc; gợi ý top-N chỉ học từ 4–5★"],
     ["User / item chỉ 1 tương tác", "71,76% user; 33,35% item", tag("Giữ, không lọc k-core", C.tealMid), "Là long-tail thật; lọc sẽ xóa đúng phần sampling phải xử lý"],
-    ["Hành vi bất thường (bot, spam, đánh giá dồn dập)", "Chưa kiểm tra", tag("Kiểm tra ở R1, chỉ báo cáo", C.amber), "Không xóa khi chưa có quy tắc đăng ký trước"],
+    ["Hành vi bất thường (bot, spam, đánh giá dồn dập)", "0,1% tương tác từ user-ngày ≥20 đánh giá; tối đa 48/ngày", tag("Giữ, chỉ báo cáo", C.tealMid), "Quá ít để ảnh hưởng; không có quy tắc xóa đăng ký trước"],
     ["Thiên lệch phổ biến", "Top 1% item giữ 44,1% tương tác", tag("Giữ, báo theo nhóm", C.tealMid), "Không phải nhiễu nhưng làm lệch chỉ số tổng"],
   ];
   s.addTable(rows, { x: 0.6, y: 1.55, w: 12.1, colW: [3.0, 2.8, 2.5, 3.8], fontFace: BF, fontSize: 13.5, color: C.ink, border: { type: "solid", pt: 0.5, color: C.grayLight }, rowH: 0.72, fill: { color: C.white } });
@@ -446,11 +447,11 @@ let MAP_SLIDE;
   s.addTable(rows, { x: 8.4, y: 1.55, w: 4.3, colW: [1.2, 1.3, 1.8], fontFace: BF, fontSize: 12, color: C.ink, border: { type: "solid", pt: 0.5, color: C.grayLight }, rowH: 0.42, fill: { color: C.white } });
   s.addText(bullets([
     "Tăng mạnh từ 2013, đỉnh 2019–2020, giảm dần sau 2021: phân bố thay đổi theo thời gian → chia theo thời gian thay vì ngẫu nhiên.",
-    "Cửa sổ development ước tính ~546 nghìn tương tác (~14% trước t1), nên quy tắc t0 chính dự kiến đủ điều kiện; con số chính xác chờ notebook 11.",
+    "Cửa sổ development thực tế: 553.157 tương tác 4–5★, 105.401 target warm; quy tắc t0 chính đủ điều kiện.",
     "32.050 dòng trùng timestamp với dòng khác; không có dòng nào đúng bằng t1 hoặc t2.",
   ], 13), { x: 8.4, y: 4.25, w: 4.3, h: 2.6, fontFace: BF, margin: 0, isTextBox: true, valign: "top", paraSpaceAfter: 6 });
-  s.addText("Độ trôi của sản phẩm phổ biến theo năm, khoảng cách giữa hai tương tác: ĐANG CHỜ notebook 11.", { x: 0.6, y: 5.8, w: 7.5, h: 0.5, fontFace: BF, fontSize: 12, italic: true, color: C.coral, margin: 0, isTextBox: true });
-  footnote(s, "Nguồn: data_story_summary.json (monthly_p4), Baby_Products_protocol_audit.json (timestamp_audit). Số cửa sổ development là ước lượng theo tháng.");
+  s.addText("Chi tiết độ trôi và khoảng cách giữa hai tương tác: phần “Hành vi theo thời gian”.", { x: 0.6, y: 5.8, w: 7.5, h: 0.5, fontFace: BF, fontSize: 12, italic: true, color: C.tealMid, margin: 0, isTextBox: true });
+  footnote(s, "Nguồn: data_story_summary.json (monthly_p4), Baby_Products_protocol_audit.json (timestamp_audit). Số development: development_graph_manifest.json.");
 }
 
 
@@ -472,7 +473,7 @@ let MAP_SLIDE;
   ];
   s.addTable(rows, { x: 0.6, y: 4.55, w: 6.0, colW: [1.6, 1.5, 1.45, 1.45], fontFace: BF, fontSize: 13, color: C.ink, border: { type: "solid", pt: 0.5, color: C.grayLight }, rowH: 0.45, fill: { color: C.white } });
   card(s, 7.0, 1.55, 5.7, 2.55, "Đọc cấu trúc này thế nào", "Graph gần như liên thông nên lan truyền 2–3 bước chạm tới phần lớn graph. Một item head có hàng nghìn user; 80% sản phẩm tail chỉ giữ 10% cạnh. Mỗi lựa chọn node vì vậy đánh đổi giữa tín hiệu phổ biến (rẻ để có, ít cá nhân) và tín hiệu hiếm.", { fill: C.tealPale, bodySize: 13.5, headSize: 15 });
-  card(s, 7.0, 4.25, 5.7, 2.55, "ĐANG CHỜ notebook 11", "Số cặp sản phẩm đồng mua; tỷ lệ sản phẩm không có sản phẩm đồng mua (không nhận được collaborative signal); kích thước lân cận 1–3 bước thực tế của user; % graph bị chạm theo batch 1k–65k triplet; target development nằm trong 3 bước bao nhiêu %.", { fill: C.amberPale, bodySize: 13, headSize: 15 });
+  card(s, 7.0, 4.25, 5.7, 2.55, "Đo thêm (notebook 11)", "4,89 triệu cặp sản phẩm đồng mua. 20,7% sản phẩm (25,8% tail) không có sản phẩm đồng mua nào — chỉ được user một-tương-tác chạm tới. Một user ngẫu nhiên chạm trung vị 524 user sau 2 bước và 974 sản phẩm sau 3 bước.", { fill: C.amberPale, bodySize: 13, headSize: 15 });
   footnote(s, "Nguồn: data_story_summary.json (training_graph), configs/cohorts_v1.json (khóa trước khi có kết quả model).");
 }
 
@@ -508,20 +509,162 @@ let MAP_SLIDE;
 
 
 
-// Pending deep analysis
+// S1 rating by popularity / user
 {
-  const s = pending("Phân tích sâu dữ liệu (notebook 11)", "Chương 2 · Dữ liệu", "notebook 11_dataset_deep_analysis_and_dev_split — chạy trên Colab", [
-    ["Rating trung bình, tỷ lệ 5★ và ≤3★ theo độ phổ biến sản phẩm", "Dữ liệu rating; nhiễu", "S1"],
-    ["User chỉ cho 5★, độ lệch rating mỗi user", "Nhiễu; mất cân bằng", "S1"],
-    ["User mới theo năm, khoảng cách giữa hai tương tác, độ trôi top-1%", "Thời gian; không đủ dữ liệu", "S2"],
-    ["User đánh giá dồn dập, sản phẩm tăng đột biến, rating hằng số", "Nhiễu có nên loại bỏ", "S3"],
-    ["Cặp đồng mua, sản phẩm không có đồng mua, lân cận 1–3 bước", "Quan hệ node có giá trị; bùng nổ lân cận", "S4"],
-    ["Độ phủ metadata, danh mục cấp 2, giá theo head/tail", "Khớp ngữ nghĩa; đa dạng", "S6"],
-    ["Development split: số cạnh, target, retention, quy tắc đã dùng", "Protocol (gate R1)", "R1"],
-    ["Target development: nhóm head/body/tail, % trong 3 bước", "Quan hệ node; hệ quả số layer", "R1"],
-  ], "Mỗi dòng sẽ thành một slide và một mục trong báo cáo khi có deep_analysis_summary.json."); REG["deep"] = n;
+  const s = base("Rating theo độ phổ biến sản phẩm và theo user", "Chương 2 · Dữ liệu"); REG["deep"] = n; REG["s1"] = n;
+  const labs = ["1", "2–5", "6–20", "21–100", "101–1000", ">1000"];
+  s.addChart(pres.charts.BAR, [{ name: "% rating ≤3★", labels: labs, values: [26.0, 24.0, 22.8, 22.5, 20.7, 18.9] }], {
+    x: 0.5, y: 1.45, w: 6.2, h: 3.4, chartColors: [C.coral], showValue: true, dataLabelFormatCode: "0.0", dataLabelFontSize: 11, dataLabelColor: C.ink,
+    catAxisLabelColor: C.ink, valAxisHidden: true, valGridLine: { style: "none" }, catGridLine: { style: "none" },
+    showTitle: true, title: "% rating 1–3★ theo số rating của sản phẩm (trước t1)", titleFontSize: 12, titleColor: C.ink, showLegend: false,
+    showCatAxisTitle: true, catAxisTitle: "số rating của sản phẩm", catAxisTitleFontSize: 11, catAxisTitleColor: C.gray,
+  });
+  s.addText("Rating trung bình tăng đều từ 4,07 (sản phẩm 1 rating) lên 4,31 (sản phẩm >1000 rating). Sản phẩm phổ biến vừa nhiều tương tác vừa được đánh giá tốt hơn → positive P4 càng dồn về head.", { x: 0.6, y: 4.95, w: 6.0, h: 1.0, fontFace: BF, fontSize: 13, color: C.ink, margin: 0, isTextBox: true });
+  const stats = [["44,2%", "user có ≥2 rating cho mọi sản phẩm cùng một mức"], ["18,1%", "user có ≥5 rating chỉ cho 5★"], ["0,58", "độ lệch chuẩn rating trung vị của user (≥2 rating)"], ["4,18 → 4,34", "rating trung bình từ user 1 rating đến user >20 rating"]];
+  stats.forEach(([v, l], i) => {
+    const x = 7.0 + (i % 2) * 2.9, y = 1.55 + Math.floor(i / 2) * 1.5;
+    s.addText(v, { x, y, w: 2.8, h: 0.65, fontFace: HF, fontSize: 24, bold: true, color: C.teal, margin: 0, isTextBox: true });
+    s.addText(l, { x, y: y + 0.65, w: 2.7, h: 0.7, fontFace: BF, fontSize: 12, color: C.gray, margin: 0, isTextBox: true, valign: "top" });
+  });
+  card(s, 7.0, 4.65, 5.7, 2.2, "Hệ quả", "Rating mang nhiều thói quen của người đánh giá hơn là mức thích tuyệt đối → dùng tín hiệu nhị phân 4–5★ thay vì hồi quy rating là hợp lý. Cần báo kết quả theo head/body/tail vì positive đã lệch về head từ dữ liệu.", { fill: C.tealPale, bodySize: 13, headSize: 15 });
+  footnote(s, "Nguồn: results/dataset_deep_analysis/deep_analysis_summary.json (S1_rating), 4.886.112 rating trước t1.");
 }
 
+// S2 temporal behaviour and drift
+{
+  const s = base("Hành vi theo thời gian và độ trôi của sản phẩm phổ biến", "Chương 2 · Dữ liệu"); REG["s2"] = n;
+  const yrs = ["2015", "2016", "2017", "2018", "2019", "2020", "2021"];
+  s.addChart(pres.charts.LINE, [
+    { name: "Jaccard top-1% với năm trước", labels: yrs, values: [0.541, 0.505, 0.515, 0.450, 0.505, 0.497, 0.503] },
+    { name: "% rating vào top-1% của năm trước", labels: yrs, values: [0.238, 0.254, 0.273, 0.246, 0.253, 0.281, 0.303] },
+    { name: "% rating vào top-1% của chính năm đó", labels: yrs, values: [0.308, 0.316, 0.319, 0.316, 0.326, 0.336, 0.309] },
+  ], {
+    x: 0.5, y: 1.45, w: 6.6, h: 4.2, chartColors: [C.teal, C.amber, C.grayLight], lineSize: 2.5, lineDataSymbol: "circle", lineDataSymbolSize: 7,
+    catAxisLabelColor: C.ink, valAxisLabelColor: C.gray, valAxisMinVal: 0, valAxisMaxVal: 0.7, valAxisLabelFormatCode: "0.0", valGridLine: { color: "E3E8E8", size: 0.5 },
+    showLegend: true, legendPos: "b", legendFontSize: 11, showTitle: true, title: "Top 1% sản phẩm thay đổi khoảng một nửa mỗi năm", titleFontSize: 12, titleColor: C.ink,
+  });
+  const stats = [["20,9 ngày", "khoảng cách trung vị giữa hai tương tác của cùng user (p90: 598 ngày)"], ["41,4%", "cặp tương tác liên tiếp của user xảy ra trong cùng một ngày"], ["565 ngày", "thời gian hoạt động trung vị của sản phẩm có ≥2 rating"], ["55–60%", "tỷ lệ rating mỗi năm (2014–2023) đến từ user lần đầu xuất hiện"]];
+  stats.forEach(([v, l], i) => {
+    const y = 1.5 + i * 1.02;
+    s.addText(v, { x: 7.4, y, w: 2.0, h: 0.85, fontFace: HF, fontSize: 20, bold: true, color: C.teal, margin: 0, isTextBox: true, valign: "middle" });
+    s.addText(l, { x: 9.45, y, w: 3.25, h: 0.85, fontFace: BF, fontSize: 12.5, color: C.ink, margin: 0, isTextBox: true, valign: "middle" });
+  });
+  card(s, 0.6, 5.8, 12.1, 1.0, "Hệ quả", "", { fill: C.amberPale, headSize: 14 });
+  s.addText("Phổ biến của năm trước chỉ giải thích một phần năm sau → chia theo thời gian là cần thiết; sampler ưu tiên bậc tích lũy (M1) có thể bám vào sản phẩm đã hết thời. User thường đánh giá theo đợt → lịch sử cá nhân rất ngắn.", { x: 1.75, y: 5.8, w: 10.8, h: 1.0, fontFace: BF, fontSize: 12.5, color: C.ink, margin: 0, isTextBox: true, valign: "middle" });
+  footnote(s, "Nguồn: deep_analysis_summary.json (S2_temporal). Độ trôi và khoảng cách tính trên dữ liệu trước t1; tỷ lệ user mới theo năm dùng toàn bộ số dòng.");
+}
+
+// S3 anomalies
+{
+  const s = base("Bất thường: có bot, spam hay đánh giá dồn dập không?", "Chương 2 · Dữ liệu"); REG["s3"] = n;
+  const head = (t) => ({ text: t, options: { bold: true, color: C.white, fill: { color: C.teal } } });
+  const rows = [
+    [head("Dấu hiệu"), head("Số lượng (trước t1)"), head("Tỷ lệ tương tác"), head("Đánh giá")],
+    ["User đánh giá ≥5 sản phẩm trong 1 ngày", "36.470 user-ngày (33.367 user)", "4,90%", "Mua sắm theo đợt, bình thường"],
+    ["User đánh giá ≥10 sản phẩm trong 1 ngày", "3.335 user-ngày (3.229 user)", "0,87%", "Có thể là đánh giá hàng loạt"],
+    ["User đánh giá ≥20 sản phẩm trong 1 ngày", "197 user-ngày (195 user)", "0,10%", "Đáng ngờ nhưng rất ít"],
+    ["User đánh giá ≥50 sản phẩm trong 1 ngày", "0", "0%", "Không có; tối đa 48/ngày"],
+    ["Cùng user, cùng timestamp", "66 nhóm, 135 dòng, tối đa 3", "~0%", "Không đáng kể"],
+    ["Sản phẩm tăng đột biến (≥50/ngày và ≥10× trung vị)", "32 sản phẩm-ngày, 10 sản phẩm", "3.349 dòng", "Có thể do khuyến mãi"],
+    ["User ≥10 rating cho cùng một mức", "2.610 / 31.882 user", "8,2% nhóm này", "Thói quen, phần lớn 5★"],
+  ];
+  s.addTable(rows, { x: 0.6, y: 1.5, w: 12.1, colW: [4.1, 3.3, 1.8, 2.9], fontFace: BF, fontSize: 13.5, color: C.ink, border: { type: "solid", pt: 0.5, color: C.grayLight }, rowH: 0.56, fill: { color: C.white } });
+  s.addText("Kết luận: tín hiệu bất thường chiếm dưới 1% tương tác. Không xóa (không có quy tắc đăng ký trước và ảnh hưởng quá nhỏ); ghi nhận như một hạn chế.", { x: 0.6, y: 6.15, w: 12.1, h: 0.6, fontFace: BF, fontSize: 14, italic: true, color: C.tealMid, margin: 0, isTextBox: true });
+  footnote(s, "Nguồn: deep_analysis_summary.json (S3_anomalies). Chỉ báo cáo, không có dòng nào bị loại.");
+}
+
+// S4 measured neighbourhood explosion
+{
+  const s = base("Bùng nổ lân cận: đo thực tế trên graph train", "Chương 2 · Dữ liệu"); REG["s4x"] = n;
+  s.addChart(pres.charts.LINE, [
+    { name: "1.024 triplet", labels: ["1 bước", "2 bước", "3 bước"], values: [23.6, 44.7, 93.2] },
+    { name: "4.096 triplet", labels: ["1 bước", "2 bước", "3 bước"], values: [46.3, 65.9, 95.1] },
+    { name: "16.384 triplet", labels: ["1 bước", "2 bước", "3 bước"], values: [68.4, 82.1, 96.3] },
+    { name: "65.536 triplet", labels: ["1 bước", "2 bước", "3 bước"], values: [86.6, 93.1, 97.6] },
+  ], {
+    x: 0.5, y: 1.45, w: 6.6, h: 4.6, chartColors: [C.grayLight, C.teal, C.amber, C.coral], lineSize: 2.5, lineDataSymbol: "circle", lineDataSymbolSize: 8,
+    catAxisLabelColor: C.ink, valAxisLabelColor: C.gray, valAxisMinVal: 0, valAxisMaxVal: 100, valGridLine: { color: "E3E8E8", size: 0.5 },
+    showLegend: true, legendPos: "b", legendFontSize: 11, showTitle: true, title: "% trong 2,48 triệu node bị chạm khi không lấy mẫu", titleFontSize: 12, titleColor: C.ink,
+  });
+  const head = (t) => ({ text: t, options: { bold: true, color: C.white, fill: { color: C.teal } } });
+  const rows = [
+    [head("Một user ngẫu nhiên"), head("p50"), head("p90"), head("p99")],
+    ["Sản phẩm sau 1 bước", "1", "3", "8"],
+    ["User sau 2 bước", "524", "4.342", "21.348"],
+    ["Sản phẩm sau 3 bước", "974", "5.821", "12.979"],
+  ];
+  s.addTable(rows, { x: 7.4, y: 1.55, w: 5.3, colW: [2.3, 1.0, 1.0, 1.0], fontFace: BF, fontSize: 13, color: C.ink, border: { type: "solid", pt: 0.5, color: C.grayLight }, rowH: 0.45, fill: { color: C.white } });
+  s.addText("User có ≥5 tương tác: trung vị 5.483 user sau 2 bước, 7.917 sản phẩm sau 3 bước.", { x: 7.4, y: 3.45, w: 5.3, h: 0.6, fontFace: BF, fontSize: 12, color: C.gray, margin: 0, isTextBox: true });
+  card(s, 7.4, 4.2, 5.3, 2.65, "Hệ quả trực tiếp", "Batch 65.536 triplet của pilot đã chạm 87% graph ngay bước đầu → gần như full-graph, lấy mẫu không còn ý nghĩa. Budget cho R3 phải bắt đầu từ batch ≤ 4.096, nơi chọn node thực sự quyết định context (R-1).", { fill: C.coralPale, bodySize: 13.5, headSize: 15 });
+  footnote(s, "Nguồn: deep_analysis_summary.json (S4_graph.neighbourhood_explosion_unsampled, 3 lần lặp mỗi batch; unsampled_user_reach, 5.000 user ngẫu nhiên).");
+}
+
+// S4 co-occurrence and target reachability
+{
+  const s = base("Quan hệ đồng mua và bằng chứng collaborative cho target", "Chương 2 · Dữ liệu"); REG["reach"] = n;
+  s.addChart(pres.charts.BAR, [
+    { name: "% target có đường đi ≤3 bước", labels: ["Head", "Body", "Tail", "Tất cả"], values: [53.0, 16.9, 4.5, 29.0] },
+  ], {
+    x: 0.5, y: 1.45, w: 5.6, h: 3.6, chartColors: [C.teal], showValue: true, dataLabelFormatCode: "0.0", dataLabelFontSize: 12, dataLabelColor: C.ink,
+    catAxisLabelColor: C.ink, valAxisHidden: true, valGridLine: { style: "none" }, catGridLine: { style: "none" }, valAxisMaxVal: 60,
+    showTitle: true, title: "% target development có đường user→SP→user→target", titleFontSize: 12, titleColor: C.ink, showLegend: false,
+  });
+  s.addChart(pres.charts.BAR, [
+    { name: "% sản phẩm không có sản phẩm đồng mua", labels: ["Head", "Body", "Tail", "Tất cả"], values: [0.0, 0.13, 25.8, 20.7] },
+  ], {
+    x: 6.3, y: 1.45, w: 6.4, h: 3.6, chartColors: [C.coral], showValue: true, dataLabelFormatCode: "0.0", dataLabelFontSize: 12, dataLabelColor: C.ink,
+    catAxisLabelColor: C.ink, valAxisHidden: true, valGridLine: { style: "none" }, catGridLine: { style: "none" }, valAxisMaxVal: 30,
+    showTitle: true, title: "% sản phẩm không có sản phẩm đồng mua nào (graph train)", titleFontSize: 12, titleColor: C.ink, showLegend: false,
+  });
+  card(s, 0.6, 5.2, 5.5, 1.65, "Chỉ 29% target có bằng chứng đồng mua trực tiếp", "Tail gần như không có (4,5%). Với phần còn lại, model phải dựa vào embedding lan truyền xa hơn hoặc độ phổ biến.", { fill: C.tealPale, bodySize: 13, headSize: 14 });
+  card(s, 6.3, 5.2, 6.4, 1.65, "33.560 sản phẩm không nhận collaborative signal", "4,89 triệu cặp đồng mua, nhưng 20,7% sản phẩm chỉ được user một-tương-tác chạm tới. Không sampler nào tạo ra tín hiệu không tồn tại.", { fill: C.coralPale, bodySize: 13, headSize: 14 });
+  footnote(s, "Nguồn: S4_graph.item_item_cooccurrence; R1_dev_target_analysis (20.000 target development mẫu, graph G_dev_train). Không dùng validation/test.");
+}
+
+// R1 development split
+{
+  const s = base("Development split (gate R1): kết quả", "Chương 2 · Dữ liệu"); REG["dev"] = n;
+  const stats = [["05/09/2020", "t0 = t1 − (t2 − t1); quy tắc chính, không cần dự phòng"], ["3.315.497", "cạnh G_dev_train (85,7% graph train hiện tại)"], ["1.965.541 · 144.011", "user · sản phẩm trong G_dev_train"], ["105.401", "target warm trong [t0, t1) — 19,1% của 553.157 tương tác"]];
+  stats.forEach(([v, l], i) => {
+    const y = 1.5 + i * 1.05;
+    s.addText(v, { x: 0.6, y, w: 3.4, h: 0.85, fontFace: HF, fontSize: 22, bold: true, color: C.teal, margin: 0, isTextBox: true, valign: "middle" });
+    s.addText(l, { x: 4.05, y, w: 2.9, h: 0.85, fontFace: BF, fontSize: 12.5, color: C.ink, margin: 0, isTextBox: true, valign: "middle" });
+  });
+  s.addChart(pres.charts.BAR, [
+    { name: "% sản phẩm trong catalog", labels: ["Head", "Body", "Tail"], values: [1.0, 19.0, 80.0] },
+    { name: "% target development", labels: ["Head", "Body", "Tail"], values: [37.3, 49.8, 12.9] },
+  ], {
+    x: 7.1, y: 1.45, w: 5.6, h: 3.5, barGrouping: "clustered", chartColors: [C.grayLight, C.teal], showValue: true, dataLabelFormatCode: "0.0", dataLabelFontSize: 11, dataLabelColor: C.ink,
+    catAxisLabelColor: C.ink, valAxisHidden: true, valGridLine: { style: "none" }, catGridLine: { style: "none" },
+    showTitle: true, title: "Target rơi vào nhóm nào", titleFontSize: 12, titleColor: C.ink, showLegend: true, legendPos: "t", legendFontSize: 11,
+  });
+  card(s, 0.6, 5.85, 6.3, 1.0, "Cách ly", "", { fill: C.tealPale, headSize: 14 });
+  s.addText("Mọi cạnh train < mọi target; mọi dòng < t1; không dùng dòng validation/test. SHA-256 lưu trong manifest.", { x: 1.8, y: 5.85, w: 5.0, h: 1.0, fontFace: BF, fontSize: 12, color: C.ink, margin: 0, isTextBox: true, valign: "middle" });
+  card(s, 7.1, 5.1, 5.6, 1.75, "Target user", "46,5% target thuộc user chỉ có 1 tương tác train; 39,1% user 2–5; 12,6% user 6–20; 1,8% user >20. 77,2% tương tác trong cửa sổ bị loại vì user mới.", { fill: C.amberPale, bodySize: 12.5, headSize: 14 });
+  footnote(s, "Nguồn: results/grapes_gfn_rec_development/development_graph_manifest.json; test: tests/test_grapes_gfn_rec_protocol.py.");
+}
+
+// S6 metadata
+{
+  const s = base("Metadata sản phẩm: có đủ để đo ngữ nghĩa không?", "Chương 2 · Dữ liệu"); REG["meta"] = n;
+  s.addChart(pres.charts.BAR, [{ name: "Độ phủ", labels: ["Title", "Store", "Danh mục", "Features", "Mô tả", "Giá"], values: [99.99, 98.5, 93.4, 77.6, 62.3, 22.6] }], {
+    x: 0.5, y: 1.45, w: 5.2, h: 3.6, barDir: "bar", chartColors: [C.teal], showValue: true, dataLabelFormatCode: "0.0", dataLabelFontSize: 11, dataLabelColor: C.ink,
+    catAxisLabelColor: C.ink, valAxisHidden: true, valGridLine: { style: "none" }, catGridLine: { style: "none" }, valAxisMaxVal: 110, catAxisOrientation: "maxMin",
+    showTitle: true, title: "% trong 162.125 sản phẩm train có trường", titleFontSize: 12, titleColor: C.ink, showLegend: false,
+  });
+  const cats = ["Nursery", "Feeding", "Baby Care", "Diapering", "Safety", "Car Seats", "Strollers", "Activity"];
+  s.addChart(pres.charts.BAR, [
+    { name: "% sản phẩm", labels: cats, values: [32.7, 13.5, 9.6, 12.7, 6.0, 4.2, 5.1, 1.8] },
+    { name: "% tương tác", labels: cats, values: [22.4, 17.9, 12.2, 12.0, 11.3, 7.0, 4.4, 3.7] },
+  ], {
+    x: 5.9, y: 1.45, w: 6.8, h: 3.6, barGrouping: "clustered", chartColors: [C.grayLight, C.amber], showValue: false,
+    catAxisLabelColor: C.ink, catAxisLabelFontSize: 10, valAxisLabelColor: C.gray, valGridLine: { color: "E3E8E8", size: 0.5 }, catGridLine: { style: "none" },
+    showTitle: true, title: "Danh mục cấp 2 lớn nhất (96 danh mục cấp 2, 448 danh mục lá)", titleFontSize: 12, titleColor: C.ink, showLegend: true, legendPos: "t", legendFontSize: 11,
+  });
+  card(s, 0.6, 5.2, 6.0, 1.65, "Đủ cho semantic match và ILD", "Title gần 100%, danh mục 93,4% → đo được mức khớp văn bản và đa dạng danh mục. Giá chỉ 22,6% → không dùng. Chỉ 61% sản phẩm có main_category là “Baby”.", { fill: C.tealPale, bodySize: 12.5, headSize: 14 });
+  card(s, 6.8, 5.2, 5.9, 1.65, "Phân bổ theo danh mục cũng lệch", "Nursery chiếm 32,7% sản phẩm nhưng 22,4% tương tác; Safety 6,0% sản phẩm nhưng 11,3% tương tác. Giá trung vị ~19–20 USD ở cả head, body, tail.", { fill: C.amberPale, bodySize: 12.5, headSize: 14 });
+  footnote(s, "Nguồn: deep_analysis_summary.json (S6_metadata), meta_Baby_Products.jsonl.gz. Metadata chỉ dùng cho đánh giá, không vào huấn luyện.");
+}
 
 // Data -> design implications
 {
@@ -536,9 +679,12 @@ let MAP_SLIDE;
     ["64% tương tác validation của user mới", "Giới hạn warm-start; cold-start là hướng phát triển"],
     ["Phân bố thay đổi mạnh theo năm", "Chia theo thời gian; development split mới trước t1"],
     ["Graph gần liên thông, bậc kỳ vọng theo cạnh ~1.009", "Lấy mẫu có budget k; chi phí sampler được tính vào trade-off"],
-    ["Có metadata sản phẩm", "Dùng cho đánh giá ngữ nghĩa/đa dạng, không đưa vào huấn luyện"],
+    ["Batch 65.536 triplet chạm 87% graph ngay bước 1", "Budget R3 bắt đầu từ batch ≤ 4.096 cho mọi sampler"],
+    ["Chỉ 29% target có đường ≤3 bước; tail 4,5%", "Báo kết quả theo nhóm có/không có đường ≤3 bước (DL-003)"],
+    ["Top 1% sản phẩm đổi ~một nửa mỗi năm", "Theo dõi M1 (bậc tích lũy) có bám sản phẩm cũ"],
+    ["Metadata: title ~100%, danh mục 93%, giá 23%", "Đo ngữ nghĩa bằng title + danh mục, không dùng giá"],
   ];
-  s.addTable(rows, { x: 0.6, y: 1.5, w: 12.1, colW: [5.6, 6.5], fontFace: BF, fontSize: 14, color: C.ink, border: { type: "solid", pt: 0.5, color: C.grayLight }, rowH: 0.56, fill: { color: C.white } });
+  s.addTable(rows, { x: 0.6, y: 1.5, w: 12.1, colW: [5.6, 6.5], fontFace: BF, fontSize: 12.5, color: C.ink, border: { type: "solid", pt: 0.5, color: C.grayLight }, rowH: 0.42, fill: { color: C.white } });
 }
 
 // NEW ─ Concepts
@@ -569,7 +715,7 @@ let MAP_SLIDE;
   const rows = [
     [head("Điều kiện"), head("Trạng thái")],
     ["Amazon Reviews'23 có meta_Baby_Products (title, categories, features, store, price)", "Có sẵn, công bố chính thức [10]"],
-    ["Độ phủ metadata trên 162.125 sản phẩm train", "ĐANG CHỜ notebook 11"],
+    ["Độ phủ trên 162.125 sản phẩm train: title 99,99%, danh mục 93,4%, features 77,6%, giá 22,6%", "Đủ cho title + danh mục; không dùng giá"],
     ["Metadata không vào huấn luyện → không đổi phương pháp, chỉ thêm phép đo", "Cần cô duyệt (OD-2)"],
     ["Tính trên rank vector đã lưu của R5", "Sau R5"],
   ];
@@ -793,7 +939,7 @@ let MAP_SLIDE;
   });
   const tasks = [
     ["R0 · R2 lõi", "Scope, spec, code, oracle test", 0, 0.6, C.tealMid, "Xong"],
-    ["Notebook 11", "Phân tích sâu + dev split (R1)", 0, 1, C.amber, "Chạy ngay"],
+    ["Notebook 11", "Phân tích sâu + dev split (R1)", 0, 0.6, C.tealMid, "Xong"],
     ["R2 hoàn tất", "Negative, ablation D9/D6, embedding thưa", 0.4, 1, C.teal, ""],
     ["R3 development", "Backbone, budget, quét α/lr, khả thi", 1, 2.5, C.teal, ""],
     ["R4 freeze", "Chốt OD-1…4 với cô, hash cấu hình", 3.3, 0.7, C.coral, "Gặp cô"],
@@ -835,8 +981,8 @@ let MAP_SLIDE;
   s.background = { color: C.teal };
   s.addText("Tổng kết", { x: 0.6, y: 0.5, w: 8, h: 0.8, fontFace: HF, fontSize: 36, bold: true, color: C.white, margin: 0, isTextBox: true });
   const colsT = [
-    ["Đã đạt được", ["Kiểm toán 3 dataset Amazon, trả lời các câu hỏi dữ liệu của cô", "Protocol thời gian, evaluator toàn catalog", "Rà soát và khóa lại scope (DL-001), checklist G1–G7", "Thiết kế GRAPES-GFN-Rec cho gợi ý + lõi code, 28 oracle test"]],
-    ["Sẽ làm", ["Development split và thí nghiệm development (R1, R3)", "Freeze rồi so sánh ghép cặp 7 phương pháp (R4, R5)", "Phân tích chất lượng – chi phí – hành vi sampler (R6)", "Báo cáo cuối từ bằng chứng holdout (R7)"]],
+    ["Đã đạt được", ["Phân tích sâu dataset, trả lời các câu hỏi dữ liệu của cô", "Protocol thời gian, evaluator toàn catalog", "Rà soát và khóa lại scope (DL-001), checklist G1–G7", "Thiết kế GRAPES-GFN-Rec cho gợi ý + lõi code, 28 oracle test"]],
+    ["Sẽ làm", ["Development split xong (R1); thí nghiệm development (R3)", "Freeze rồi so sánh ghép cặp 7 phương pháp (R4, R5)", "Phân tích chất lượng – chi phí – hành vi sampler (R6)", "Báo cáo cuối từ bằng chứng holdout (R7)"]],
     ["Xin ý kiến cô", ["OD-1: thêm GraphSAGE fan-out làm đối chứng?", "OD-2: nối metadata để đo ngữ nghĩa, đa dạng? (khuyến nghị: có)", "OD-3: lưới budget (1 chính + 1 chặt)?", "OD-4: số seed (đề xuất 3)?"]],
   ];
   colsT.forEach(([h, items], i) => {
@@ -882,17 +1028,17 @@ let MAP_SLIDE;
   const rows = [
     [head("Câu hỏi của cô (3/9)"), head("Trả lời ngắn"), head("Trạng thái"), head("Slide")],
     ["Coverage / conversion, context, NDCG", "Định nghĩa rõ; conversion cần log online, không có trong dữ liệu offline", "Có", sl("concept")],
-    ["Mức khớp ngữ nghĩa", "Semantic match@20 từ metadata Amazon", pend("Chờ nb11 + R5"), sl("sem")],
+    ["Mức khớp ngữ nghĩa", "Semantic match@20; metadata đủ (title ~100%, danh mục 93%)", pend("Số theo mô hình chờ R5"), sl("sem", "meta")],
     ["Tính phân bổ, đa dạng sản phẩm được gợi ý", "Exposure/hit head–body–tail, Gini, ILD@20, coverage", "Định nghĩa có; số chờ R5", sl("graph", "sem")],
     ["Trade-off; tiêu chí nào thì giá trị khác ra sao", "Bảng tối ưu X → hệ quả Y; mặt trận Pareto", "Có; số chờ R6", sl("trade")],
     ["Bao nhiêu sản phẩm, histogram từng sản phẩm", "217.654 → 194.722 → 162.125; histogram theo sản phẩm và user", "Có", sl("hist")],
-    ["Mất cân bằng, dồn về, long-tail", "Top 1% giữ 44,1% tương tác; Gini 0,858; head/body/tail", "Có", sl("imb", "graph")],
-    ["Dữ liệu rating", "Hình chữ J; so sánh P4/P5/tất cả", "Có; theo độ phổ biến chờ nb11", sl("rating")],
-    ["Không đủ dữ liệu", "71,8% user 1 tương tác; 64% tương tác validation của user mới", "Có", sl("cold")],
+    ["Mất cân bằng, dồn về, long-tail, thời gian", "Top 1% giữ 44,1%; Gini 0,858; top 1% đổi ~50%/năm", "Có", sl("imb", "s2")],
+    ["Dữ liệu rating", "Hình chữ J; P4/P5; rating tăng theo độ phổ biến; 44% user cho cùng một mức", "Có", sl("rating", "s1")],
+    ["Không đủ dữ liệu", "71,8% user 1 tương tác; 73% tương tác tương lai của user mới", "Có", sl("cold", "dev")],
     ["Cần biểu diễn dữ liệu gì", "Graph hai phía, cạnh = tương tác 4–5★ có thời điểm", "Có", sl("hist")],
-    ["Nhiễu nhiều không, có nên loại bỏ", "6 kiểu nhiễu và quyết định cho từng kiểu", "Có; bot/spam chờ nb11", sl("noise")],
-    ["Sampling hay distributed", "So sánh 5 hướng; chọn sampling, bổ sung cho distributed", "Có", sl("dist")],
-    ["Quan hệ giữa các node có giá trị ra sao", "5 loại quan hệ; sampler học giá trị; đo ở RQ3", "Có; số chờ nb11, R6", sl("rel")],
+    ["Nhiễu nhiều không, có nên loại bỏ", "6 kiểu nhiễu; bất thường <1% tương tác → giữ", "Có", sl("noise", "s3")],
+    ["Sampling hay distributed", "5 hướng; batch 4.096 triplet đã chạm 46% graph sau 1 bước", "Có", sl("dist", "s4x")],
+    ["Quan hệ giữa các node có giá trị ra sao", "Chỉ 29% target có đường đồng mua ≤3 bước; 21% SP không đồng mua", "Có; hành vi sampler chờ R6", sl("rel", "reach")],
   ];
   s.addTable(rows, { x: 0.6, y: 1.45, w: 12.1, colW: [3.4, 5.3, 2.4, 1.0], fontFace: BF, fontSize: 12, color: C.ink, border: { type: "solid", pt: 0.5, color: C.grayLight }, rowH: 0.41, fill: { color: C.white } });
 }

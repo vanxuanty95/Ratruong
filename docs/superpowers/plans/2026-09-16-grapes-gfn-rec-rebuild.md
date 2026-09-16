@@ -64,9 +64,9 @@ Steps:
 - [x] Rule of spec §3.1 implemented (t0 = t1 − (t2 − t1); fallback 80% edge quantile; thresholds 20.000 targets / 50% edges).
 - [x] Contract test: notebook never references validation/test target files; embedded source equals script; structural stats restricted before t1.
 - [x] Script tested end-to-end on synthetic data (cloud workspace).
-- [ ] **Ty runs notebook 11 on Colab** → `deep_analysis_bundle.zip`.
-- [ ] Copy summary/figures to `results/dataset_deep_analysis/`, manifest to `results/grapes_gfn_rec_development/`; add `tests/test_grapes_gfn_rec_protocol.py` reading the saved manifest.
-- [ ] Fill "ĐANG CHỜ notebook 11" in living deck/report (v0.4).
+- [x] Ty ran notebook 11 on Colab → `deep_analysis_bundle.zip`.
+- [x] Summary/figures in `results/dataset_deep_analysis/`, manifest in `results/grapes_gfn_rec_development/`; `tests/test_grapes_gfn_rec_protocol.py` (7 tests).
+- [x] Living deck/report v0.4 filled; design conclusions recorded as DL-003 (batch ≤ 4.096 for R3; report by 3-hop evidence cohort).
 
 ### Task LD: Living thesis documents (DL-002) — ongoing
 
@@ -78,7 +78,7 @@ Steps:
 **Files:** `notebooks/12_grapes_gfn_rec_development.ipynb`, `configs/grapes_gfn_rec_development_v1.json`, `tests/test_grapes_gfn_rec_dev_notebook.py`, `results/grapes_gfn_rec_development/`
 
 - [ ] R3a Backbone adequacy: MostPop vs Full LightGCN on `D_dev` across an epoch grid registered in config; pick smallest budget where Full LightGCN > MostPop. Fail → decision log entry before continuing.
-- [ ] R3b Budget regime shared by all samplers: batch size grid (e.g. 1024/4096/16384) × `k_l` relative to |V⁰|; record sampler updates per run, wall time, memory on T4.
+- [ ] R3b Budget regime shared by all samplers: batch size grid starting at ≤ 4.096 triplets (DL-003: 65.536 touches 87% of graph at 1 hop) × `k_l` relative to |V⁰|; record sampler updates per run, wall time, memory on T4.
 - [ ] R3c Sampler sweep (dev only): `α` log-grid, `log_z_init`, `lr_S`; select by dev NDCG@20 with cost reported; one seed for sweep, second seed to confirm.
 - [ ] R3d Learning evidence (G7): selected-node degree/type/cohort distribution differs from M0 at same candidates; `‖ΔΘ_S‖>0`; TB residual decreases.
 - [ ] R3e Feasibility: sampler overhead ≤ registered ceiling per epoch; else reduce `GCN_S` width or candidate subgraph and log decision.

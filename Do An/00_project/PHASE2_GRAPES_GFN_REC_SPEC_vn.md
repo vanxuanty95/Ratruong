@@ -59,7 +59,7 @@ GRAPES gốc (arXiv:2310.03399, code commit `71ecebe`) giải node classificatio
 
 Đây là lý do không thể "port nguyên". Mỗi điểm có quyết định hoặc gate đo trước khi chạy holdout.
 
-**R-1. Credit assignment theo kích thước batch.** GRAPES dùng batch 256–512 target, nên có hàng nghìn sampler update. Pilot M0–M2 dùng batch 65.536 triplet × 5 epoch ≈ 300 optimizer step: một reward vô hướng cho ~196k target node và chỉ ~300 update sampler — gần như chắc chắn không học được policy. **Quyết định:** budget regime (batch size, số step, `k_l`) được chọn lại trên development split cho *mọi* sampler cùng lúc (Gate R3). Pilot budget không được kế thừa.
+**R-1. Credit assignment theo kích thước batch.** *(Bằng chứng DL-003: batch 65.536 triplet chạm 86,6% graph sau 1 bước khi không lấy mẫu; lưới R3 bắt đầu từ batch ≤ 4.096.)* GRAPES dùng batch 256–512 target, nên có hàng nghìn sampler update. Pilot M0–M2 dùng batch 65.536 triplet × 5 epoch ≈ 300 optimizer step: một reward vô hướng cho ~196k target node và chỉ ~300 update sampler — gần như chắc chắn không học được policy. **Quyết định:** budget regime (batch size, số step, `k_l`) được chọn lại trên development split cho *mọi* sampler cùng lúc (Gate R3). Pilot budget không được kế thừa.
 
 **R-2. Scale của reward.** Mean BPR ≈ 0,69 lúc đầu và chênh lệch giữa các trajectory rất nhỏ. GRAPES chọn `loss_coef` từ ~6·10³ tới ~6·10⁵ bằng sweep. **Quyết định:** `α` và `log_z_init` được chọn trên development split từ grid log-scale đăng ký trước; log riêng `log q`, `log Z`, `α·L_task` và TB residual để phát hiện `log q` áp đảo reward.
 
@@ -72,6 +72,8 @@ GRAPES gốc (arXiv:2310.03399, code commit `71ecebe`) giải node classificatio
 **R-6. Backbone phải đủ tốt để so sánh sampler có nghĩa.** Trong pilot, Full LightGCN (NDCG@20 0,004931) thua MostPop (0,005873) sau 5 epoch: backbone đang under-trained, nên khác biệt giữa sampler có thể chỉ là nhiễu của chế độ huấn luyện ngắn. **Quyết định:** Gate R3 yêu cầu Full LightGCN vượt MostPop trên development split trước khi so sánh sampler.
 
 **R-7. Negative item cũng là target.** `i⁻` được đưa vào `V⁰` nên sampler cũng chọn ngữ cảnh cho negative. Giữ như reference design (D-contract §3.3); ablation "chỉ user + positive trong `V⁰`" không thuộc phương án chính.
+
+**R-9. Bằng chứng collaborative hạn chế (DL-003).** Chỉ 29,0% target development có đường độ dài 3 từ user (tail 4,5%); 20,7% sản phẩm không có sản phẩm đồng mua. **Quyết định:** R5 báo thêm kết quả theo nhóm target có/không có đường ≤ 3 trong graph train; không claim sampler cải thiện nhóm không có bằng chứng nếu số liệu không cho thấy.
 
 **R-8. Positive edge leakage trong propagation.** Giữ edge `(u,i⁺)` là phương án chính; mask transient là sensitivity ablation bắt buộc (D9) nhưng chạy sau primary matrix.
 
@@ -172,7 +174,7 @@ Không bao giờ: đổi method, `α`, budget hay seed sau khi đọc holdout; d
 | Gate | Nội dung | Điều kiện qua gate | Chạy ở |
 |---|---|---|---|
 | R0 | Governance: spec, decision log, docs, archive pilot, checker | Không còn file trung tâm gọi M2 là method; checker pass | Local |
-| R1 | Development split theo §3.1 | Manifest + SHA-256; test isolation pass | Colab |
+| R1 | Development split theo §3.1 (xong 16/09: t0 = 05/09/2020, 105.401 target) | Manifest + SHA-256; test isolation pass | Colab |
 | R2 | Primitive + oracle GRAPES-GFN-Rec (G1–G7, T01–T25 áp dụng) | Toàn bộ oracle test pass trên CPU | Local |
 | R3 | Development: backbone adequacy (R-6), budget regime (R-1), sweep `α`/`log_z_init`/lr (R-2), feasibility T4 (R-5), sampler thực sự học (G7) | Full LightGCN > MostPop trên `D_dev`; loss hữu hạn; replay xác định; cấu hình chọn chỉ từ `D_dev` | Colab |
 | R4 | Freeze: config hash, seed, budget, evaluator hash, analysis script, matrix | `current_validation_read = false` lúc tạo manifest | Local + Colab |

@@ -1,0 +1,849 @@
+{
+  "seed": 20260916,
+  "raw_path": "/content/drive/MyDrive/Phase2_Amazon_Audit/raw/Baby_Products.csv.gz",
+  "raw_sha256": "e2a8d0498afed767ee2615db7fac549559d82490b1a73c7241b84b5e9e8c279e",
+  "raw_sha256_matches_audit": true,
+  "rows_after_quarantine": 5953890,
+  "S1_rating": {
+    "scope": "all ratings with timestamp < t1",
+    "rows": 4886112,
+    "by_item_popularity": [
+      {
+        "item_rating_count_bucket": "1",
+        "rows": 57640,
+        "mean_rating": 4.074705123901367,
+        "share_5": 0.6164816099930603,
+        "share_le3": 0.2598195697432339
+      },
+      {
+        "item_rating_count_bucket": "2-5",
+        "rows": 176293,
+        "mean_rating": 4.1344523429870605,
+        "share_5": 0.6317210552886388,
+        "share_le3": 0.23973158321657695
+      },
+      {
+        "item_rating_count_bucket": "6-20",
+        "rows": 392757,
+        "mean_rating": 4.172763347625732,
+        "share_5": 0.6432934358903851,
+        "share_le3": 0.22815124873649612
+      },
+      {
+        "item_rating_count_bucket": "21-100",
+        "rows": 860938,
+        "mean_rating": 4.186233043670654,
+        "share_5": 0.6500770090296862,
+        "share_le3": 0.22461315448963803
+      },
+      {
+        "item_rating_count_bucket": "101-1000",
+        "rows": 1954436,
+        "mean_rating": 4.2498321533203125,
+        "share_5": 0.6748248599595996,
+        "share_le3": 0.20679725506488827
+      },
+      {
+        "item_rating_count_bucket": ">1000",
+        "rows": 1444048,
+        "mean_rating": 4.30640172958374,
+        "share_5": 0.7014870696818942,
+        "share_le3": 0.18909412983501933
+      }
+    ],
+    "by_user_activity": [
+      {
+        "user_rating_count_bucket": "1",
+        "rows": 1955292,
+        "mean_rating": 4.184893608093262,
+        "share_5": 0.6732549409499962
+      },
+      {
+        "user_rating_count_bucket": "2-5",
+        "rows": 1942173,
+        "mean_rating": 4.26630973815918,
+        "share_5": 0.678167186960173
+      },
+      {
+        "user_rating_count_bucket": "6-20",
+        "rows": 853708,
+        "mean_rating": 4.306539058685303,
+        "share_5": 0.6681300866338373
+      },
+      {
+        "user_rating_count_bucket": ">20",
+        "rows": 134939,
+        "mean_rating": 4.3446149826049805,
+        "share_5": 0.6462401529580033
+      }
+    ],
+    "users_with_2plus_ratings": 834473,
+    "share_users_2plus_all_same_rating": 0.441709917516804,
+    "share_users_5plus_only_5_star": 0.18100682843717972,
+    "per_user_rating_std_2plus": {
+      "p50": 0.5773502588272095,
+      "p90": 2.1213202476501465,
+      "p99": 2.8284270763397217,
+      "mean": 0.7444962855000216,
+      "max": 2.8284270763397217
+    }
+  },
+  "S2_temporal": {
+    "yearly_volume_all_rows": [
+      {
+        "year": 2000,
+        "rows": 9,
+        "users": 9,
+        "items": 4,
+        "new_user_rows_share": 1.0,
+        "new_item_rows_share": 0.4444444444444444,
+        "mean_rating": 4.333333492279053,
+        "share_5": 0.4444444444444444
+      },
+      {
+        "year": 2001,
+        "rows": 204,
+        "users": 175,
+        "items": 76,
+        "new_user_rows_share": 0.8529411764705882,
+        "new_item_rows_share": 0.3627450980392157,
+        "mean_rating": 3.906862735748291,
+        "share_5": 0.5441176470588235
+      },
+      {
+        "year": 2002,
+        "rows": 978,
+        "users": 768,
+        "items": 134,
+        "new_user_rows_share": 0.7750511247443763,
+        "new_item_rows_share": 0.08384458077709611,
+        "mean_rating": 3.7300612926483154,
+        "share_5": 0.4652351738241309
+      },
+      {
+        "year": 2003,
+        "rows": 1535,
+        "users": 1200,
+        "items": 204,
+        "new_user_rows_share": 0.752442996742671,
+        "new_item_rows_share": 0.06579804560260587,
+        "mean_rating": 3.9218242168426514,
+        "share_5": 0.549185667752443
+      },
+      {
+        "year": 2004,
+        "rows": 3033,
+        "users": 2241,
+        "items": 369,
+        "new_user_rows_share": 0.7088691064952193,
+        "new_item_rows_share": 0.06495219254863172,
+        "mean_rating": 3.7744808197021484,
+        "share_5": 0.4948895483020112
+      },
+      {
+        "year": 2005,
+        "rows": 5364,
+        "users": 3926,
+        "items": 671,
+        "new_user_rows_share": 0.6940715883668904,
+        "new_item_rows_share": 0.07158836689038031,
+        "mean_rating": 3.8010811805725098,
+        "share_5": 0.5152870991797166
+      },
+      {
+        "year": 2006,
+        "rows": 4628,
+        "users": 3729,
+        "items": 1016,
+        "new_user_rows_share": 0.75,
+        "new_item_rows_share": 0.12662057044079517,
+        "mean_rating": 3.874027729034424,
+        "share_5": 0.5207433016421781
+      },
+      {
+        "year": 2007,
+        "rows": 7554,
+        "users": 6366,
+        "items": 2276,
+        "new_user_rows_share": 0.7953402171035213,
+        "new_item_rows_share": 0.21207307386814933,
+        "mean_rating": 4.104447841644287,
+        "share_5": 0.5598358485570558
+      },
+      {
+        "year": 2008,
+        "rows": 10426,
+        "users": 8670,
+        "items": 3158,
+        "new_user_rows_share": 0.7684634567427585,
+        "new_item_rows_share": 0.18137348935353922,
+        "mean_rating": 4.152982711791992,
+        "share_5": 0.5758680222520621
+      },
+      {
+        "year": 2009,
+        "rows": 14427,
+        "users": 11843,
+        "items": 4502,
+        "new_user_rows_share": 0.7559437166424066,
+        "new_item_rows_share": 0.1838913148956817,
+        "mean_rating": 4.075414180755615,
+        "share_5": 0.5546544673182228
+      },
+      {
+        "year": 2010,
+        "rows": 28061,
+        "users": 21764,
+        "items": 7443,
+        "new_user_rows_share": 0.7150493567584905,
+        "new_item_rows_share": 0.1577990805744628,
+        "mean_rating": 4.054559707641602,
+        "share_5": 0.548840027083853
+      },
+      {
+        "year": 2011,
+        "rows": 57673,
+        "users": 41343,
+        "items": 10894,
+        "new_user_rows_share": 0.6494200058953062,
+        "new_item_rows_share": 0.10141660742461811,
+        "mean_rating": 4.0492777824401855,
+        "share_5": 0.5568636970506129
+      },
+      {
+        "year": 2012,
+        "rows": 75059,
+        "users": 53595,
+        "items": 14247,
+        "new_user_rows_share": 0.6305839406333684,
+        "new_item_rows_share": 0.09191436070291371,
+        "mean_rating": 4.0852131843566895,
+        "share_5": 0.5751475505935331
+      },
+      {
+        "year": 2013,
+        "rows": 177800,
+        "users": 117029,
+        "items": 21944,
+        "new_user_rows_share": 0.5852418447694038,
+        "new_item_rows_share": 0.058638920134983126,
+        "mean_rating": 4.217204570770264,
+        "share_5": 0.6126096737907761
+      },
+      {
+        "year": 2014,
+        "rows": 274569,
+        "users": 177595,
+        "items": 28425,
+        "new_user_rows_share": 0.5643426606791007,
+        "new_item_rows_share": 0.046090418073416885,
+        "mean_rating": 4.2310895919799805,
+        "share_5": 0.632769904832665
+      },
+      {
+        "year": 2015,
+        "rows": 434394,
+        "users": 276824,
+        "items": 36616,
+        "new_user_rows_share": 0.5485066552484611,
+        "new_item_rows_share": 0.03654055995248553,
+        "mean_rating": 4.2592878341674805,
+        "share_5": 0.6553129186867221
+      },
+      {
+        "year": 2016,
+        "rows": 520257,
+        "users": 336642,
+        "items": 41934,
+        "new_user_rows_share": 0.5399043165204889,
+        "new_item_rows_share": 0.034411838764303024,
+        "mean_rating": 4.275642395019531,
+        "share_5": 0.6685349740608968
+      },
+      {
+        "year": 2017,
+        "rows": 528422,
+        "users": 360192,
+        "items": 42997,
+        "new_user_rows_share": 0.5529595664071518,
+        "new_item_rows_share": 0.033700337987441854,
+        "mean_rating": 4.2193379402160645,
+        "share_5": 0.6628168395714031
+      },
+      {
+        "year": 2018,
+        "rows": 628649,
+        "users": 427854,
+        "items": 50769,
+        "new_user_rows_share": 0.5464416550412075,
+        "new_item_rows_share": 0.03504022117270528,
+        "mean_rating": 4.246403217315674,
+        "share_5": 0.6801617436757237
+      },
+      {
+        "year": 2019,
+        "rows": 809247,
+        "users": 560668,
+        "items": 58568,
+        "new_user_rows_share": 0.5588639809600777,
+        "new_item_rows_share": 0.0309893024008739,
+        "mean_rating": 4.348288059234619,
+        "share_5": 0.7261997881981644
+      },
+      {
+        "year": 2020,
+        "rows": 809228,
+        "users": 606643,
+        "items": 54272,
+        "new_user_rows_share": 0.5951412951603257,
+        "new_item_rows_share": 0.024828602075064134,
+        "mean_rating": 4.239225387573242,
+        "share_5": 0.6955023800461675
+      },
+      {
+        "year": 2021,
+        "rows": 713610,
+        "users": 551697,
+        "items": 54232,
+        "new_user_rows_share": 0.602078165944984,
+        "new_item_rows_share": 0.029949131878757303,
+        "mean_rating": 4.105371475219727,
+        "share_5": 0.6568896175782291
+      },
+      {
+        "year": 2022,
+        "rows": 596042,
+        "users": 432591,
+        "items": 52907,
+        "new_user_rows_share": 0.5505971055730972,
+        "new_item_rows_share": 0.03539515671714409,
+        "mean_rating": 4.0587544441223145,
+        "share_5": 0.638298978931015
+      },
+      {
+        "year": 2023,
+        "rows": 252721,
+        "users": 185199,
+        "items": 34223,
+        "new_user_rows_share": 0.5517744864890531,
+        "new_item_rows_share": 0.034421357940179094,
+        "mean_rating": 4.115973949432373,
+        "share_5": 0.6496492179122432
+      }
+    ],
+    "note": "yearly volume/rating uses all rows (already-published EDA granularity); structural stats below use timestamp < t1",
+    "item_active_span_days_2plus": {
+      "p50": 565.4448032407407,
+      "p90": 2030.3179747685194,
+      "p99": 4069.2817644907386,
+      "mean": 851.4532844227346,
+      "max": 7343.495424444444
+    },
+    "user_inter_event_gap_days": {
+      "p50": 20.924542118055555,
+      "p90": 598.4512973425932,
+      "p99": 1854.3115912854191,
+      "mean": 191.79824211081012,
+      "max": 7542.009137002315
+    },
+    "share_consecutive_events_same_day": 0.41411989522726916,
+    "popularity_drift_top1pct": [
+      {
+        "year": 2014,
+        "items_active": 28425,
+        "top1pct_items": 285,
+        "top1pct_row_share": 0.26645032760435444
+      },
+      {
+        "year": 2015,
+        "items_active": 36616,
+        "top1pct_items": 367,
+        "top1pct_row_share": 0.30753647610234025,
+        "jaccard_with_prev_year_top1pct": 0.541371158392435,
+        "row_share_on_prev_year_top1pct": 0.2382399388573507
+      },
+      {
+        "year": 2016,
+        "items_active": 41934,
+        "top1pct_items": 420,
+        "top1pct_row_share": 0.3164147719300269,
+        "jaccard_with_prev_year_top1pct": 0.5047801147227533,
+        "row_share_on_prev_year_top1pct": 0.25427625192933495
+      },
+      {
+        "year": 2017,
+        "items_active": 42997,
+        "top1pct_items": 430,
+        "top1pct_row_share": 0.3193981325531488,
+        "jaccard_with_prev_year_top1pct": 0.5151515151515151,
+        "row_share_on_prev_year_top1pct": 0.2734973184311024
+      },
+      {
+        "year": 2018,
+        "items_active": 50769,
+        "top1pct_items": 508,
+        "top1pct_row_share": 0.31605713204029595,
+        "jaccard_with_prev_year_top1pct": 0.44976816074188564,
+        "row_share_on_prev_year_top1pct": 0.24550424799848564
+      },
+      {
+        "year": 2019,
+        "items_active": 58568,
+        "top1pct_items": 586,
+        "top1pct_row_share": 0.32597587633936237,
+        "jaccard_with_prev_year_top1pct": 0.5048143053645117,
+        "row_share_on_prev_year_top1pct": 0.25259778534860183
+      },
+      {
+        "year": 2020,
+        "items_active": 54272,
+        "top1pct_items": 543,
+        "top1pct_row_share": 0.33565447562368084,
+        "jaccard_with_prev_year_top1pct": 0.4973474801061008,
+        "row_share_on_prev_year_top1pct": 0.28145343463152533
+      },
+      {
+        "year": 2021,
+        "items_active": 43915,
+        "top1pct_items": 440,
+        "top1pct_row_share": 0.3087698015548075,
+        "jaccard_with_prev_year_top1pct": 0.5030581039755352,
+        "row_share_on_prev_year_top1pct": 0.3028073474256715
+      }
+    ]
+  },
+  "S3_anomalies": {
+    "scope": "timestamp < t1; report only, nothing removed",
+    "user_days_ge_5": {
+      "user_days": 36470,
+      "users": 33367,
+      "row_share": 0.049046153669829916
+    },
+    "user_days_ge_10": {
+      "user_days": 3335,
+      "users": 3229,
+      "row_share": 0.00873455213470342
+    },
+    "user_days_ge_20": {
+      "user_days": 197,
+      "users": 195,
+      "row_share": 0.0009774642906261665
+    },
+    "user_days_ge_50": {
+      "user_days": 0,
+      "users": 0,
+      "row_share": 0.0
+    },
+    "max_ratings_by_one_user_in_one_day": 48,
+    "user_identical_timestamp_groups_ge2": {
+      "groups": 66,
+      "rows": 135,
+      "max_group": 3
+    },
+    "item_day_spikes_ge50_and_10x_median": {
+      "item_days": 32,
+      "items": 10,
+      "rows": 3349
+    },
+    "users_ge10_ratings_constant_value": {
+      "users": 2610,
+      "of_users_ge10": 31882
+    }
+  },
+  "S4_graph": {
+    "train_graph": {
+      "edges": 3868654,
+      "users": 2318308,
+      "items": 162125
+    },
+    "matches_registered_manifest": {
+      "edges": true,
+      "users": true,
+      "items": true
+    },
+    "item_item_cooccurrence": {
+      "unique_item_pairs": 4887104,
+      "items_with_no_cooccurring_item": 33560,
+      "share_items_with_no_cooccurring_item": 0.20700077101002312,
+      "cooccurring_items_per_item": {
+        "p50": 5.0,
+        "p90": 106.0,
+        "p99": 1016.7600000000093,
+        "mean": 60.28809868928296,
+        "max": 12624.0
+      },
+      "by_cohort_share_no_cooccurrence": {
+        "head": 0.0,
+        "body": 0.001303908465625713,
+        "tail": 0.2582036666153135
+      },
+      "pair_weight_distribution": {
+        "p50": 1.0,
+        "p90": 2.0,
+        "p99": 5.0,
+        "mean": 1.218437954256754,
+        "max": 434.0
+      }
+    },
+    "items_reached_only_by_single_interaction_users": {
+      "items": 33560,
+      "share": 0.20700077101002312
+    },
+    "unsampled_user_reach_random_users": {
+      "items_1hop": {
+        "p50": 1.0,
+        "p90": 3.0,
+        "p99": 8.0,
+        "mean": 1.6368,
+        "max": 25.0
+      },
+      "users_2hop": {
+        "p50": 523.5,
+        "p90": 4342.1,
+        "p99": 21348.0,
+        "mean": 1666.4892,
+        "max": 33754.0
+      },
+      "items_3hop": {
+        "p50": 973.5,
+        "p90": 5821.300000000001,
+        "p99": 12979.220000000005,
+        "mean": 2132.7128,
+        "max": 23965.0
+      }
+    },
+    "unsampled_user_reach_users_deg_ge5": {
+      "items_1hop": {
+        "p50": 6.0,
+        "p90": 13.0,
+        "p99": 30.0,
+        "mean": 7.8845,
+        "max": 59.0
+      },
+      "users_2hop": {
+        "p50": 5482.5,
+        "p90": 15440.80000000001,
+        "p99": 32259.76,
+        "mean": 7260.1525,
+        "max": 66216.0
+      },
+      "items_3hop": {
+        "p50": 7917.0,
+        "p90": 15486.900000000007,
+        "p99": 24241.519999999997,
+        "mean": 8719.7295,
+        "max": 39911.0
+      }
+    },
+    "neighbourhood_explosion_unsampled": [
+      {
+        "batch_triplets": 1024,
+        "node_universe": 2480433,
+        "v0_mean": 2964.0,
+        "candidates_mean": [
+          583008.0,
+          521664.6666666667,
+          1786411.3333333333
+        ],
+        "candidates_share_of_nodes": [
+          0.23504283324725966,
+          0.21031193612835608,
+          0.7202014056954303
+        ],
+        "cumulative_reach_share_of_nodes": [
+          0.23623778590270328,
+          0.4465497220310594,
+          0.9317082944792301
+        ]
+      },
+      {
+        "batch_triplets": 4096,
+        "node_universe": 2480433,
+        "v0_mean": 11158.666666666666,
+        "candidates_mean": [
+          1138064.3333333333,
+          485684.3333333333,
+          1861850.3333333333
+        ],
+        "candidates_share_of_nodes": [
+          0.4588168006688079,
+          0.19580626984616528,
+          0.750615047184638
+        ],
+        "cumulative_reach_share_of_nodes": [
+          0.46331547757992253,
+          0.6591217474260878,
+          0.950919993941918
+        ]
+      },
+      {
+        "batch_triplets": 16384,
+        "node_universe": 2480433,
+        "v0_mean": 40021.333333333336,
+        "candidates_mean": [
+          1656587.3333333333,
+          340632.0,
+          2007003.0
+        ],
+        "candidates_share_of_nodes": [
+          0.667862156862666,
+          0.13732763594098288,
+          0.809134131016641
+        ],
+        "cumulative_reach_share_of_nodes": [
+          0.6839969741842117,
+          0.8213246101251945,
+          0.9625965842791696
+        ]
+      },
+      {
+        "batch_triplets": 65536,
+        "node_universe": 2480433,
+        "v0_mean": 132749.0,
+        "candidates_mean": [
+          2016294.3333333333,
+          159195.33333333334,
+          2129882.3333333335
+        ],
+        "candidates_share_of_nodes": [
+          0.8128799823794205,
+          0.06418046096521589,
+          0.8586735998647549
+        ],
+        "cumulative_reach_share_of_nodes": [
+          0.8663984608063727,
+          0.9305789217715885,
+          0.9763725392569227
+        ]
+      }
+    ],
+    "cohort_check": {
+      "head": {
+        "items": 1628,
+        "edge_share": 0.4415571987628937
+      },
+      "body": {
+        "items": 30677,
+        "edge_share": 0.4545265734195709
+      },
+      "tail": {
+        "items": 129820,
+        "edge_share": 0.1039162427186966
+      }
+    }
+  },
+  "R1_dev_manifest": {
+    "gate": "R1",
+    "spec": "PHASE2_GRAPES_GFN_REC_SPEC_vn.md §3.1",
+    "rule_used": "t0 = t1 - (t2 - t1)",
+    "fallback_triggered": false,
+    "primary_rule_counts": {
+      "dev_train_edges": 3315497,
+      "dev_window_rows": 553157,
+      "dev_warm_targets": 105401
+    },
+    "t0_ms": 1599284098247,
+    "t1_ms": 1628643414042,
+    "t2_ms": 1658002729837,
+    "dev_train": {
+      "edges": 3315497,
+      "users": 1965541,
+      "items": 144011,
+      "share_of_current_train_edges": 0.8570156442007996
+    },
+    "dev_window": {
+      "rows": 553157,
+      "warm_targets": 105401,
+      "warm_retention": 0.19054445663708494,
+      "excluded_unseen_user": 426999,
+      "excluded_unseen_item_only": 20757
+    },
+    "isolation": {
+      "max_dev_train_ts_lt_min_dev_target_ts": true,
+      "all_dev_rows_before_t1": true,
+      "current_validation_or_test_rows_used": false
+    },
+    "user_mapping_note": "user_idx/item_idx are positions in sorted internal factor codes of this run; original IDs are written to dev_user_ids/dev_item_ids",
+    "files": {
+      "dev_train_edges.csv.gz": {
+        "rows": 3315497,
+        "sha256": "0b8b7090deda85288b57e1f7a53eb24cdb0969a975542098693bb491ab9323ee",
+        "bytes": 34427801
+      },
+      "dev_targets.csv.gz": {
+        "rows": 105401,
+        "sha256": "da321f19f4170b4f54cf2f07fcac50f76f28d434826950d565d606050f59f25c",
+        "bytes": 1160180
+      },
+      "dev_user_ids.csv.gz": {
+        "rows": 1965541,
+        "sha256": "bea7c924b050bf383c0fe23f9c7c1708d049090c404bf1974c7b1149108fe7d3",
+        "bytes": 9282028
+      },
+      "dev_item_ids.csv.gz": {
+        "rows": 144011,
+        "sha256": "39ec4770a87ce5046c8c2a724e15f78a05c8052e829c9a657dcd6ab11a7ec25c",
+        "bytes": 666825
+      }
+    }
+  },
+  "R1_dev_target_analysis": {
+    "scope": "development window targets vs G_dev_train (no current validation/test)",
+    "targets": 105401,
+    "target_item_cohort_share": {
+      "head": 0.37284276240263375,
+      "body": 0.49787952675970815,
+      "tail": 0.1292777108376581
+    },
+    "catalog_item_cohort_share": {
+      "head": 0.009728423523203088,
+      "body": 0.1899577115637,
+      "tail": 0.8003138649130969
+    },
+    "target_user_train_degree_bucket_share": {
+      "1": 0.4654225291980152,
+      "2-5": 0.3908312065350424,
+      "6-20": 0.12589064619880266,
+      ">20": 0.017855618068139772
+    },
+    "target_reachable_within_3_hops": {
+      "sampled_targets": 20000,
+      "share": 0.2904,
+      "by_target_cohort": {
+        "head": 0.5296213220741522,
+        "body": 0.16887417218543047,
+        "tail": 0.045213849287169046
+      }
+    }
+  },
+  "S6_metadata": {
+    "train_items": 162125,
+    "train_items_with_metadata": 162125,
+    "coverage": 1.0,
+    "field_coverage": {
+      "title": 0.9999321511179645,
+      "categories_nonempty": 0.9342112567463376,
+      "price": 0.22577640709329222,
+      "store": 0.9853754818812644,
+      "features_nonempty": 0.7762652274479568,
+      "description_nonempty": 0.6234016962220509
+    },
+    "category_depth": {
+      "0": 10666,
+      "2": 6347,
+      "3": 24127,
+      "4": 71395,
+      "5": 43392,
+      "6": 6198
+    },
+    "distinct_level2_categories": 96,
+    "distinct_leaf_categories": 448,
+    "main_category_top": {
+      "Baby": 98821,
+      "Amazon Home": 21594,
+      "Health & Personal Care": 7657,
+      "AMAZON FASHION": 5668,
+      "Tools & Home Improvement": 4724,
+      "All Beauty": 4172,
+      "Toys & Games": 1784,
+      "Grocery": 1591
+    },
+    "level2_category_top12": [
+      {
+        "category": "Nursery",
+        "item_share": 0.3269514263685428,
+        "interaction_share": 0.22395928919980954
+      },
+      {
+        "category": "Feeding",
+        "item_share": 0.13511796453353894,
+        "interaction_share": 0.17902583172338493
+      },
+      {
+        "category": "Baby Care",
+        "item_share": 0.09571626831148805,
+        "interaction_share": 0.12240122792061528
+      },
+      {
+        "category": "Diapering",
+        "item_share": 0.12741403238242097,
+        "interaction_share": 0.11961679695315218
+      },
+      {
+        "category": "Safety",
+        "item_share": 0.059552814186584424,
+        "interaction_share": 0.1126060898700168
+      },
+      {
+        "category": "Car Seats & Accessories",
+        "item_share": 0.041862760215882804,
+        "interaction_share": 0.07028335953538363
+      },
+      {
+        "category": "Strollers & Accessories",
+        "item_share": 0.05146646106399383,
+        "interaction_share": 0.043521596917170675
+      },
+      {
+        "category": "Activity & Entertainment",
+        "item_share": 0.017566692367000772,
+        "interaction_share": 0.03745023462940857
+      },
+      {
+        "category": "Potty Training",
+        "item_share": 0.020798766383962993,
+        "interaction_share": 0.027817685427541466
+      },
+      {
+        "category": "Travel Gear",
+        "item_share": 0.013933693138010794,
+        "interaction_share": 0.016997901595748807
+      },
+      {
+        "category": "Gifts",
+        "item_share": 0.028021588280647648,
+        "interaction_share": 0.015952059812017305
+      },
+      {
+        "category": "Redeem Your Nursery Event Code  Sent  by Email 30-Days After Shipping",
+        "item_share": 0.0023870470316114108,
+        "interaction_share": 0.002003797703283881
+      }
+    ],
+    "by_cohort": {
+      "head": {
+        "items": 1628,
+        "price_median": 20.04,
+        "categories_nonempty": 0.9938574938574939,
+        "distinct_leaf_categories": 228
+      },
+      "body": {
+        "items": 30677,
+        "price_median": 18.99,
+        "categories_nonempty": 0.9682824265736545,
+        "distinct_leaf_categories": 385
+      },
+      "tail": {
+        "items": 129820,
+        "price_median": 19.47,
+        "categories_nonempty": 0.9254121090741027,
+        "distinct_leaf_categories": 424
+      }
+    },
+    "price_quantiles": {
+      "p50": 19.43,
+      "p90": 69.0,
+      "p99": 342.11490000000254,
+      "mean": 37.80297590427276,
+      "max": 6500.99
+    }
+  },
+  "figures": [
+    "D1_rating_by_item_popularity.png",
+    "D2_yearly_volume_new_users.png",
+    "D3_popularity_drift.png",
+    "D4_neighbourhood_explosion.png",
+    "D5_target_cohorts.png",
+    "D6_metadata_categories.png"
+  ]
+}

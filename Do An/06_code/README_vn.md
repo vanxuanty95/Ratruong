@@ -24,7 +24,7 @@
 | `03_data_story_eda.ipynb` | EDA | Nền, dùng lại |
 | `04`–`06` | MostPop, BPR-MF, Full LightGCN (5 epoch) | Sanity cũ; chạy lại ở budget mới |
 | `07`–`10` | M0, M1, M2, paired validation | `ARCHIVED PILOT` |
-| `11_dataset_deep_analysis_and_dev_split.ipynb` | Phân tích sâu dataset + development split (R1); nhúng `scripts/deep_dataset_analysis.py` | Sẵn sàng, chờ chạy trên Colab |
+| `11_dataset_deep_analysis_and_dev_split.ipynb` | Phân tích sâu dataset + development split (R1); nhúng `scripts/deep_dataset_analysis.py` | Đã chạy 16/09; kết quả `results/dataset_deep_analysis/`, `results/grapes_gfn_rec_development/` |
 | `12_grapes_gfn_rec_development.ipynb` | Backbone adequacy, budget, sweep, feasibility (R3) | Chưa tạo |
 | `13_grapes_gfn_rec_paired_holdout.ipynb` | Holdout matrix (R5) | Chưa tạo |
 

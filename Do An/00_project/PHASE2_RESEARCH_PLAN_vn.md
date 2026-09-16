@@ -1,7 +1,7 @@
 # Kế hoạch Phase 2: GRAPES-GFN-Rec
 
 > **Cập nhật:** 16/09/2026
-> **Trạng thái:** `RESET (DL-001)`, `LIVING DOCS + HẠN 30/11 (DL-002)`. Gate hiện tại: **R1** (notebook 11 trên Colab) song song hoàn tất R2.
+> **Trạng thái:** `RESET (DL-001)`, `LIVING DOCS + HẠN 30/11 (DL-002)`. Gate hiện tại: hoàn tất **R2** → viết notebook 12 (**R3**). R1 xong.
 > **Spec chuẩn:** [`PHASE2_GRAPES_GFN_REC_SPEC_vn.md`](./PHASE2_GRAPES_GFN_REC_SPEC_vn.md) · **Vì sao reset:** [`DECISION_LOG_vn.md`](./DECISION_LOG_vn.md) · **Plan thao tác:** [`../../docs/superpowers/plans/2026-09-16-grapes-gfn-rec-rebuild.md`](../../docs/superpowers/plans/2026-09-16-grapes-gfn-rec-rebuild.md)
 
 ## 1. Mục tiêu
@@ -28,7 +28,7 @@ RQ phụ: TB vs REINFORCE (RQ2), hành vi sampler và popularity bias (RQ3), đ�
 | Gate | Việc | Điều kiện qua | Nơi chạy | Lịch (DL-002) | Trạng thái |
 |---|---|---|---|---|---|
 | R0 | Spec, decision log, docs trung tâm, archive pilot, checker | Checker pass; không file trung tâm gọi M2 là method | Local | 16/9 | Xong (`b122d1d`) |
-| R1 | Development split theo spec §3.1 | Manifest + hash; isolation test pass | Colab | 16–22/9 | Notebook 11 sẵn sàng, chờ chạy |
+| R1 | Development split theo spec §3.1 | Manifest + hash; isolation test pass | Colab | 16–22/9 | **Xong** (DL-003): t0 = 05/09/2020; 3.315.497 cạnh; 105.401 target |
 | R2 | Primitive + oracle GRAPES-GFN-Rec (G1–G7) | Oracle test pass trên CPU | Local | 16–22/9 | Đang làm: core 28 oracle pass; còn T04, T23/D9, D6 legacy, embedding cho scale |
 | R3 | Development: backbone adequacy, budget regime, sweep `α`/`log_z_init`/lr, feasibility T4, sampler học thật | Full LightGCN > MostPop trên `D_dev`; loss hữu hạn; replay xác định | Colab | 23/9–10/10 | Chưa |
 | R4 | Freeze config/seed/budget/evaluator/analysis; chốt OD-1..OD-4 | `current_validation_read=false` khi tạo | Local+Colab | 10–13/10 | Chưa |
